@@ -73,6 +73,9 @@ typedef void(*ON_UMOCK_C_ERROR)(UMOCK_C_ERROR_CODE error_code);
 
 #define IGNORED_ARG (0)
 
+#define IGNORED_STRUCT_ARG(struct_type) \
+    ...
+
 #define MOCKABLE_FUNCTION(modifiers, result, function, ...) \
 	...
 
@@ -997,6 +1000,8 @@ is equivalent to:
         .IgnoreArgument(1)
         .IgnoreArgument(3);
 ```
+
+**SRS_UMOCK_C_LIB_01_221: [** `IGNORED_STRUCT_ARG(struct_type)` shall expand to a zero initialized value of `struct_type` in order to allow automatically ignoring structure type arguments. **]**
 
 ##Global mock modifiers
 

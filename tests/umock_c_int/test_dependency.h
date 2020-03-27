@@ -21,6 +21,12 @@ extern "C" {
         int x;
     } TEST_STRUCT;
 
+    typedef struct TEST_NESTED_STRUCT_TAG
+    {
+        TEST_STRUCT test_struct;
+        int x;
+    } TEST_NESTED_STRUCT;
+
     typedef struct TEST_STRUCT_WITH_2_MEMBERS_TAG
     {
         int x;
@@ -48,6 +54,7 @@ extern "C" {
     MOCKABLE_FUNCTION(, int, test_dependency_struct_arg, TEST_STRUCT, s);
     MOCKABLE_FUNCTION(, const TEST_STRUCT*, test_dependency_return_const_struct_ptr);
     MOCKABLE_FUNCTION(, int, test_dependency_struct_with_2_members, TEST_STRUCT_WITH_2_MEMBERS, s, int, a);
+    MOCKABLE_FUNCTION(, void, test_dependency_nested_struct, TEST_NESTED_STRUCT, s);
     MOCKABLE_FUNCTION(, int, test_dependency_char_star_arg, char*, s);
     MOCKABLE_FUNCTION(, int, test_dependency_1_out_arg, int*, a);
     MOCKABLE_FUNCTION(, int, test_dependency_2_out_args, int*, a, int*, b);

@@ -104,9 +104,7 @@ char* stringify_func_TEST_STRUCT_COPY_FAILS(const TEST_STRUCT_COPY_FAILS* value)
 
 int are_equal_func_TEST_STRUCT_COPY_FAILS(const TEST_STRUCT_COPY_FAILS* left, const TEST_STRUCT_COPY_FAILS* right)
 {
-    (void)left;
-    (void)right;
-    return 1;
+    return left->x == right->x;
 }
 
 int copy_func_TEST_STRUCT_COPY_FAILS(TEST_STRUCT_COPY_FAILS* destination, const TEST_STRUCT_COPY_FAILS* source)
@@ -131,15 +129,13 @@ char* umocktypes_stringify_TEST_STRUCT_WITH_2_MEMBERS(const TEST_STRUCT_WITH_2_M
 
 int umocktypes_are_equal_TEST_STRUCT_WITH_2_MEMBERS(const TEST_STRUCT_WITH_2_MEMBERS* left, const TEST_STRUCT_WITH_2_MEMBERS* right)
 {
-    (void)left;
-    (void)right;
-    return 1;
+    return (left->x == right->x) && (left->y == right->y);
 }
 
 int umocktypes_copy_TEST_STRUCT_WITH_2_MEMBERS(TEST_STRUCT_WITH_2_MEMBERS* destination, const TEST_STRUCT_WITH_2_MEMBERS* source)
 {
-    (void)source;
-    (void)destination;
+    destination->x = source->x;
+    destination->y = source->y;
     return 0;
 }
 
@@ -2781,11 +2777,11 @@ TEST_FUNCTION(auto_ignore_when_first_arg_is_a_struct_succeeds_for_2nd_arg)
     // act
     (void)test_dependency_struct_with_2_members({ 2, 3 }, 1);
 #else
-	// arrange
-	STRICT_EXPECTED_CALL(test_dependency_struct_with_2_members((struct TEST_STRUCT_WITH_2_MEMBERS_TAG) { 2, 3 }, IGNORED_ARG));
+    // arrange
+    STRICT_EXPECTED_CALL(test_dependency_struct_with_2_members((struct TEST_STRUCT_WITH_2_MEMBERS_TAG) { 2, 3 }, IGNORED_ARG));
 
-	// act
-	(void)test_dependency_struct_with_2_members((struct TEST_STRUCT_WITH_2_MEMBERS_TAG) { 2, 3 }, 1);
+    // act
+    (void)test_dependency_struct_with_2_members((struct TEST_STRUCT_WITH_2_MEMBERS_TAG) { 2, 3 }, 1);
 #endif
 #else
     // arrange
@@ -3136,6 +3132,40 @@ TEST_FUNCTION(IGNORED_ARG_works_with_another_macro_wrapping_function_name)
 
     // act
     WRAPPER_MACRO(test_dependency_1_arg_no_return)(x);
+
+    // assert
+    ASSERT_ARE_EQUAL(char_ptr, "", umock_c_get_expected_calls());
+    ASSERT_ARE_EQUAL(char_ptr, "", umock_c_get_actual_calls());
+}
+
+/* Tests_SRS_UMOCK_C_LIB_01_221: [ IGNORED_STRUCT_ARG(struct_type) shall expand to a zero initialized value of struct_type in order to allow automatically ignoring structure type arguments. ]*/
+TEST_FUNCTION(IGNORED_STRUCT_ARG_works)
+{
+    // arrange
+    TEST_STRUCT_WITH_2_MEMBERS s = { 42, 43 };
+
+    REGISTER_TYPE(TEST_STRUCT_WITH_2_MEMBERS, TEST_STRUCT_WITH_2_MEMBERS);
+
+    STRICT_EXPECTED_CALL(test_dependency_struct_with_2_members(IGNORED_STRUCT_ARG(TEST_STRUCT_WITH_2_MEMBERS), 42));
+
+    // act
+    (void)test_dependency_struct_with_2_members(s, 42);
+
+    // assert
+    ASSERT_ARE_EQUAL(char_ptr, "", umock_c_get_expected_calls());
+    ASSERT_ARE_EQUAL(char_ptr, "", umock_c_get_actual_calls());
+}
+
+/* Tests_SRS_UMOCK_C_LIB_01_221: [ IGNORED_STRUCT_ARG(struct_type) shall expand to a zero initialized value of struct_type in order to allow automatically ignoring structure type arguments. ]*/
+TEST_FUNCTION(IGNORED_STRUCT_ARG_works_with_nested_struct)
+{
+    // arrange
+    TEST_NESTED_STRUCT s = { { 42 } };
+
+    STRICT_EXPECTED_CALL(test_dependency_nested_struct(IGNORED_STRUCT_ARG(TEST_NESTED_STRUCT)));
+
+    // act
+    test_dependency_nested_struct(s);
 
     // assert
     ASSERT_ARE_EQUAL(char_ptr, "", umock_c_get_expected_calls());

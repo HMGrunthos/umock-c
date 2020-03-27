@@ -11,6 +11,7 @@
 #include "umock_c/umock_log.h"
 
 static const char ignore_arg_string[] = "IGNORED_ARG";
+static const char ignore_struct_arg_string[] = "IGNORED_STRUCT_ARG";
 
 #define PARSER_STACK_DEPTH 256
 
@@ -111,8 +112,12 @@ int umockautoignoreargs_is_call_argument_ignored(const char* call, size_t argume
                         {
                             if (argument_count == argument_index)
                             {
-                                /* Codes_SRS_UMOCKAUTOIGNOREARGS_01_007: [ If the argument value is IGNORED_ARG then is_argument_ignored shall be set to 1. ]*/
-                                if (strncmp(cur_pos, ignore_arg_string, sizeof(ignore_arg_string) - 1) == 0)
+                                if (
+                                    /* Codes_SRS_UMOCKAUTOIGNOREARGS_01_007: [ If the argument value is IGNORED_ARG then is_argument_ignored shall be set to 1. ]*/
+                                    (strncmp(cur_pos, ignore_arg_string, sizeof(ignore_arg_string) - 1) == 0) ||
+                                    /* Codes_SRS_UMOCKAUTOIGNOREARGS_01_012: [ If the argument value starts with IGNORED_STRUCT_ARG then is_argument_ignored shall be set to 1. ]*/
+                                    (strncmp(cur_pos, ignore_struct_arg_string, sizeof(ignore_struct_arg_string) - 1) == 0)
+                                    )
                                 {
                                     /* Codes_SRS_UMOCKAUTOIGNOREARGS_01_005: [ If umockautoignoreargs_is_call_argument_ignored was able to parse the argument_indexth argument it shall succeed and return 0, while writing whether the argument is ignored in the is_argument_ignored output argument. ]*/
                                     *is_argument_ignored = 1;

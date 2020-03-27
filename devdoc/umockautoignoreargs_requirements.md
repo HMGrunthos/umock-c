@@ -42,4 +42,6 @@ For this example, the arg list would be `arg1, some_call(x), ...`.
 
 **SRS_UMOCKAUTOIGNOREARGS_01_007: [** If the argument value is `IGNORED_ARG` then `is_argument_ignored` shall be set to 1. **]**
 
+**SRS_UMOCKAUTOIGNOREARGS_01_012: [** If the argument value starts with `IGNORED_STRUCT_ARG` then `is_argument_ignored` shall be set to 1. **]**
+
 **SRS_UMOCKAUTOIGNOREARGS_01_008: [** If the argument value is any other value then `is_argument_ignored` shall be set to 0. **]**

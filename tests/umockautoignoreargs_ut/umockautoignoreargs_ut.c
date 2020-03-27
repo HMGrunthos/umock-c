@@ -391,4 +391,49 @@ TEST_FUNCTION(umockautoignoreargs_is_call_argument_ignored_with_not_enough_LPARE
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
 }
 
+/* Tests_SRS_UMOCKAUTOIGNOREARGS_01_012: [ If the argument value starts with IGNORED_STRUCT_ARG then is_argument_ignored shall be set to 1. ]*/
+TEST_FUNCTION(umockautoignoreargs_is_call_argument_ignored_with_IGNORED_STRUCT_ARG_succeeds)
+{
+    // arrange
+    int result;
+    int is_ignored;
+
+    // act
+    result = umockautoignoreargs_is_call_argument_ignored("a(IGNORED_STRUCT_ARG(struct))", 1, &is_ignored);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(int, 1, is_ignored);
+}
+
+/* Tests_SRS_UMOCKAUTOIGNOREARGS_01_012: [ If the argument value starts with IGNORED_STRUCT_ARG then is_argument_ignored shall be set to 1. ]*/
+TEST_FUNCTION(umockautoignoreargs_is_call_argument_ignored_with_IGNORED_STRUCT_ARG_as_second_arg_succeeds)
+{
+    // arrange
+    int result;
+    int is_ignored;
+
+    // act
+    result = umockautoignoreargs_is_call_argument_ignored("a(xxx, IGNORED_STRUCT_ARG(struct))", 2, &is_ignored);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(int, 1, is_ignored);
+}
+
+/* Tests_SRS_UMOCKAUTOIGNOREARGS_01_012: [ If the argument value starts with IGNORED_STRUCT_ARG then is_argument_ignored shall be set to 1. ]*/
+TEST_FUNCTION(umockautoignoreargs_is_call_argument_ignored_with_IGNORED_STRUCT_ARG_does_not_ignore_first_arg)
+{
+    // arrange
+    int result;
+    int is_ignored;
+
+    // act
+    result = umockautoignoreargs_is_call_argument_ignored("a(xxx, IGNORED_STRUCT_ARG(struct))", 1, &is_ignored);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(int, 0, is_ignored);
+}
+
 END_TEST_SUITE(umockautoignoreargs_unittests)
