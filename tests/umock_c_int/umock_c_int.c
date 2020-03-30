@@ -94,7 +94,7 @@ static void my_hook_test_dependency_void_return(void)
     test_dependency_void_return_called = 1;
 }
 
-char* stringify_func_TEST_STRUCT_COPY_FAILS(const TEST_STRUCT_COPY_FAILS* value)
+static char* stringify_func_TEST_STRUCT_COPY_FAILS(const TEST_STRUCT_COPY_FAILS* value)
 {
     char* result = (char*)malloc(1);
     (void)value;
@@ -102,24 +102,24 @@ char* stringify_func_TEST_STRUCT_COPY_FAILS(const TEST_STRUCT_COPY_FAILS* value)
     return result;
 }
 
-int are_equal_func_TEST_STRUCT_COPY_FAILS(const TEST_STRUCT_COPY_FAILS* left, const TEST_STRUCT_COPY_FAILS* right)
+static int are_equal_func_TEST_STRUCT_COPY_FAILS(const TEST_STRUCT_COPY_FAILS* left, const TEST_STRUCT_COPY_FAILS* right)
 {
     return left->x == right->x;
 }
 
-int copy_func_TEST_STRUCT_COPY_FAILS(TEST_STRUCT_COPY_FAILS* destination, const TEST_STRUCT_COPY_FAILS* source)
+static int copy_func_TEST_STRUCT_COPY_FAILS(TEST_STRUCT_COPY_FAILS* destination, const TEST_STRUCT_COPY_FAILS* source)
 {
     (void)source;
     (void)destination;
     return 0;
 }
 
-void free_func_TEST_STRUCT_COPY_FAILS(TEST_STRUCT_COPY_FAILS* value)
+static void free_func_TEST_STRUCT_COPY_FAILS(TEST_STRUCT_COPY_FAILS* value)
 {
     (void)value;
 }
 
-char* umocktypes_stringify_TEST_STRUCT_WITH_2_MEMBERS(const TEST_STRUCT_WITH_2_MEMBERS* value)
+static char* umocktypes_stringify_TEST_STRUCT_WITH_2_MEMBERS(const TEST_STRUCT_WITH_2_MEMBERS* value)
 {
     char* result = (char*)malloc(1);
     (void)value;
@@ -127,26 +127,26 @@ char* umocktypes_stringify_TEST_STRUCT_WITH_2_MEMBERS(const TEST_STRUCT_WITH_2_M
     return result;
 }
 
-int umocktypes_are_equal_TEST_STRUCT_WITH_2_MEMBERS(const TEST_STRUCT_WITH_2_MEMBERS* left, const TEST_STRUCT_WITH_2_MEMBERS* right)
+static int umocktypes_are_equal_TEST_STRUCT_WITH_2_MEMBERS(const TEST_STRUCT_WITH_2_MEMBERS* left, const TEST_STRUCT_WITH_2_MEMBERS* right)
 {
     return (left->x == right->x) && (left->y == right->y);
 }
 
-int umocktypes_copy_TEST_STRUCT_WITH_2_MEMBERS(TEST_STRUCT_WITH_2_MEMBERS* destination, const TEST_STRUCT_WITH_2_MEMBERS* source)
+static int umocktypes_copy_TEST_STRUCT_WITH_2_MEMBERS(TEST_STRUCT_WITH_2_MEMBERS* destination, const TEST_STRUCT_WITH_2_MEMBERS* source)
 {
     destination->x = source->x;
     destination->y = source->y;
     return 0;
 }
 
-void umocktypes_free_TEST_STRUCT_WITH_2_MEMBERS(TEST_STRUCT_WITH_2_MEMBERS* value)
+static void umocktypes_free_TEST_STRUCT_WITH_2_MEMBERS(TEST_STRUCT_WITH_2_MEMBERS* value)
 {
     (void)value;
 }
 
 typedef void* SOME_OTHER_TYPE;
 
-char* umock_stringify_SOME_OTHER_TYPE(const SOME_OTHER_TYPE* value)
+static char* umock_stringify_SOME_OTHER_TYPE(const SOME_OTHER_TYPE* value)
 {
     char* result = (char*)malloc(1);
     (void)value;
@@ -154,21 +154,21 @@ char* umock_stringify_SOME_OTHER_TYPE(const SOME_OTHER_TYPE* value)
     return result;
 }
 
-int umock_are_equal_SOME_OTHER_TYPE(const SOME_OTHER_TYPE* left, const SOME_OTHER_TYPE* right)
+static int umock_are_equal_SOME_OTHER_TYPE(const SOME_OTHER_TYPE* left, const SOME_OTHER_TYPE* right)
 {
     (void)left;
     (void)right;
     return 1;
 }
 
-int umock_copy_SOME_OTHER_TYPE(SOME_OTHER_TYPE* destination, const SOME_OTHER_TYPE* source)
+static int umock_copy_SOME_OTHER_TYPE(SOME_OTHER_TYPE* destination, const SOME_OTHER_TYPE* source)
 {
     (void)source;
     (void)destination;
     return 0;
 }
 
-void umock_free_SOME_OTHER_TYPE(SOME_OTHER_TYPE* value)
+static void umock_free_SOME_OTHER_TYPE(SOME_OTHER_TYPE* value)
 {
     (void)value;
 }
@@ -178,7 +178,7 @@ typedef struct MY_STRUCT_TAG
     int x;
 } MY_STRUCT;
 
-char* umocktypes_stringify_MY_STRUCT_ptr(const MY_STRUCT** value)
+static char* umocktypes_stringify_MY_STRUCT_ptr(const MY_STRUCT** value)
 {
     char* result = (char*)malloc(1);
     (void)value;
@@ -186,7 +186,7 @@ char* umocktypes_stringify_MY_STRUCT_ptr(const MY_STRUCT** value)
     return result;
 }
 
-int umocktypes_are_equal_MY_STRUCT_ptr(const MY_STRUCT** left, const MY_STRUCT** right)
+static int umocktypes_are_equal_MY_STRUCT_ptr(const MY_STRUCT** left, const MY_STRUCT** right)
 {
     int result;
 
@@ -202,7 +202,7 @@ int umocktypes_are_equal_MY_STRUCT_ptr(const MY_STRUCT** left, const MY_STRUCT**
     return result;
 }
 
-int umocktypes_copy_MY_STRUCT_ptr(MY_STRUCT** destination, const MY_STRUCT** source)
+static int umocktypes_copy_MY_STRUCT_ptr(MY_STRUCT** destination, const MY_STRUCT** source)
 {
     int result;
 
@@ -220,12 +220,12 @@ int umocktypes_copy_MY_STRUCT_ptr(MY_STRUCT** destination, const MY_STRUCT** sou
     return result;
 }
 
-void umocktypes_free_MY_STRUCT_ptr(MY_STRUCT** value)
+static void umocktypes_free_MY_STRUCT_ptr(MY_STRUCT** value)
 {
     free(*value);
 }
 
-char* umocktypes_stringify_ARRAY_TYPE(const ARRAY_TYPE* value)
+static char* umocktypes_stringify_ARRAY_TYPE(const ARRAY_TYPE* value)
 {
     char* result = (char*)malloc(1);
     (void)value;
@@ -233,7 +233,7 @@ char* umocktypes_stringify_ARRAY_TYPE(const ARRAY_TYPE* value)
     return result;
 }
 
-int umocktypes_are_equal_ARRAY_TYPE(const ARRAY_TYPE* left, const ARRAY_TYPE* right)
+static int umocktypes_are_equal_ARRAY_TYPE(const ARRAY_TYPE* left, const ARRAY_TYPE* right)
 {
     int result;
 
@@ -249,13 +249,13 @@ int umocktypes_are_equal_ARRAY_TYPE(const ARRAY_TYPE* left, const ARRAY_TYPE* ri
     return result;
 }
 
-int umocktypes_copy_ARRAY_TYPE(ARRAY_TYPE* destination, const ARRAY_TYPE* source)
+static int umocktypes_copy_ARRAY_TYPE(ARRAY_TYPE* destination, const ARRAY_TYPE* source)
 {
     (void)memcpy(*destination, *source, 16);
     return 0;
 }
 
-void umocktypes_free_ARRAY_TYPE(ARRAY_TYPE* value)
+static void umocktypes_free_ARRAY_TYPE(ARRAY_TYPE* value)
 {
     (void)value;
 }
@@ -301,7 +301,7 @@ typedef struct SOME_STRUCT_TAG
     unsigned char a;
 } SOME_STRUCT;
 
-SOME_STRUCT test_struct = { 42 };
+static SOME_STRUCT test_struct = { 42 };
 
 MOCK_FUNCTION_WITH_CODE(, SOME_HANDLE, some_create, int, a);
 MOCK_FUNCTION_END(test_handle)
@@ -332,7 +332,6 @@ MOCK_FUNCTION_END(NULL)
 
 MOCK_FUNCTION_WITH_CODE(, const TEST_STRUCT*, mock_function_with_code_return_const_struct_ptr);
 MOCK_FUNCTION_END(NULL)
-
 
 BEGIN_TEST_SUITE(umock_c_integrationtests)
 

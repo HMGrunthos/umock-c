@@ -444,6 +444,40 @@ XX**SRS_UMOCK_C_LIB_01_148: [** If call comparison fails an error shall be indic
 
 **SRS_UMOCK_C_LIB_01_153: [** If no custom handler has beed registered for a pointer type, it shall be trated as void*. **]**
 
+### Windows types
+
+**SRS_UMOCKTYPES_WINDOWS_01_001: [** The following Windows types shall be supported out of the box, aliased to their underlying types: **]**
+
+    LONG - long
+    LONGLONG - long long
+    DWORD - unsigned long
+    HRESULT - LONG
+    BOOL - int
+    PVOID - void*
+    LPCSTR - const char*
+    LPSECURITY_ATTRIBUTES - void*
+    HANDLE - void*
+    UCHAR - unsigned char
+    PTP_POOL - void*
+    PTP_CLEANUP_GROUP - void*
+    PTP_CALLBACK_ENVIRON - void*
+    PTP_CLEANUP_GROUP_CANCEL_CALLBACK - void*
+    PTP_IO - void*
+    PTP_WIN32_IO_CALLBACK - void*
+    PTP_WORK_CALLBACK - void*
+    PTP_WORK - void*
+    LPCVOID - void*
+    LPDWORD - void*
+    LPOVERLAPPED - void*
+    LPVOID - void*
+    PTP_SIMPLE_CALLBACK - void*
+    LPLONG - void*
+    BYTE - unsigned char
+    BOOLEAN - BYTE
+    ULONG - unsigned long
+    LPCWSTR - const wchar_t*
+    LONG64 - int64_t \
+
 ### Custom types
 
 **SRS_UMOCK_C_LIB_01_045: [** Custom types, like structures shall be supported by allowing the user to define a set of functions that can be used by umock_c to operate with these types. **]**

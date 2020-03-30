@@ -24,6 +24,10 @@ if(${run_unittests})
     add_subdirectory(umocktypes_wcharptr_ut)
     add_subdirectory(umock_c_negt_noini_ut)
     add_subdirectory(umock_c_negt_ut)
+
+    if(WIN32)
+        add_subdirectory(umocktypes_windows_ut)
+    endif()
 endif()
 
 #int tests
@@ -36,4 +40,9 @@ if(${run_int_tests})
     add_subdirectory(umock_c_malloc_hook_int)
     add_subdirectory(umock_c_ptrarg_leak_int)
     add_subdirectory(umocktypes_struct_int)
+
+    if(WIN32)
+        add_subdirectory(umock_c_windows_types_int)
+        add_subdirectory(umock_c_reg_win_types_int)
+    endif()
 endif()

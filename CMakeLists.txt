@@ -120,6 +120,14 @@ IF(WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
     # Make warning as error
     add_definitions(/WX)
+
+set(umock_c_c_files ${umock_c_c_files}
+    ./src/umocktypes_windows.c
+)
+
+set(umock_c_h_files ${umock_c_h_files}
+    ./inc/umock_c/umocktypes_windows.h
+)
 ENDIF()
 
 FILE(GLOB umock_c_md_files "devdoc/*.md")
