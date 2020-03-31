@@ -281,7 +281,7 @@ int umocktypes_charptr_register_types(void)
 {
     int result;
 
-    /* Codes_SRS_UMOCKTYPES_CHARPTR_01_001: [ umocktypes_charptr_register_types shall register support for the types char\* and const char\* by using the REGISTER_UMOCK_VALUE_TYPE macro provided by umockc. ]*/
+    /* Codes_SRS_UMOCKTYPES_CHARPTR_01_001: [ umocktypes_charptr_register_types shall register support for the types char* and const char* by using the REGISTER_UMOCK_VALUE_TYPE macro. ]*/
     if ((REGISTER_TYPE(char*, charptr) != 0) ||
         (REGISTER_TYPE(const char*, const_charptr) != 0) ||
         (REGISTER_TYPE(char const*, const_charptr) != 0))

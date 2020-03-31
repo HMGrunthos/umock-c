@@ -15,7 +15,7 @@ void* umockalloc_malloc(size_t size)
 
 void* umockalloc_calloc(size_t nmemb, size_t size)
 {
-    /* Codes_SRS_UMOCKALLOC_09_001: [ umockalloc_calloc shall call calloc, while passing the number of members and size arguments to calloc. ] */
+    /* Codes_SRS_UMOCKALLOC_09_001: [ umockalloc_calloc shall call calloc, while passing the nmemb and size arguments to calloc. ] */
     /* Codes_SRS_UMOCKALLOC_09_002: [ umockalloc_calloc shall return the result of calloc. ]*/
     return calloc(nmemb, size);
 }

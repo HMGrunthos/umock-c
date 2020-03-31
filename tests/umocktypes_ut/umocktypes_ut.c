@@ -384,7 +384,7 @@ TEST_FUNCTION_CLEANUP(test_function_cleanup)
 
 /* umocktypes_init */
 
-/* Tests_SRS_UMOCKTYPES_01_001: [ umocktypes_init shall initialize the umocktypes module. ] */
+/* Tests_SRS_UMOCKTYPES_01_001: [ umocktypes_init shall initialize the umock types module. ] */
 /* Tests_SRS_UMOCKTYPES_01_003: [ On success umocktypes_init shall return 0. ]*/
 TEST_FUNCTION(umocktypes_init_initializes_the_module)
 {
@@ -884,9 +884,9 @@ TEST_FUNCTION(umocktypes_register_alias_when_module_is_not_initialized_fails)
 
 /* umocktypes_stringify */
 
-/* Tests_SRS_UMOCKTYPES_01_013: [ umocktypes_stringify shall return a char\* with the string representation of the value argument. ]*/
+/* Tests_SRS_UMOCKTYPES_01_013: [ umocktypes_stringify shall return a char* with the string representation of the value argument. ]*/
 /* Tests_SRS_UMOCKTYPES_01_014: [ The string representation shall be obtained by calling the stringify function registered for the type identified by the argument type. ]*/
-/* Tests_SRS_UMOCKTYPES_01_015: [ On success umocktypes_stringify shall return the char\* produced by the underlying stringify function for type (passed in umocktypes_register_type). ]*/
+/* Tests_SRS_UMOCKTYPES_01_015: [ On success umocktypes_stringify shall return the char* produced by the underlying stringify function for type (passed in umocktypes_register_type). ]*/
 /* Tests_SRS_UMOCKTYPES_01_035: [ Before looking it up, the type string shall be normalized by calling umocktypename_normalize. ]*/
 TEST_FUNCTION(umocktypes_stringify_calls_the_underlying_stringify)
 {

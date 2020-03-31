@@ -17,7 +17,7 @@ int umockcallpairs_track_create_paired_call(PAIRED_HANDLES* paired_handles, cons
         (handle == NULL) ||
         (handle_type == NULL))
     {
-        /* Codes_SRS_UMOCKCALLPAIRS_01_004: [ If any of the arguments paired_handles, handle or handle_type is NULL, umockcallpairs_track_create_paired_call shallfail and return a non-zero value. ]*/
+        /* Codes_SRS_UMOCKCALLPAIRS_01_004: [ If any of the arguments paired_handles, handle or handle_type is NULL, umockcallpairs_track_create_paired_call shall fail and return a non-zero value. ]*/
         result = __LINE__;
         UMOCK_LOG("umock_track_create_destroy_paired_calls_malloc: NULL paired_handles");
     }
@@ -73,7 +73,7 @@ int umockcallpairs_track_create_paired_call(PAIRED_HANDLES* paired_handles, cons
                 {
                     (void)memcpy(paired_handles->paired_handles[paired_handles->paired_handle_count - 1].handle_type, handle_type, handle_type_length + 1);
 
-                    /* Codes_SRS_UMOCKCALLPAIRS_01_002: [ umockcallpairs_track_create_paired_call shall copy the handle_value to the handle_value member of the new entry. ] */
+                    /* Codes_SRS_UMOCKCALLPAIRS_01_002: [ umockcallpairs_track_create_paired_call shall copy the handle to the handle_value member of the new entry. ] */
                     /* Codes_SRS_UMOCKCALLPAIRS_01_006: [ The handle value shall be copied by using umocktypes_copy. ]*/
                     if (umocktypes_copy(handle_type, paired_handles->paired_handles[paired_handles->paired_handle_count - 1].handle_value, handle) != 0)
                     {
@@ -158,7 +158,7 @@ int umockcallpairs_track_destroy_paired_call(PAIRED_HANDLES* paired_handles, con
                 paired_handles->paired_handle_count--;
                 if (paired_handles->paired_handle_count == 0)
                 {
-                    /* Codes_SRS_UMOCKCALLPAIRS_01_012: [ If the array paired handles array is empty after removing the entry, the paired_handles field shall be freed and set to NULL. ]*/
+                    /* Codes_SRS_UMOCKCALLPAIRS_01_012: [ If the paired handles array is empty after removing the entry, the paired_handles field shall be freed and set to NULL. ]*/
                     umockalloc_free(paired_handles->paired_handles);
                     paired_handles->paired_handles = NULL;
                 }

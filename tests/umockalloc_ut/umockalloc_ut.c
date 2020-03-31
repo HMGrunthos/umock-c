@@ -225,7 +225,7 @@ TEST_FUNCTION(when_malloc_returns_NULL_umockalloc_malloc_returns_NULL)
 
 /* umockalloc_calloc */
 
-/* Tests_SRS_UMOCKALLOC_09_001: [ umockalloc_calloc shall call calloc, while passing the number of members and size arguments to calloc. ] */
+/* Tests_SRS_UMOCKALLOC_09_001: [ umockalloc_calloc shall call calloc, while passing the nmemb and size arguments to calloc. ] */
 /* Tests_SRS_UMOCKALLOC_09_002: [ umockalloc_calloc shall return the result of calloc. ]*/
 TEST_FUNCTION(umockalloc_calloc_calls_calloc)
 {
@@ -243,7 +243,7 @@ TEST_FUNCTION(umockalloc_calloc_calls_calloc)
     ASSERT_ARE_EQUAL(size_t, 1, test_calloc_calls[0].nmemb);
 }
 
-/* Tests_SRS_UMOCKALLOC_09_001: [ umockalloc_calloc shall call calloc, while passing the number of members and size arguments to calloc. ] */
+/* Tests_SRS_UMOCKALLOC_09_001: [ umockalloc_calloc shall call calloc, while passing the nmemb and size arguments to calloc. ] */
 /* Tests_SRS_UMOCKALLOC_09_002: [ umockalloc_calloc shall return the result of calloc. ]*/
 TEST_FUNCTION(umockalloc_calloc_calls_calloc_other_value)
 {
@@ -261,7 +261,7 @@ TEST_FUNCTION(umockalloc_calloc_calls_calloc_other_value)
     ASSERT_ARE_EQUAL(size_t, 1, test_calloc_calls[0].nmemb);
 }
 
-/* Tests_SRS_UMOCKALLOC_09_001: [ umockalloc_calloc shall call calloc, while passing the number of members and size arguments to calloc. ] */
+/* Tests_SRS_UMOCKALLOC_09_001: [ umockalloc_calloc shall call calloc, while passing the nmemb and size arguments to calloc. ] */
 /* Tests_SRS_UMOCKALLOC_09_002: [ umockalloc_calloc shall return the result of calloc. ]*/
 TEST_FUNCTION(umockalloc_calloc_calls_calloc_2_members)
 {
@@ -279,7 +279,7 @@ TEST_FUNCTION(umockalloc_calloc_calls_calloc_2_members)
     ASSERT_ARE_EQUAL(size_t, 2, test_calloc_calls[0].nmemb);
 }
 
-/* Tests_SRS_UMOCKALLOC_09_001: [ umockalloc_calloc shall call calloc, while passing the number of members and size arguments to calloc. ] */
+/* Tests_SRS_UMOCKALLOC_09_001: [ umockalloc_calloc shall call calloc, while passing the nmemb and size arguments to calloc. ] */
 /* Tests_SRS_UMOCKALLOC_09_002: [ umockalloc_calloc shall return the result of calloc. ]*/
 TEST_FUNCTION(umockalloc_calloc_calls_calloc_0_members)
 {
@@ -297,7 +297,7 @@ TEST_FUNCTION(umockalloc_calloc_calls_calloc_0_members)
     ASSERT_ARE_EQUAL(size_t, 0, test_calloc_calls[0].nmemb);
 }
 
-/* Tests_SRS_UMOCKALLOC_09_001: [ umockalloc_malloc shall call malloc, while passing the size argument to malloc. ] */
+/* Tests_SRS_UMOCKALLOC_09_001: [ umockalloc_calloc shall call calloc, while passing the nmemb and size arguments to calloc. ] */
 TEST_FUNCTION(when_calloc_returns_NULL_umockalloc_calloc_returns_NULL)
 {
     // arrange

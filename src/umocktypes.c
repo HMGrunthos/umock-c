@@ -53,7 +53,7 @@ static UMOCK_VALUE_TYPE_HANDLERS* get_value_type_handlers(const char* type_name)
     return result;
 }
 
-/* Codes_SRS_UMOCKTYPES_01_001: [ umocktypes_init shall initialize the umocktypes module. ] */
+/* Codes_SRS_UMOCKTYPES_01_001: [ umocktypes_init shall initialize the umock types module. ] */
 int umocktypes_init(void)
 {
     int result;
@@ -273,7 +273,7 @@ int umocktypes_register_alias_type(const char* type, const char* is_type)
     return result;
 }
 
-/* Codes_SRS_UMOCKTYPES_01_013: [ umocktypes_stringify shall return a char\* with the string representation of the value argument. ]*/
+/* Codes_SRS_UMOCKTYPES_01_013: [ umocktypes_stringify shall return a char* with the string representation of the value argument. ]*/
 char* umocktypes_stringify(const char* type, const void* value)
 {
     char* result;
@@ -322,7 +322,7 @@ char* umocktypes_stringify(const char* type, const void* value)
             else
             {
                 /* Codes_SRS_UMOCKTYPES_01_014: [ The string representation shall be obtained by calling the stringify function registered for the type identified by the argument type. ]*/
-                /* Codes_SRS_UMOCKTYPES_01_015: [ On success umocktypes_stringify shall return the char\* produced by the underlying stringify function for type (passed in umocktypes_register_type). ]*/
+                /* Codes_SRS_UMOCKTYPES_01_015: [ On success umocktypes_stringify shall return the char* produced by the underlying stringify function for type (passed in umocktypes_register_type). ]*/
                 result = value_type_handlers->stringify_func(value);
             }
 

@@ -833,7 +833,7 @@ TEST_FUNCTION(umocktypes_free_const_charptr_with_NULL_does_nothing)
 
 /* umocktypes_charptr_register_types */
 
-/* Tests_SRS_UMOCKTYPES_CHARPTR_01_001: [ umocktypes_charptr_register_types shall register support for the types char\* and const char\* by using the REGISTER_UMOCK_VALUE_TYPE macro provided by umockc. ]*/
+/* Tests_SRS_UMOCKTYPES_CHARPTR_01_001: [ umocktypes_charptr_register_types shall register support for the types char* and const char* by using the REGISTER_UMOCK_VALUE_TYPE macro. ]*/
 /* Tests_SRS_UMOCKTYPES_CHARPTR_01_038: [ On success, umocktypes_charptr_register_types shall return 0. ]*/
 TEST_FUNCTION(umocktypes_charptr_register_types_registers_all_types)
 {
