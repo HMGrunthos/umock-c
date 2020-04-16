@@ -45,6 +45,8 @@ extern "C" {
 
     typedef unsigned char ARRAY_TYPE[16];
 
+    typedef const TEST_STRUCT* const CONST_P2_CONST_TEST_STRUCT;
+    
     /* Tests_SRS_UMOCK_C_LIB_01_001: [MOCKABLE_FUNCTION shall be used to wrap function definition allowing the user to declare a function that can be mocked.]*/
     /* Tests_SRS_UMOCK_C_LIB_01_004: [If ENABLE_MOCKS is defined, MOCKABLE_FUNCTION shall generate the declaration of the function and code for the mocked function, thus allowing setting up of expectations in test functions.] */
     MOCKABLE_FUNCTION(, int, test_dependency_no_args);
@@ -77,6 +79,9 @@ extern "C" {
     MOCKABLE_FUNCTION(, void, test_dependency_with_volatile_arg, volatile int, argument);
     MOCKABLE_FUNCTION(, void, test_dependency_with_volatile_pointer_arg, int volatile*, argument);
     MOCKABLE_FUNCTION(, volatile void*, test_dependency_with_volatile_pptr_return);
+
+    // this is here to make sure that a function with a const return can compile
+    MOCKABLE_FUNCTION(, CONST_P2_CONST_TEST_STRUCT, test_dependency_with_const_p2_const_return);
 
     typedef enum TEST_ENUM_TAG
     {

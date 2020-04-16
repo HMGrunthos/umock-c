@@ -51,6 +51,9 @@ typedef struct ARG_BUFFER_TAG
 typedef int(*TRACK_CREATE_FUNC_TYPE)(PAIRED_HANDLES* paired_handles, const void* handle, const char* handle_type, size_t handle_type_size);
 typedef int(*TRACK_DESTROY_FUNC_TYPE)(PAIRED_HANDLES* paired_handles, const void* handle);
 
+#define UMOCK_COPY_INTERNAL(A, B) \
+    (void)memcpy((void*)&(A), (void*)&(B), sizeof(A));
+
 #define MOCK_ENABLED 0
 #define MOCK_DISABLED 1
 
@@ -886,7 +889,7 @@ typedef int(*TRACK_DESTROY_FUNC_TYPE)(PAIRED_HANDLES* paired_handles, const void
 #define IMPLEMENT_REGISTER_GLOBAL_MOCK_RETURN(return_type, name, ...) \
     MU_IF(IS_NOT_VOID(return_type), UMOCK_STATIC void MU_C2(set_global_mock_return_, name)(return_type return_value) \
     { \
-        MU_C2(get_mock_call_return_values_,name)()->success_value = return_value; \
+        UMOCK_COPY_INTERNAL(MU_C2(get_mock_call_return_values_,name)()->success_value, return_value); \
     }, ) \
 
 /* Codes_SRS_UMOCK_C_LIB_01_111: [The REGISTER_GLOBAL_MOCK_FAIL_RETURN shall register a fail return value to be returned by a mock function when marked as failed in the expected calls.]*/
@@ -895,7 +898,7 @@ typedef int(*TRACK_DESTROY_FUNC_TYPE)(PAIRED_HANDLES* paired_handles, const void
 #define IMPLEMENT_REGISTER_GLOBAL_MOCK_FAIL_RETURN(return_type, name, ...) \
     MU_IF(IS_NOT_VOID(return_type), UMOCK_STATIC void MU_C2(set_global_mock_fail_return_, name)(return_type fail_return_value) \
     { \
-        MU_C2(get_mock_call_return_values_,name)()->failure_value = fail_return_value; \
+        UMOCK_COPY_INTERNAL(MU_C2(get_mock_call_return_values_,name)()->failure_value, fail_return_value); \
     }, ) \
 
 /* Codes_SRS_UMOCK_C_LIB_01_113: [The REGISTER_GLOBAL_MOCK_RETURNS shall register both a success and a fail return value associated with a mock function.]*/
@@ -904,15 +907,15 @@ typedef int(*TRACK_DESTROY_FUNC_TYPE)(PAIRED_HANDLES* paired_handles, const void
 #define IMPLEMENT_REGISTER_GLOBAL_MOCK_RETURNS(return_type, name, ...) \
     MU_IF(IS_NOT_VOID(return_type), UMOCK_STATIC void MU_C2(set_global_mock_returns_, name)(return_type return_value, return_type fail_return_value) \
     { \
-        MU_C2(get_mock_call_return_values_,name)()->success_value = return_value; \
-        MU_C2(get_mock_call_return_values_,name)()->failure_value = fail_return_value; \
+        UMOCK_COPY_INTERNAL(MU_C2(get_mock_call_return_values_,name)()->success_value, return_value); \
+        UMOCK_COPY_INTERNAL(MU_C2(get_mock_call_return_values_,name)()->failure_value, fail_return_value); \
     }, ) \
 
 #define DECLARE_VALIDATE_ONE_ARGUMENT_FUNC_TYPE(name) \
     typedef struct MU_C2(_mock_call_modifier_, name) (*MU_C2(validate_one_argument_func_type_, name))(void);
 
 #define COPY_RETURN_VALUE(return_type, name) \
-    result_C8417226_7442_49B4_BBB9_9CA816A21EB7 = MU_C2(get_mock_call_return_values_, name)()->success_value;
+    UMOCK_COPY_INTERNAL(result_C8417226_7442_49B4_BBB9_9CA816A21EB7, MU_C2(get_mock_call_return_values_, name)()->success_value);
 
 typedef struct MOCK_CALL_ARG_METADATA_TAG
 {
@@ -997,13 +1000,18 @@ typedef struct MOCK_CALL_METADATA_TAG
         MU_C2(mock_call_args_metadata_,name) }; \
     struct MU_C2(_mock_call_modifier_,name); \
     MU_IF(IS_NOT_VOID(return_type), \
+    typedef void (*MU_C2(COPY_RETURN_VALUE_FUNC_TYPE, name))(return_type* dst, return_type src); \
+    static void MU_C2(copy_return_value_, name)(return_type* dst, return_type src) \
+    { \
+        UMOCK_COPY_INTERNAL(*dst, src); \
+    } \
     typedef struct MU_C3(UMOCK_RETURNS_VALUES_STRUCT_, name, _TAG) \
     { \
         return_type success_value; \
         return_type failure_value; \
         int initialized : 1; \
     } MU_C2(UMOCK_RETURNS_VALUES_STRUCT_, name); \
-    static MU_C2(UMOCK_RETURNS_VALUES_STRUCT_, name) MU_C2(mock_call_return_values_, name); \
+    static MU_C2(UMOCK_RETURNS_VALUES_STRUCT_, name) MU_C2(mock_call_return_values_, name) = { 0 }; \
     static MU_C2(UMOCK_RETURNS_VALUES_STRUCT_, name)* MU_C2(get_mock_call_return_values_, name)(void); \
         MU_IF(IS_NOT_VOID(return_type), \
         MU_IF(do_returns,, \
@@ -1265,6 +1273,8 @@ typedef struct MOCK_CALL_METADATA_TAG
         UMOCKCALL_HANDLE mock_call; \
         UMOCKCALL_HANDLE matched_call; \
         MU_IF(IS_NOT_VOID(return_type), \
+        MU_C2(COPY_RETURN_VALUE_FUNC_TYPE, name) copy_return_value_func = MU_C2(copy_return_value_, name); \
+        (void)copy_return_value_func; \
         unsigned int result_value_set_C8417226_7442_49B4_BBB9_9CA816A21EB7 = 0; \
         unsigned int fail_result_value_set_C8417226_7442_49B4_BBB9_9CA816A21EB7 = 0; \
         void* captured_return_value_C8417226_7442_49B4_BBB9_9CA816A21EB7 = NULL;,) \
@@ -1316,25 +1326,26 @@ typedef struct MOCK_CALL_METADATA_TAG
                     { \
                         if (matched_call_data->fail_return_value_set == FAIL_RETURN_VALUE_SET) \
                         { \
-                            result_C8417226_7442_49B4_BBB9_9CA816A21EB7 = matched_call_data->fail_return_value; \
+                            UMOCK_COPY_INTERNAL(result_C8417226_7442_49B4_BBB9_9CA816A21EB7, matched_call_data->fail_return_value); \
                         } \
                         else \
                         { \
-                            result_C8417226_7442_49B4_BBB9_9CA816A21EB7 = MU_C2(get_mock_call_return_values_, name)()->failure_value; \
+                            UMOCK_COPY_INTERNAL(result_C8417226_7442_49B4_BBB9_9CA816A21EB7, MU_C2(get_mock_call_return_values_, name)()->failure_value); \
                         } \
                         result_value_set_C8417226_7442_49B4_BBB9_9CA816A21EB7 = 1; \
                         fail_result_value_set_C8417226_7442_49B4_BBB9_9CA816A21EB7 = 1; \
                     } \
                     else if (matched_call_data->return_value_set == RETURN_VALUE_SET) \
                     { \
-                        result_C8417226_7442_49B4_BBB9_9CA816A21EB7 = matched_call_data->return_value; \
+                        UMOCK_COPY_INTERNAL(result_C8417226_7442_49B4_BBB9_9CA816A21EB7, matched_call_data->return_value); \
                         result_value_set_C8417226_7442_49B4_BBB9_9CA816A21EB7 = 1; \
                     } \
                     else \
                     { \
                         if (MU_C2(mock_hook_, name) != NULL) \
                         { \
-                            MU_IF(IS_NOT_VOID(return_type),result_C8417226_7442_49B4_BBB9_9CA816A21EB7 =,) MU_C2(mock_hook_, name)(MU_FOR_EACH_2_COUNTED(ARG_NAME_ONLY_IN_CALL, __VA_ARGS__)); \
+                            MU_IF(IS_NOT_VOID(return_type),return_type temp_result_C8417226_7442_49B4_BBB9_9CA816A21EB7 =,) MU_C2(mock_hook_, name)(MU_FOR_EACH_2_COUNTED(ARG_NAME_ONLY_IN_CALL, __VA_ARGS__)); \
+                            MU_IF(IS_NOT_VOID(return_type),UMOCK_COPY_INTERNAL(result_C8417226_7442_49B4_BBB9_9CA816A21EB7, temp_result_C8417226_7442_49B4_BBB9_9CA816A21EB7);,) \
                             MU_IF(IS_NOT_VOID(return_type),result_value_set_C8417226_7442_49B4_BBB9_9CA816A21EB7 = 1;,) \
                         } \
                     } \
@@ -1350,7 +1361,8 @@ typedef struct MOCK_CALL_METADATA_TAG
             { \
                 if (MU_C2(mock_hook_, name) != NULL) \
                 { \
-                    MU_IF(IS_NOT_VOID(return_type),result_C8417226_7442_49B4_BBB9_9CA816A21EB7 =,) MU_C2(mock_hook_, name)(MU_FOR_EACH_2_COUNTED(ARG_NAME_ONLY_IN_CALL, __VA_ARGS__)); \
+                    MU_IF(IS_NOT_VOID(return_type),return_type temp_result_C8417226_7442_49B4_BBB9_9CA816A21EB7 =,) MU_C2(mock_hook_, name)(MU_FOR_EACH_2_COUNTED(ARG_NAME_ONLY_IN_CALL, __VA_ARGS__)); \
+                    MU_IF(IS_NOT_VOID(return_type),UMOCK_COPY_INTERNAL(result_C8417226_7442_49B4_BBB9_9CA816A21EB7, temp_result_C8417226_7442_49B4_BBB9_9CA816A21EB7);,) \
                     MU_IF(IS_NOT_VOID(return_type),result_value_set_C8417226_7442_49B4_BBB9_9CA816A21EB7 = 1;,) \
                 } \
             } \
@@ -1389,7 +1401,7 @@ typedef struct MOCK_CALL_METADATA_TAG
             }; \
             if (captured_return_value_C8417226_7442_49B4_BBB9_9CA816A21EB7 != NULL) \
             { \
-                (void)memcpy(captured_return_value_C8417226_7442_49B4_BBB9_9CA816A21EB7, (void*)&result_C8417226_7442_49B4_BBB9_9CA816A21EB7, sizeof(result_C8417226_7442_49B4_BBB9_9CA816A21EB7)); \
+                (void)memcpy((void*)captured_return_value_C8417226_7442_49B4_BBB9_9CA816A21EB7, (void*)&result_C8417226_7442_49B4_BBB9_9CA816A21EB7, sizeof(result_C8417226_7442_49B4_BBB9_9CA816A21EB7)); \
             } \
             if ((track_create_destroy_pair_malloc_local_C8417226_7442_49B4_BBB9_9CA816A21EB7 != NULL) && (fail_result_value_set_C8417226_7442_49B4_BBB9_9CA816A21EB7 == 0)) \
             { \
@@ -1429,11 +1441,11 @@ typedef struct MOCK_CALL_METADATA_TAG
 #define MOCK_FUNCTION_END(...) \
             MU_IF(MU_COUNT_ARG(__VA_ARGS__), if (result_value_set_C8417226_7442_49B4_BBB9_9CA816A21EB7 == 0) \
             { \
-                result_C8417226_7442_49B4_BBB9_9CA816A21EB7 = __VA_ARGS__; \
+                copy_return_value_func(&result_C8417226_7442_49B4_BBB9_9CA816A21EB7, __VA_ARGS__); \
             }; \
             if (captured_return_value_C8417226_7442_49B4_BBB9_9CA816A21EB7 != NULL) \
             { \
-                (void)memcpy(captured_return_value_C8417226_7442_49B4_BBB9_9CA816A21EB7, (void*)&result_C8417226_7442_49B4_BBB9_9CA816A21EB7, sizeof(result_C8417226_7442_49B4_BBB9_9CA816A21EB7)); \
+                (void)memcpy((void*)captured_return_value_C8417226_7442_49B4_BBB9_9CA816A21EB7, (void*)&result_C8417226_7442_49B4_BBB9_9CA816A21EB7, sizeof(result_C8417226_7442_49B4_BBB9_9CA816A21EB7)); \
             } \
             if ((track_create_destroy_pair_malloc_local_C8417226_7442_49B4_BBB9_9CA816A21EB7 != NULL) && (fail_result_value_set_C8417226_7442_49B4_BBB9_9CA816A21EB7 == 0)) \
             { \
