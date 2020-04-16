@@ -640,8 +640,7 @@ TEST_FUNCTION(STRICT_EXPECTED_CALL_allows_call_modifiers)
     // arrange
 
     // act
-    STRICT_EXPECTED_CALL(test_dependency_2_args(42, 43))
-        .ValidateAllArguments();
+    STRICT_EXPECTED_CALL(test_dependency_2_args(42, 43));
 
     test_dependency_2_args(42, 43);
 
@@ -658,14 +657,14 @@ TEST_FUNCTION(STRICT_EXPECTED_CALL_with_ignore_all_arguments_and_then_validate_a
     // arrange
 
     // act
-    STRICT_EXPECTED_CALL(test_dependency_2_args(42, 43))
-        .IgnoreAllArguments()
-        .ValidateAllArguments();
+    STRICT_EXPECTED_CALL(test_dependency_2_args(42, 44))
+        .IgnoreArgument(1)
+        .ValidateArgument(1);
 
     test_dependency_2_args(43, 44);
 
     // assert
-    ASSERT_ARE_EQUAL(char_ptr, "[test_dependency_2_args(42,43)]", umock_c_get_expected_calls());
+    ASSERT_ARE_EQUAL(char_ptr, "[test_dependency_2_args(42,44)]", umock_c_get_expected_calls());
     ASSERT_ARE_EQUAL(char_ptr, "[test_dependency_2_args(43,44)]", umock_c_get_actual_calls());
 }
 
@@ -675,9 +674,9 @@ TEST_FUNCTION(EXPECTED_CALL_with_validate_all_arguments_and_then_ignore_all_args
     // arrange
 
     // act
-    EXPECTED_CALL(test_dependency_2_args(42, 43))
-        .ValidateAllArguments()
-        .IgnoreAllArguments();
+    EXPECTED_CALL(test_dependency_2_args(42, 44))
+        .ValidateArgument(1)
+        .IgnoreArgument(1);
 
     test_dependency_2_args(43, 44);
 
@@ -692,10 +691,10 @@ TEST_FUNCTION(STRICT_EXPECTED_CALL_with_ignore_validate_ignore_all_arguments_ign
     // arrange
 
     // act
-    STRICT_EXPECTED_CALL(test_dependency_2_args(42, 43))
-        .IgnoreAllArguments()
-        .ValidateAllArguments()
-        .IgnoreAllArguments();
+    STRICT_EXPECTED_CALL(test_dependency_2_args(42, 44))
+        .IgnoreArgument(1)
+        .ValidateArgument(1)
+        .IgnoreArgument(1);
 
     test_dependency_2_args(43, 44);
 
@@ -710,51 +709,15 @@ TEST_FUNCTION(STRICT_EXPECTED_CALL_with_validate_ignore_validate_all_arguments_v
     // arrange
 
     // act
-    EXPECTED_CALL(test_dependency_2_args(42, 43))
-        .ValidateAllArguments()
-        .IgnoreAllArguments()
-        .ValidateAllArguments();
+    EXPECTED_CALL(test_dependency_2_args(42, 44))
+        .ValidateArgument(1)
+        .IgnoreArgument(1)
+        .ValidateArgument(1);
 
     test_dependency_2_args(43, 44);
 
     // assert
-    ASSERT_ARE_EQUAL(char_ptr, "[test_dependency_2_args(42,43)]", umock_c_get_expected_calls());
-    ASSERT_ARE_EQUAL(char_ptr, "[test_dependency_2_args(43,44)]", umock_c_get_actual_calls());
-}
-
-/* IgnoreAllArguments */
-
-/* Tests_SRS_UMOCK_C_LIB_01_076: [The IgnoreAllArguments call modifier shall record that for that specific call all arguments will be ignored for that specific call.] */
-TEST_FUNCTION(IgnoreAllArguments_ignores_args_on_a_STRICT_EXPECTED_CALL)
-{
-    // arrange
-
-    // act
-    STRICT_EXPECTED_CALL(test_dependency_2_args(42, 43))
-        .IgnoreAllArguments();
-
-    test_dependency_2_args(43, 44);
-
-    // assert
-    ASSERT_ARE_EQUAL(char_ptr, "", umock_c_get_expected_calls());
-    ASSERT_ARE_EQUAL(char_ptr, "", umock_c_get_actual_calls());
-}
-
-/* ValidateAllArguments */
-
-/* Tests_SRS_UMOCK_C_LIB_01_077: [The ValidateAllArguments call modifier shall record that for that specific call all arguments will be validated.] */
-TEST_FUNCTION(ValidateAllArguments_validates_all_args_on_an_EXPECTED_CALL)
-{
-    // arrange
-
-    // act
-    EXPECTED_CALL(test_dependency_2_args(42, 43))
-        .ValidateAllArguments();
-
-    test_dependency_2_args(43, 44);
-
-    // assert
-    ASSERT_ARE_EQUAL(char_ptr, "[test_dependency_2_args(42,43)]", umock_c_get_expected_calls());
+    ASSERT_ARE_EQUAL(char_ptr, "[test_dependency_2_args(42,44)]", umock_c_get_expected_calls());
     ASSERT_ARE_EQUAL(char_ptr, "[test_dependency_2_args(43,44)]", umock_c_get_actual_calls());
 }
 
@@ -3011,7 +2974,7 @@ TEST_FUNCTION(CaptureArgumentValue_does_not_disable_argument_validation)
     int captured_arg_value = 42;
 
     EXPECTED_CALL(test_dependency_2_args(41, 41))
-        .ValidateAllArguments()
+        .ValidateArgument(1)
         .CaptureArgumentValue_a(&captured_arg_value);
 
     // act

@@ -288,34 +288,6 @@ typedef int(*TRACK_DESTROY_FUNC_TYPE)(PAIRED_HANDLES* paired_handles, const void
 #define IS_NOT_VOID(x) \
     MU_IF(MU_C2(TEST_,x), 1, 0)
 
-/* Codes_SRS_UMOCK_C_LIB_01_076: [The IgnoreAllArguments call modifier shall record that for that specific call all arguments will be ignored for that specific call.] */
-#define IMPLEMENT_IGNORE_ALL_ARGUMENTS_FUNCTION(return_type, name, ...) \
-    static MU_C2(mock_call_modifier_,name) MU_C2(ignore_all_arguments_func_,name)(void) \
-    { \
-        MU_C2(mock_call_, name)* mock_call_data = (MU_C2(mock_call_, name)*)umockcall_get_call_data(umock_c_get_last_expected_call()); \
-        DECLARE_MOCK_CALL_MODIFIER(name) \
-        MU_IF(MU_COUNT_ARG(__VA_ARGS__), MU_FOR_EACH_2(MARK_ARG_AS_IGNORED, __VA_ARGS__),) \
-        return mock_call_modifier; \
-    } \
-
-/* Codes_SRS_UMOCK_C_LIB_01_077: [The ValidateAllArguments call modifier shall record that for that specific call all arguments will be validated.] */
-#define IMPLEMENT_VALIDATE_ALL_ARGUMENTS_FUNCTION(return_type, name, ...) \
-    static MU_C2(mock_call_modifier_,name) MU_C2(validate_all_arguments_func_,name)(void) \
-    { \
-        MU_C2(mock_call_, name)* mock_call_data = (MU_C2(mock_call_, name)*)umockcall_get_call_data(umock_c_get_last_expected_call()); \
-        DECLARE_MOCK_CALL_MODIFIER(name) \
-        if (mock_call_data == NULL) \
-        { \
-            UMOCK_LOG("ValidateAllArguments called without having an expected call."); \
-            umock_c_indicate_error(UMOCK_C_ERROR); \
-        } \
-        else \
-        { \
-            MU_IF(MU_COUNT_ARG(__VA_ARGS__), MU_FOR_EACH_2(MARK_ARG_AS_NOT_IGNORED, __VA_ARGS__), ) \
-        } \
-        return mock_call_modifier; \
-    } \
-
 /* Codes_SRS_UMOCK_C_LIB_01_078: [The IgnoreArgument_{arg_name} call modifier shall record that the argument identified by arg_name will be ignored for that specific call.] */
 #define IMPLEMENT_IGNORE_ARGUMENT_BY_NAME_FUNCTION(name, arg_type, arg_name) \
     static MU_C2(mock_call_modifier_,name) MU_C4(ignore_argument_func_,name,_,arg_name)(void) \
@@ -965,8 +937,6 @@ typedef struct MOCK_CALL_METADATA_TAG
 /* Codes_SRS_UMOCK_C_LIB_01_017: [No arguments shall be saved by default, unless other modifiers state it.]*/
 /* Codes_SRS_UMOCK_C_LIB_01_074: [When an expected call is recorded a call modifier interface in the form of a structure containing function pointers shall be returned to the caller.] */
 /* Codes_SRS_UMOCK_C_LIB_01_075: [The last modifier in a chain overrides previous modifiers if any collision occurs.]*/
-/* Codes_SRS_UMOCK_C_LIB_01_127: [ IgnoreAllArguments shall only be available for mock functions that have arguments. ]*/
-/* Codes_SRS_UMOCK_C_LIB_01_126: [ ValidateAllArguments shall only be available for mock functions that have arguments. ]*/
 /* Codes_SRS_UMOCK_C_LIB_01_125: [ IgnoreArgument_{arg_name} shall only be available for mock functions that have arguments. ]*/
 /* Codes_SRS_UMOCK_C_LIB_01_124: [ ValidateArgument_{arg_name} shall only be available for mock functions that have arguments. **]*/
 /* Codes_SRS_UMOCK_C_LIB_01_123: [ IgnoreArgument shall only be available for mock functions that have arguments. ]*/
@@ -1042,9 +1012,7 @@ typedef struct MOCK_CALL_METADATA_TAG
         MU_C2(set_fail_return_func_type_,name) SetFailReturn; \
         MU_C2(call_cannot_fail_func_type_,name) CallCannotFail; \
         MU_C2(capture_return_func_type_,name) CaptureReturn;,) \
-        MU_IF(MU_COUNT_ARG(__VA_ARGS__),MU_C2(ignore_all_arguments_func_type_,name) IgnoreAllArguments; \
-        MU_C2(validate_all_arguments_func_type_,name) ValidateAllArguments; \
-        MU_C2(copy_out_argument_func_type_,name) CopyOutArgument; \
+        MU_IF(MU_COUNT_ARG(__VA_ARGS__),MU_C2(copy_out_argument_func_type_,name) CopyOutArgument; \
         MU_C2(ignore_argument_func_type_,name) IgnoreArgument; \
         MU_C2(validate_argument_func_type_,name) ValidateArgument; \
         MU_C2(validate_argument_buffer_func_type_,name) ValidateArgumentBuffer; \
@@ -1085,9 +1053,7 @@ typedef struct MOCK_CALL_METADATA_TAG
         mock_call_modifier->SetFailReturn = MU_C2(set_fail_return_func_,name); \
         mock_call_modifier->CallCannotFail = MU_C2(call_cannot_fail_func_,name); \
         mock_call_modifier->CaptureReturn = MU_C2(capture_return_func_,name);,) \
-        MU_IF(MU_COUNT_ARG(__VA_ARGS__),mock_call_modifier->IgnoreAllArguments = MU_C2(ignore_all_arguments_func_,name); \
-        mock_call_modifier->ValidateAllArguments = MU_C2(validate_all_arguments_func_,name); \
-        mock_call_modifier->CopyOutArgument = MU_C2(copy_out_argument_func_,name); \
+        MU_IF(MU_COUNT_ARG(__VA_ARGS__),mock_call_modifier->CopyOutArgument = MU_C2(copy_out_argument_func_,name); \
         mock_call_modifier->IgnoreArgument = MU_C2(ignore_argument_func_,name); \
         mock_call_modifier->ValidateArgument = MU_C2(validate_argument_func_,name); \
         mock_call_modifier->ValidateArgumentBuffer = MU_C2(validate_argument_buffer_func_,name); \
@@ -1243,9 +1209,7 @@ typedef struct MOCK_CALL_METADATA_TAG
     IMPLEMENT_SET_FAIL_RETURN_FUNCTION(return_type, name, __VA_ARGS__) \
     IMPLEMENT_SET_CALL_CANNOT_FAIL(return_type, name, __VA_ARGS__) \
     IMPLEMENT_CAPTURE_RETURN_FUNCTION(return_type, name, __VA_ARGS__),) \
-    MU_IF(MU_COUNT_ARG(__VA_ARGS__),IMPLEMENT_IGNORE_ALL_ARGUMENTS_FUNCTION(return_type, name, __VA_ARGS__) \
-    IMPLEMENT_VALIDATE_ALL_ARGUMENTS_FUNCTION(return_type, name, __VA_ARGS__) \
-    MU_FOR_EACH_2_KEEP_1(IMPLEMENT_IGNORE_ARGUMENT_BY_NAME_FUNCTION, name, __VA_ARGS__) \
+    MU_IF(MU_COUNT_ARG(__VA_ARGS__),MU_FOR_EACH_2_KEEP_1(IMPLEMENT_IGNORE_ARGUMENT_BY_NAME_FUNCTION, name, __VA_ARGS__) \
     MU_FOR_EACH_2_KEEP_1(IMPLEMENT_VALIDATE_ARGUMENT_BY_NAME_FUNCTION, name, __VA_ARGS__) \
     IMPLEMENT_IGNORE_ARGUMENT_FUNCTION(return_type, name, __VA_ARGS__) \
     IMPLEMENT_VALIDATE_ARGUMENT_FUNCTION(return_type, name, __VA_ARGS__) \
