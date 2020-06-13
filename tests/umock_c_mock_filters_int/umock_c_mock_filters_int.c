@@ -45,17 +45,16 @@ BEGIN_TEST_SUITE(umock_c_mock_filters_int_tests)
 
 TEST_SUITE_INITIALIZE(suite_init)
 {
-    int result;
-
     test_mutex = TEST_MUTEX_CREATE();
     ASSERT_IS_NOT_NULL(test_mutex);
 
-    result = umock_c_init(test_on_umock_c_error);
-    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(int, 0, umock_c_init(test_on_umock_c_error));
 }
 
 TEST_SUITE_CLEANUP(suite_cleanup)
 {
+    umock_c_deinit();
+
     TEST_MUTEX_DESTROY(test_mutex);
 }
 

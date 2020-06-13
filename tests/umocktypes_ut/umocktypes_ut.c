@@ -1747,6 +1747,9 @@ TEST_FUNCTION(stringify_for_enum_returns_the_desired_string)
 
     // assert
     ASSERT_ARE_EQUAL(char_ptr, "TEST_ENUM_TYPE_VALUE_1", result);
+
+    // cleanup
+    free(result);
 }
 
 END_TEST_SUITE(umocktypes_unittests)
