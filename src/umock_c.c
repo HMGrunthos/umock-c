@@ -105,11 +105,15 @@ int umock_c_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLO
     {
         if (umock_c_state != UMOCK_C_STATE_INITIALIZED)
         {
+            /* Codes_SRS_UMOCK_C_01_037: [ If the module is not initialized, `umock_c_set_lock_functions` shall do nothing. ]*/
             UMOCK_LOG("umock not initialized, state is %" PRI_MU_ENUM"", MU_ENUM_VALUE(UMOCK_C_STATE, umock_c_state));
             result = MU_FAILURE;
         }
         else
         {
+            /* Codes_SRS_UMOCK_C_01_038: [ `umock_c_set_lock_functions` shall save `lock_function`, `unlock_function` and `context` for later use. ]*/
+
+            /* Codes_SRS_UMOCK_C_01_039: [ On success `umock_c_set_lock_functions` shall return 0. ]*/
             result = 0;
         }
     }
