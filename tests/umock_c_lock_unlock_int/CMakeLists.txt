@@ -11,16 +11,17 @@ umock_c_lock_unlock_int.c
 
 set(${theseTestsName}_c_files
 ../../src/umock_c.c
+../../src/umock_lock_functions.c
+../../src/umock_log.c
 ../../src/umockalloc.c
+../../src/umockautoignoreargs.c
 ../../src/umockcall.c
 ../../src/umockcallrecorder.c
+../../src/umockstring.c
 ../../src/umocktypes.c
 ../../src/umocktypes_charptr.c
 ../../src/umocktypes_c.c
 ../../src/umocktypename.c
-../../src/umock_log.c
-../../src/umockstring.c
-../../src/umockautoignoreargs.c
 )
 
 set(${theseTestsName}_h_files

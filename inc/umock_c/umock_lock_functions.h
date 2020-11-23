@@ -14,10 +14,10 @@ extern "C" {
     UMOCK_C_LOCK_TYPE_READ, \
     UMOCK_C_LOCK_TYPE_WRITE
 
-    MU_DEFINE_ENUM(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_VALUES)
+MU_DEFINE_ENUM(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_VALUES)
 
-    typedef int (*UMOCK_C_LOCK_FUNCTION)(void* context, UMOCK_C_LOCK_TYPE lock_type);
-    typedef int (*UMOCK_C_UNLOCK_FUNCTION)(void* context, UMOCK_C_LOCK_TYPE lock_type);
+typedef int (*UMOCK_C_LOCK_FUNCTION)(void* context, UMOCK_C_LOCK_TYPE lock_type);
+typedef int (*UMOCK_C_UNLOCK_FUNCTION)(void* context, UMOCK_C_LOCK_TYPE lock_type);
 
 #ifdef __cplusplus
 }
