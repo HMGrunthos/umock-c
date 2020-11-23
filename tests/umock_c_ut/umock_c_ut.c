@@ -29,10 +29,7 @@ static UMOCKCALL_HANDLE test_actual_call = (UMOCKCALL_HANDLE)0x4243;
 static UMOCKCALLRECORDER_HANDLE test_call_recorder = (UMOCKCALLRECORDER_HANDLE)0x4244;
 static UMOCKCALLRECORDER_HANDLE test_cloned_call_recorder = (UMOCKCALLRECORDER_HANDLE)0x4245;
 
-static size_t umocktypes_init_count;
 static int umocktypes_init_result;
-
-static size_t umocktypes_c_register_types_count;
 static int umocktypes_c_register_types_result;
 
 typedef struct umockcallrecorder_create_CALL_TAG
@@ -40,26 +37,18 @@ typedef struct umockcallrecorder_create_CALL_TAG
     int dummy;
 } umockcallrecorder_create_CALL;
 
-static size_t umockcallrecorder_create_count;
 static UMOCKCALLRECORDER_HANDLE umockcallrecorder_create_result;
-
-static size_t umocktypes_deinit_count;
 
 typedef struct umockcallrecorder_destroy_CALL_TAG
 {
     UMOCKCALLRECORDER_HANDLE umock_call_recorder;
 } umockcallrecorder_destroy_CALL;
 
-static umockcallrecorder_destroy_CALL* umockcallrecorder_destroys;
-static size_t umockcallrecorder_destroy_count;
-
 typedef struct umockcallrecorder_reset_all_calls_CALL_TAG
 {
     UMOCKCALLRECORDER_HANDLE umock_call_recorder;
 } umockcallrecorder_reset_all_calls_CALL;
 
-static umockcallrecorder_reset_all_calls_CALL* umockcallrecorder_reset_all_callss;
-static size_t umockcallrecorder_reset_all_calls_count;
 static int umockcallrecorder_reset_all_calls_result;
 
 typedef struct umockcallrecorder_get_actual_calls_CALL_TAG
@@ -67,8 +56,6 @@ typedef struct umockcallrecorder_get_actual_calls_CALL_TAG
     UMOCKCALLRECORDER_HANDLE umock_call_recorder;
 } umockcallrecorder_get_actual_calls_CALL;
 
-static umockcallrecorder_get_actual_calls_CALL* umockcallrecorder_get_actual_callss;
-static size_t umockcallrecorder_get_actual_calls_count;
 static const char* umockcallrecorder_get_actual_calls_result;
 
 typedef struct umockcallrecorder_get_expected_calls_CALL_TAG
@@ -76,8 +63,6 @@ typedef struct umockcallrecorder_get_expected_calls_CALL_TAG
     UMOCKCALLRECORDER_HANDLE umock_call_recorder;
 } umockcallrecorder_get_expected_calls_CALL;
 
-static umockcallrecorder_get_expected_calls_CALL* umockcallrecorder_get_expected_callss;
-static size_t umockcallrecorder_get_expected_calls_count;
 static const char* umockcallrecorder_get_expected_calls_result;
 
 typedef struct umockcallrecorder_get_last_expected_call_CALL_TAG
@@ -85,8 +70,6 @@ typedef struct umockcallrecorder_get_last_expected_call_CALL_TAG
     UMOCKCALLRECORDER_HANDLE umock_call_recorder;
 } umockcallrecorder_get_last_expected_call_CALL;
 
-static umockcallrecorder_get_last_expected_call_CALL* umockcallrecorder_get_last_expected_calls;
-static size_t umockcallrecorder_get_last_expected_call_count;
 static UMOCKCALL_HANDLE umockcallrecorder_get_last_expected_call_result;
 
 typedef struct umockcallrecorder_add_expected_call_CALL_TAG
@@ -95,8 +78,6 @@ typedef struct umockcallrecorder_add_expected_call_CALL_TAG
     UMOCKCALL_HANDLE mock_call;
 } umockcallrecorder_add_expected_call_CALL;
 
-static umockcallrecorder_add_expected_call_CALL* umockcallrecorder_add_expected_calls;
-static size_t umockcallrecorder_add_expected_call_count;
 static int umockcallrecorder_add_expected_call_result;
 
 typedef struct umockcallrecorder_add_actual_call_CALL_TAG
@@ -106,8 +87,6 @@ typedef struct umockcallrecorder_add_actual_call_CALL_TAG
     UMOCKCALL_HANDLE* matched_call;
 } umockcallrecorder_add_actual_call_CALL;
 
-static umockcallrecorder_add_actual_call_CALL* umockcallrecorder_add_actual_calls;
-static size_t umockcallrecorder_add_actual_call_count;
 static int umockcallrecorder_add_actual_call_result;
 
 typedef struct umockcallrecorder_clone_CALL_TAG
@@ -115,8 +94,6 @@ typedef struct umockcallrecorder_clone_CALL_TAG
     UMOCKCALLRECORDER_HANDLE umock_call_recorder;
 } umockcallrecorder_clone_CALL;
 
-static umockcallrecorder_clone_CALL* umockcallrecorder_clones;
-static size_t umockcallrecorder_clone_count;
 static UMOCKCALLRECORDER_HANDLE umockcallrecorder_clone_result;
 
 typedef struct umocktypes_init_CALL_TAG
@@ -349,9 +326,6 @@ int umocktypes_c_register_types(void)
     return umocktypes_c_register_types_result;
 }
 
-static test_on_umock_c_error_CALL* test_on_umock_c_error_calls;
-static size_t test_on_umock_c_error_call_count;
-
 static void test_on_umock_c_error(UMOCK_C_ERROR_CODE error_code)
 {
     TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
@@ -373,86 +347,16 @@ void reset_all_calls(void)
         mocked_calls = NULL;
     }
 
-    umocktypes_init_count = 0;
     umocktypes_init_result = 0;
-
-    umocktypes_c_register_types_count = 0;
     umocktypes_c_register_types_result = 0;
-
-    umockcallrecorder_create_count = 0;
     umockcallrecorder_create_result = test_call_recorder;
-
-    umocktypes_deinit_count = 0;
-
-    if (umockcallrecorder_destroys != NULL)
-    {
-        free(umockcallrecorder_destroys);
-    }
-    umockcallrecorder_destroys = NULL;
-    umockcallrecorder_destroy_count = 0;
-
-    if (umockcallrecorder_reset_all_callss != NULL)
-    {
-        free(umockcallrecorder_reset_all_callss);
-    }
-    umockcallrecorder_reset_all_callss = NULL;
-    umockcallrecorder_reset_all_calls_count = 0;
     umockcallrecorder_reset_all_calls_result = 0;
-
-    if (umockcallrecorder_get_actual_callss != NULL)
-    {
-        free(umockcallrecorder_get_actual_callss);
-    }
-    umockcallrecorder_get_actual_callss = NULL;
-    umockcallrecorder_get_actual_calls_count = 0;
     umockcallrecorder_get_actual_calls_result = NULL;
-
-    if (umockcallrecorder_get_expected_callss != NULL)
-    {
-        free(umockcallrecorder_get_expected_callss);
-    }
-    umockcallrecorder_get_expected_callss = NULL;
-    umockcallrecorder_get_expected_calls_count = 0;
     umockcallrecorder_get_expected_calls_result = NULL;
-
-    if (umockcallrecorder_get_last_expected_calls != NULL)
-    {
-        free(umockcallrecorder_get_last_expected_calls);
-    }
-    umockcallrecorder_get_last_expected_calls = NULL;
-    umockcallrecorder_get_last_expected_call_count = 0;
     umockcallrecorder_get_last_expected_call_result = NULL;
-
-    if (umockcallrecorder_add_expected_calls != NULL)
-    {
-        free(umockcallrecorder_add_expected_calls);
-    }
-    umockcallrecorder_add_expected_calls = NULL;
-    umockcallrecorder_add_expected_call_count = 0;
     umockcallrecorder_add_expected_call_result = 0;
-
-    if (umockcallrecorder_add_actual_calls != NULL)
-    {
-        free(umockcallrecorder_add_actual_calls);
-    }
-    umockcallrecorder_add_actual_calls = NULL;
-    umockcallrecorder_add_actual_call_count = 0;
     umockcallrecorder_add_actual_call_result = 0;
-
-    if (umockcallrecorder_clones != NULL)
-    {
-        free(umockcallrecorder_clones);
-    }
-    umockcallrecorder_clones = NULL;
-    umockcallrecorder_clone_count = 0;
     umockcallrecorder_clone_result = test_cloned_call_recorder;
-
-    if (test_on_umock_c_error_calls != NULL)
-    {
-        free(test_on_umock_c_error_calls);
-    }
-    test_on_umock_c_error_calls = NULL;
-    test_on_umock_c_error_call_count = 0;
 }
 
 void* umockalloc_malloc(size_t size)

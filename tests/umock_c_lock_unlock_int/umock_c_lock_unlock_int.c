@@ -38,9 +38,10 @@ static int test_lock_function(void* context, UMOCK_C_LOCK_TYPE lock_type)
     return 0;
 }
 
-static int test_unlock_function(void* context)
+static int test_unlock_function(void* context, UMOCK_C_LOCK_TYPE lock_type)
 {
     (void)context;
+    (void)lock_type;
     return 0;
 }
 
