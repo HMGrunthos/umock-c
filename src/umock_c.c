@@ -52,7 +52,7 @@ int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error)
         /* Codes_SRS_UMOCK_C_LIB_01_152: [ const void\* ]*/
         /* Codes_SRS_UMOCK_C_01_023: [ umock_c_init shall initialize the umock types by calling umocktypes_init. ]*/
         if ((umocktypes_init() != 0) ||
-            /* Codes_SRS_UMOCK_C_01_002: [ umock_c_init shall register the C naive types by calling umocktypes_c_register_types. ]*/
+            /* Codes_SRS_UMOCK_C_01_002: [ umock_c_init shall register the C native types by calling umocktypes_c_register_types. ]*/
             (umocktypes_c_register_types() != 0))
         {
             /* Codes_SRS_UMOCK_C_01_005: [ If any of the calls fails, umock_c_init shall fail and return a non-zero value. ]*/

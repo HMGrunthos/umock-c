@@ -116,6 +116,21 @@ typedef struct test_on_umock_c_error_CALL_TAG
     UMOCK_C_ERROR_CODE error_code;
 } test_on_umock_c_error_CALL;
 
+static int test_lock_function_result;
+static int test_unlock_function_result;
+
+typedef struct test_lock_function_CALL_TAG
+{
+    void* context;
+    UMOCK_C_LOCK_TYPE lock_type;
+} test_lock_function_CALL;
+
+typedef struct test_unlock_function_CALL_TAG
+{
+    void* context;
+    UMOCK_C_LOCK_TYPE lock_type;
+} test_unlock_function_CALL;
+
 typedef union TEST_MOCK_CALL_UNION_TAG
 {
     test_on_umock_c_error_CALL test_on_umock_c_error;
@@ -131,6 +146,8 @@ typedef union TEST_MOCK_CALL_UNION_TAG
     umocktypes_init_CALL umocktypes_init;
     umocktypes_deinit_CALL umocktypes_deinit;
     umocktypes_c_register_types_CALL umocktypes_c_register_types;
+    test_lock_function_CALL test_lock_function;
+    test_unlock_function_CALL test_unlock_function;
 } TEST_MOCK_CALL_UNION;
 
 #define TEST_MOCK_CALL_TYPE_VALUES \
@@ -146,13 +163,16 @@ typedef union TEST_MOCK_CALL_UNION_TAG
     TEST_MOCK_CALL_TYPE_umockcallrecorder_clone, \
     TEST_MOCK_CALL_TYPE_umocktypes_init, \
     TEST_MOCK_CALL_TYPE_umocktypes_deinit, \
-    TEST_MOCK_CALL_TYPE_umocktypes_c_register_types
+    TEST_MOCK_CALL_TYPE_umocktypes_c_register_types, \
+    TEST_MOCK_CALL_TYPE_test_lock_function, \
+    TEST_MOCK_CALL_TYPE_test_unlock_function \
 
 MU_DEFINE_ENUM(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
 MU_DEFINE_ENUM_STRINGS(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
 TEST_DEFINE_ENUM_TYPE(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
 
 TEST_DEFINE_ENUM_TYPE(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
+TEST_DEFINE_ENUM_TYPE(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_VALUES)
 
 typedef struct TEST_MOCK_CALL_TAG
 {
@@ -357,6 +377,8 @@ void reset_all_calls(void)
     umockcallrecorder_add_expected_call_result = 0;
     umockcallrecorder_add_actual_call_result = 0;
     umockcallrecorder_clone_result = test_cloned_call_recorder;
+    test_lock_function_result = 0;
+    test_unlock_function_result = 0;
 }
 
 void* umockalloc_malloc(size_t size)
@@ -419,7 +441,7 @@ TEST_FUNCTION_CLEANUP(test_function_cleanup)
 /* Tests_SRS_UMOCK_C_01_001: [umock_c_init shall initialize the umock library.] */
 /* Tests_SRS_UMOCK_C_01_023: [ umock_c_init shall initialize the umock types by calling umocktypes_init. ]*/
 /* Tests_SRS_UMOCK_C_01_004: [ On success, umock_c_init shall return 0. ]*/
-/* Tests_SRS_UMOCK_C_01_002: [ umock_c_init shall register the C naive types by calling umocktypes_c_register_types. ]*/
+/* Tests_SRS_UMOCK_C_01_002: [ umock_c_init shall register the C native types by calling umocktypes_c_register_types. ]*/
 /* Tests_SRS_UMOCK_C_01_003: [ umock_c_init shall create a call recorder by calling umockcallrecorder_create. ]*/
 /* Tests_SRS_UMOCK_C_01_006: [ The on_umock_c_error callback shall be stored to be used for later error callbacks. ]*/
 TEST_FUNCTION(when_all_calls_succeed_umock_c_init_succeeds)
@@ -656,22 +678,6 @@ TEST_FUNCTION(when_the_underlying_call_recorder_reset_all_calls_fails_then_umock
     ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, mocked_calls[0].u.umockcallrecorder_reset_all_calls.umock_call_recorder);
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_on_umock_c_error, mocked_calls[1].call_type);
     ASSERT_ARE_EQUAL(UMOCK_C_ERROR_CODE, UMOCK_C_RESET_CALLS_ERROR, mocked_calls[1].u.test_on_umock_c_error.error_code);
-}
-
-/* Tests_SRS_UMOCK_C_01_040: [ If lock functions have been setup, `umock_c_reset_all_calls` shall call the lock function with `lock_type` set to `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
-/* Tests_SRS_UMOCK_C_01_011: [ umock_c_reset_all_calls shall reset all calls by calling umockcallrecorder_reset_all_calls on the call recorder created in umock_c_init. ]*/
-/* Tests_SRS_UMOCK_C_01_041: [ If lock functions have been setup, `umock_c_reset_all_calls` shall call the unlock function with `lock_type` set to `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
-TEST_FUNCTION(umock_c_reset_all_calls_calls_locks_and_unlocks)
-{
-    // arrange
-    ASSERT_ARE_EQUAL(int, 0, umock_c_init(NULL));
-    reset_all_calls();
-
-    // act
-    umock_c_reset_all_calls();
-
-    // assert
-    //ASSERT_ARE_EQUAL(size_t, 3, mocked_call_count);
 }
 
 /* umock_c_get_actual_calls */
