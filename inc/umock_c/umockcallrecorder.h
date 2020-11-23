@@ -11,6 +11,7 @@
 #endif
 
 #include "umockcall.h"
+#include "umock_lock_functions.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,6 +20,7 @@ extern "C" {
     typedef struct UMOCKCALLRECORDER_TAG* UMOCKCALLRECORDER_HANDLE;
 
     UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void);
+    int umockcallrecorder_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);
     void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
     int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
     int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCKCALL_HANDLE mock_call);
