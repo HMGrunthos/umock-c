@@ -1,16 +1,17 @@
 
 # umockcallrecorder requirements
 
-# Overview
+## Overview
 
 `umockcallrecorder` is a module that implements recording the expected and actual calls.
 
-# Exposed API
+## Exposed API
 
 ```c
     typedef struct UMOCKCALLRECORDER_TAG* UMOCKCALLRECORDER_HANDLE;
 
     UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void);
+    int umockcallrecorder_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);
     void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
     int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
     int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCKCALL_HANDLE mock_call);
@@ -24,7 +25,7 @@
     int umockcallrecorder_can_call_fail(UMOCKCALLRECORDER_HANDLE umock_call_recorder, size_t index, int* can_call_fail);
 ```
 
-## umockcallrecorder_create
+### umockcallrecorder_create
 
 ```c
 UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void);
@@ -36,7 +37,7 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void);
 
 **SRS_UMOCKCALLRECORDER_01_002: [** If allocating memory for the call recorder fails, `umockcallrecorder_create` shall return `NULL`. **]**
 
-## umockcallrecorder_destroy
+### umockcallrecorder_destroy
 
 ```c
 void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
@@ -48,7 +49,13 @@ void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
 
 **SRS_UMOCKCALLRECORDER_01_004: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_destroy` shall do nothing. **]**
 
-## umockcallrecorder_reset_all_calls
+### umockcallrecorder_set_lock_functions
+
+```c
+int umockcallrecorder_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);
+```
+
+### umockcallrecorder_reset_all_calls
 
 ```c
 int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
@@ -62,7 +69,7 @@ int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_record
 
 **SRS_UMOCKCALLRECORDER_01_007: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_reset_all_calls` shall fail and return a non-zero value. **]**
 
-## umockcallrecorder_add_expected_call
+### umockcallrecorder_add_expected_call
 
 ```c
 int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCKCALL_HANDLE mock_call);
@@ -78,7 +85,7 @@ int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_reco
 
 **SRS_UMOCKCALLRECORDER_01_013: [** If allocating memory for the expected calls fails, `umockcallrecorder_add_expected_call` shall fail and return a non-zero value. **]**
 
-## umockcallrecorder_add_actual_call
+### umockcallrecorder_add_actual_call
 
 ```c
 int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCKCALL_HANDLE mock_call, UMOCKCALL_HANDLE* matched_call);
@@ -106,7 +113,7 @@ int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_record
 
 **SRS_UMOCKCALLRECORDER_01_058: [** If getting `ignore_all_calls` by calling `umockcall_get_ignore_all_calls` fails, `umockcallrecorder_add_actual_call` shall fail and return a non-zero value. **]**
 
-## umockcallrecorder_get_actual_calls
+### umockcallrecorder_get_actual_calls
 
 ```c
 const char* umockcallrecorder_get_actual_calls(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
@@ -124,7 +131,7 @@ const char* umockcallrecorder_get_actual_calls(UMOCKCALLRECORDER_HANDLE umock_ca
 
 **SRS_UMOCKCALLRECORDER_01_026: [** If allocating memory for the resulting string fails, `umockcallrecorder_get_actual_calls` shall fail and return `NULL`. **]**
 
-## umockcallrecorder_get_expected_calls
+### umockcallrecorder_get_expected_calls
 
 ```c
 const char* umockcallrecorder_get_expected_calls(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
@@ -148,7 +155,7 @@ const char* umockcallrecorder_get_expected_calls(UMOCKCALLRECORDER_HANDLE umock_
 
 **SRS_UMOCKCALLRECORDER_01_056: [** If `umockcall_get_ignore_all_calls` returns a negative value then `umockcallrecorder_get_expected_calls` shall fail and return NULL. **]**
 
-## umockcallrecorder_get_last_expected_call
+### umockcallrecorder_get_last_expected_call
 
 ```c
 UMOCKCALL_HANDLE umockcallrecorder_get_last_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
@@ -162,7 +169,7 @@ UMOCKCALL_HANDLE umockcallrecorder_get_last_expected_call(UMOCKCALLRECORDER_HAND
 
 **SRS_UMOCKCALLRECORDER_01_034: [** If no expected call has been recorded for `umock_call_recorder` then `umockcallrecorder_get_last_expected_call` shall fail and return `NULL`. **]**
 
-## umockcallrecorder_clone
+### umockcallrecorder_clone
 
 ```c
 UMOCKCALLRECORDER_HANDLE umockcallrecorder_clone(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
@@ -192,7 +199,7 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_clone(UMOCKCALLRECORDER_HANDLE umock_
 
 **SRS_UMOCKCALLRECORDER_01_053: [** If allocating memory for the actual calls fails, `umockcallrecorder_clone` shall fail and return `NULL`. **]**
 
-## umockcallrecorder_get_expected_call_count
+### umockcallrecorder_get_expected_call_count
 
 ```c
 int umockcallrecorder_get_expected_call_count(UMOCKCALLRECORDER_HANDLE umock_call_recorder, size_t* expected_call_count);
@@ -206,7 +213,7 @@ int umockcallrecorder_get_expected_call_count(UMOCKCALLRECORDER_HANDLE umock_cal
 
 **SRS_UMOCKCALLRECORDER_01_046: [** If any of the arguments is `NULL`, `umockcallrecorder_get_expected_call_count` shall return a non-zero value. **]**
 
-## umockcallrecorder_fail_call
+### umockcallrecorder_fail_call
 
 ```c
 int umockcallrecorder_fail_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, size_t index);
@@ -224,8 +231,7 @@ int umockcallrecorder_fail_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, si
 
 **SRS_UMOCKCALLRECORDER_01_051: [** If `umockcall_set_fail_call` fails, `umockcallrecorder_fail_call` shall return a non-zero value. **]**
 
-
-## umockcallrecorder_can_call_fail
+### umockcallrecorder_can_call_fail
 
 ```c
 int umockcallrecorder_can_call_fail(UMOCKCALLRECORDER_HANDLE umock_call_recorder, size_t index, int* can_call_fail);
