@@ -897,7 +897,6 @@ TEST_FUNCTION(umock_c_get_last_expected_call_calls_the_underlying_call_recorder_
     ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, mocked_calls[0].u.umockcallrecorder_get_last_expected_call.umock_call_recorder);
 }
 
-#if 0
 /* Tests_SRS_UMOCK_C_01_017: [ umock_c_get_last_expected_call shall return the last expected call by calling umockcallrecorder_get_last_expected_call on the call recorder created in umock_c_init. ]*/
 TEST_FUNCTION(when_the_underlying_call_recorder_get_last_expected_call_fails_then_umock_c_get_last_expected_call_returns_NULL)
 {
@@ -912,8 +911,9 @@ TEST_FUNCTION(when_the_underlying_call_recorder_get_last_expected_call_fails_the
 
     // assert
     ASSERT_IS_NULL(result);
-    ASSERT_ARE_EQUAL(size_t, 1, umockcallrecorder_get_last_expected_call_count);
-    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, umockcallrecorder_get_last_expected_calls[0].umock_call_recorder);
+    ASSERT_ARE_EQUAL(size_t, 1, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcallrecorder_get_last_expected_call, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, mocked_calls[0].u.umockcallrecorder_get_last_expected_call.umock_call_recorder);
 }
 
 /* Tests_SRS_UMOCK_C_01_018: [ If the module is not initialized, umock_c_get_last_expected_call shall return NULL. ]*/
@@ -926,7 +926,7 @@ TEST_FUNCTION(umock_c_get_last_expected_call_when_the_module_is_not_initialized_
 
     // assert
     ASSERT_IS_NULL(result);
-    ASSERT_ARE_EQUAL(size_t, 0, umockcallrecorder_get_last_expected_call_count);
+    ASSERT_ARE_EQUAL(size_t, 0, mocked_call_count);
 }
 
 /* umock_c_add_expected_call */
@@ -945,9 +945,10 @@ TEST_FUNCTION(umock_c_add_expected_call_calls_the_underlying_call_recorder_add_e
 
     // assert
     ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(size_t, 1, umockcallrecorder_add_expected_call_count);
-    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, umockcallrecorder_add_expected_calls[0].umock_call_recorder);
-    ASSERT_ARE_EQUAL(void_ptr, test_expected_call, umockcallrecorder_add_expected_calls[0].mock_call);
+    ASSERT_ARE_EQUAL(size_t, 1, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcallrecorder_add_expected_call, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, mocked_calls[0].u.umockcallrecorder_add_expected_call.umock_call_recorder);
+    ASSERT_ARE_EQUAL(void_ptr, test_expected_call, mocked_calls[0].u.umockcallrecorder_add_expected_call.mock_call);
 }
 
 /* Tests_SRS_UMOCK_C_01_019: [ umock_c_add_expected_call shall add an expected call by calling umockcallrecorder_add_expected_call on the call recorder created in umock_c_init. ]*/
@@ -964,8 +965,10 @@ TEST_FUNCTION(when_the_underlying_call_recorder_add_expected_call_fails_then_umo
 
     // assert
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(size_t, 1, umockcallrecorder_add_expected_call_count);
-    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, umockcallrecorder_add_expected_calls[0].umock_call_recorder);
+    ASSERT_ARE_EQUAL(size_t, 1, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcallrecorder_add_expected_call, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, mocked_calls[0].u.umockcallrecorder_add_expected_call.umock_call_recorder);
+    ASSERT_ARE_EQUAL(void_ptr, test_expected_call, mocked_calls[0].u.umockcallrecorder_add_expected_call.mock_call);
 }
 
 /* Tests_SRS_UMOCK_C_01_020: [ If the module is not initialized, umock_c_add_expected_call shall return a non-zero value. ]*/
@@ -978,7 +981,7 @@ TEST_FUNCTION(umock_c_add_expected_call_when_the_module_is_not_initialized_fails
 
     // assert
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(size_t, 0, umockcallrecorder_add_expected_call_count);
+    ASSERT_ARE_EQUAL(size_t, 0, mocked_call_count);
 }
 
 /* umock_c_add_actual_call */
@@ -998,10 +1001,11 @@ TEST_FUNCTION(umock_c_add_actual_call_calls_the_underlying_call_recorder_add_act
 
     // assert
     ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(size_t, 1, umockcallrecorder_add_actual_call_count);
-    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, umockcallrecorder_add_actual_calls[0].umock_call_recorder);
-    ASSERT_ARE_EQUAL(void_ptr, test_actual_call, umockcallrecorder_add_actual_calls[0].mock_call);
-    ASSERT_ARE_EQUAL(void_ptr, &matched_call, umockcallrecorder_add_actual_calls[0].matched_call);
+    ASSERT_ARE_EQUAL(size_t, 1, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcallrecorder_add_actual_call, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, mocked_calls[0].u.umockcallrecorder_add_actual_call.umock_call_recorder);
+    ASSERT_ARE_EQUAL(void_ptr, test_actual_call, mocked_calls[0].u.umockcallrecorder_add_actual_call.mock_call);
+    ASSERT_ARE_EQUAL(void_ptr, &matched_call, mocked_calls[0].u.umockcallrecorder_add_actual_call.matched_call);
 }
 
 /* Tests_SRS_UMOCK_C_01_021: [ umock_c_add_actual_call shall add an actual call by calling umockcallrecorder_add_actual_call on the call recorder created in umock_c_init. ]*/
@@ -1019,10 +1023,11 @@ TEST_FUNCTION(when_the_underlying_call_recorder_add_actual_call_fails_then_umock
 
     // assert
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(size_t, 1, umockcallrecorder_add_actual_call_count);
-    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, umockcallrecorder_add_actual_calls[0].umock_call_recorder);
-    ASSERT_ARE_EQUAL(void_ptr, test_actual_call, umockcallrecorder_add_actual_calls[0].mock_call);
-    ASSERT_ARE_EQUAL(void_ptr, &matched_call, umockcallrecorder_add_actual_calls[0].matched_call);
+    ASSERT_ARE_EQUAL(size_t, 1, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcallrecorder_add_actual_call, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, mocked_calls[0].u.umockcallrecorder_add_actual_call.umock_call_recorder);
+    ASSERT_ARE_EQUAL(void_ptr, test_actual_call, mocked_calls[0].u.umockcallrecorder_add_actual_call.mock_call);
+    ASSERT_ARE_EQUAL(void_ptr, &matched_call, mocked_calls[0].u.umockcallrecorder_add_actual_call.matched_call);
 }
 
 /* Tests_SRS_UMOCK_C_01_022: [** If the module is not initialized, umock_c_add_actual_call shall return a non-zero value. ]*/
@@ -1036,7 +1041,7 @@ TEST_FUNCTION(umock_c_add_actual_call_when_the_module_is_not_initialized_fails)
 
     // assert
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(size_t, 0, umockcallrecorder_add_actual_call_count);
+    ASSERT_ARE_EQUAL(size_t, 0, mocked_call_count);
 }
 
 /* umock_c_get_call_recorder */
@@ -1090,9 +1095,11 @@ TEST_FUNCTION(umock_c_set_call_recorder_replaces_the_recorder)
 
     // assert
     ASSERT_ARE_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(size_t, 1, umockcallrecorder_clone_count);
-    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, umockcallrecorder_clones[0].umock_call_recorder);
-    ASSERT_ARE_EQUAL(size_t, 1, umockcallrecorder_destroy_count);
+    ASSERT_ARE_EQUAL(size_t, 2, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcallrecorder_clone, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, mocked_calls[0].u.umockcallrecorder_clone.umock_call_recorder);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcallrecorder_destroy, mocked_calls[1].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, mocked_calls[1].u.umockcallrecorder_destroy.umock_call_recorder);
 }
 
 /* Tests_SRS_UMOCK_C_01_030: [ If call_recorder is NULL, umock_c_set_call_recorder shall return a non-zero value. ]*/
@@ -1108,8 +1115,7 @@ TEST_FUNCTION(umock_c_set_call_recorder_with_NULL_call_recorder_fails)
 
     // assert
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(size_t, 0, umockcallrecorder_clone_count);
-    ASSERT_ARE_EQUAL(size_t, 0, umockcallrecorder_destroy_count);
+    ASSERT_ARE_EQUAL(size_t, 0, mocked_call_count);
 }
 
 /* Tests_SRS_UMOCK_C_01_032: [ If umockcallrecorder_clone fails, umock_c_set_call_recorder shall return a non-zero value. ]*/
@@ -1126,9 +1132,9 @@ TEST_FUNCTION(when_cloning_the_call_recorder_fails_umock_c_set_call_recorder_fai
 
     // assert
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(size_t, 1, umockcallrecorder_clone_count);
-    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, umockcallrecorder_clones[0].umock_call_recorder);
-    ASSERT_ARE_EQUAL(size_t, 0, umockcallrecorder_destroy_count);
+    ASSERT_ARE_EQUAL(size_t, 1, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcallrecorder_clone, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, test_call_recorder, mocked_calls[0].u.umockcallrecorder_clone.umock_call_recorder);
 }
 
 /* Tests_SRS_UMOCK_C_01_033: [ If the module is not initialized, umock_c_set_call_recorder shall return a non-zero value. ]*/
@@ -1145,9 +1151,7 @@ TEST_FUNCTION(when_the_module_is_not_initialize_umock_c_set_call_recorder_fails)
 
     // assert
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
-    ASSERT_ARE_EQUAL(size_t, 0, umockcallrecorder_clone_count);
-    ASSERT_ARE_EQUAL(size_t, 0, umockcallrecorder_destroy_count);
+    ASSERT_ARE_EQUAL(size_t, 0, mocked_call_count);
 }
-#endif
 
 END_TEST_SUITE(umock_c_unittests)
