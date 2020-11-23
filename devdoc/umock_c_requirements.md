@@ -71,6 +71,8 @@ int umock_c_set_call_recorder(UMOCKCALLRECORDER_HANDLE call_recorder);
 int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error);
 ```
 
+`umock_c_init` initializes `umock_c`.
+
 **SRS_UMOCK_C_01_001: [** umock_c_init shall initialize the umock library. **]**
 
 **SRS_UMOCK_C_01_023: [** umock_c_init shall initialize the umock types by calling umocktypes_init. **]**
@@ -113,6 +115,8 @@ int umock_c_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLO
 void umock_c_deinit(void);
 ```
 
+`umock_c_deinit` de-initializes `umock_c`, bringing it to a state where a new `umock_c_init` can succeed.
+
 **SRS_UMOCK_C_01_008: [** umock_c_deinit shall deinitialize the umock types by calling umocktypes_deinit. **]**
 
 **SRS_UMOCK_C_01_009: [** umock_c_deinit shall free the call recorder created in umock_c_init. **]**
@@ -125,11 +129,17 @@ void umock_c_deinit(void);
 void umock_c_reset_all_calls(void);
 ```
 
-**SRS_UMOCK_C_01_011: [** umock_c_reset_all_calls shall reset all calls by calling umockcallrecorder_reset_all_calls on the call recorder created in umock_c_init. **]**
-
-**SRS_UMOCK_C_01_025: [** If the underlying umockcallrecorder_reset_all_calls fails, the on_umock_c_error callback shall be triggered with UMOCK_C_RESET_CALLS_ERROR. **]**
+`umock_c_reset_all_calls` resets all the calls (expected and actual) tracked by `umock_c`.
 
 **SRS_UMOCK_C_01_012: [** If the module is not initialized, umock_c_reset_all_calls shall do nothing. **]**
+
+**SRS_UMOCK_C_01_040: [** If lock functions have been setup, `umock_c_reset_all_calls` shall call the lock function with `lock_type` set to `UMOCK_C_LOCK_TYPE_WRITE`. **]**
+
+**SRS_UMOCK_C_01_011: [** umock_c_reset_all_calls shall reset all calls by calling umockcallrecorder_reset_all_calls on the call recorder created in umock_c_init. **]**
+
+**SRS_UMOCK_C_01_041: [** If lock functions have been setup, `umock_c_reset_all_calls` shall call the unlock function with `lock_type` set to `UMOCK_C_LOCK_TYPE_WRITE`. **]**
+
+**SRS_UMOCK_C_01_025: [** If the underlying umockcallrecorder_reset_all_calls fails, the on_umock_c_error callback shall be triggered with UMOCK_C_RESET_CALLS_ERROR. **]**
 
 ## umock_c_get_actual_calls
 

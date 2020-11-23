@@ -108,7 +108,7 @@ typedef void(*ON_UMOCK_C_ERROR)(UMOCK_C_ERROR_CODE error_code);
 MU_DEFINE_ENUM(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_VALUES)
 
     typedef int (*UMOCK_C_LOCK_FUNCTION)(void* context, UMOCK_C_LOCK_TYPE lock_type);
-    typedef int (*UMOCK_C_UNLOCK_FUNCTION)(void* context);
+    typedef int (*UMOCK_C_UNLOCK_FUNCTION)(void* context, UMOCK_C_LOCK_TYPE lock_type);
 
     int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error);
     int umock_c_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);

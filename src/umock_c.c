@@ -80,10 +80,15 @@ int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error)
 
                 /* Codes_SRS_UMOCK_C_01_004: [ On success, umock_c_init shall return 0. ]*/
                 result = 0;
+
+                goto all_ok;
             }
+
+            umocktypes_deinit();
         }
     }
 
+all_ok:
     return result;
 }
 
@@ -128,10 +133,11 @@ void umock_c_deinit(void)
     {
         /* Codes_SRS_UMOCK_C_01_009: [ umock_c_deinit shall free the call recorder created in umock_c_init. ]*/
         umockcallrecorder_destroy(umock_call_recorder);
-        umock_c_state = UMOCK_C_STATE_NOT_INITIALIZED;
 
         /* Codes_SRS_UMOCK_C_01_008: [ umock_c_deinit shall deinitialize the umock types by calling umocktypes_deinit. ]*/
         umocktypes_deinit();
+
+        umock_c_state = UMOCK_C_STATE_NOT_INITIALIZED;
     }
 }
 

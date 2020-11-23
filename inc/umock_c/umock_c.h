@@ -102,7 +102,7 @@ extern "C" {
 MU_DEFINE_ENUM(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_VALUES)
 
 typedef int (*UMOCK_C_LOCK_FUNCTION)(void* context, UMOCK_C_LOCK_TYPE lock_type);
-typedef int (*UMOCK_C_UNLOCK_FUNCTION)(void* context);
+typedef int (*UMOCK_C_UNLOCK_FUNCTION)(void* context, UMOCK_C_LOCK_TYPE lock_type);
 
 void umock_c_indicate_error(UMOCK_C_ERROR_CODE error_code);
 int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error);
