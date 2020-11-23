@@ -352,6 +352,19 @@ void umockalloc_free(void* ptr)
     free(ptr);
 }
 
+static int test_lock_function(void* context, UMOCK_C_LOCK_TYPE lock_type)
+{
+    (void)context;
+    (void)lock_type;
+    return 0;
+}
+
+static int test_unlock_function(void* context)
+{
+    (void)context;
+    return 0;
+}
+
 static TEST_MUTEX_HANDLE test_mutex;
 
 BEGIN_TEST_SUITE(umock_c_unittests)
@@ -383,7 +396,7 @@ TEST_FUNCTION_CLEANUP(test_function_cleanup)
     TEST_MUTEX_RELEASE(test_mutex);
 }
 
-/* umock_deinit */
+/* umock_c_init */
 
 /* Tests_SRS_UMOCK_C_01_001: [umock_c_init shall initialize the umock library.] */
 /* Tests_SRS_UMOCK_C_01_023: [ umock_c_init shall initialize the umock types by calling umocktypes_init. ]*/
@@ -485,6 +498,35 @@ TEST_FUNCTION(umock_c_init_with_NULL_callback_succeeds)
     ASSERT_ARE_EQUAL(size_t, 1, umockcallrecorder_create_call_count);
 }
 
+/* umock_c_set_lock_functions */
+
+/* Tests_SRS_UMOCK_C_01_035: [ If `umock_c_set_lock_functions` is called with a `NULL` lock_function and non-`NULL` unlock_function, `umock_c_set_lock_functions` shall fail and return a non-zero value. ]*/
+TEST_FUNCTION(umock_c_set_lock_functions_with_NULL_lock_function_and_non_NULL_unlock_function_fails)
+{
+    // arrange
+    ASSERT_ARE_EQUAL(int, 0, umock_c_init(NULL));
+
+    // act
+    int result = umock_c_set_lock_functions(NULL, test_unlock_function, (void*)0x4242);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+}
+
+/* Tests_SRS_UMOCK_C_01_036: [ If `umock_c_set_lock_functions` is called with a non-`NULL` `lock_function` and a `NULL` `unlock_function`, `umock_c_set_lock_functions` shall fail and return a non-zero value. ]*/
+TEST_FUNCTION(umock_c_set_lock_functions_with_non_NULL_lock_function_and_NULL_unlock_function_fails)
+{
+    // arrange
+    ASSERT_ARE_EQUAL(int, 0, umock_c_init(NULL));
+
+    // act
+    int result = umock_c_set_lock_functions(test_lock_function, NULL, (void*)0x4242);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+}
+
+#if 0
 /* umock_c_deinit */
 
 /* Tests_SRS_UMOCK_C_01_008: [ umock_c_deinit shall deinitialize the umock types by calling umocktypes_deinit. ]*/
@@ -923,5 +965,6 @@ TEST_FUNCTION(when_the_module_is_not_initialize_umock_c_set_call_recorder_fails)
     ASSERT_ARE_EQUAL(size_t, 0, umockcallrecorder_clone_call_count);
     ASSERT_ARE_EQUAL(size_t, 0, umockcallrecorder_destroy_call_count);
 }
+#endif
 
 END_TEST_SUITE(umock_c_unittests)
