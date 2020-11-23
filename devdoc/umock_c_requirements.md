@@ -89,6 +89,24 @@ int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error);
 
 **SRS_UMOCK_C_01_024: [** on_umock_c_error shall be optional. **]**
 
+### umock_c_set_lock_functions
+
+```c
+int umock_c_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);
+```
+
+`umock_c_set_lock_functions` sets up the lock and unlock functions to be used doe accessing the expected and actual calls.
+
+**SRS_UMOCK_C_01_035: [** If `umock_c_set_lock_functions` is called with a `NULL` lock_function and non-`NULL` unlock_function, `umock_c_set_lock_functions` shall fail and return a non-zero value. **]**
+
+**SRS_UMOCK_C_01_036: [** If `umock_c_set_lock_functions` is called with a non-`NULL` lock_function and a `NULL` unlock_function, `umock_c_set_lock_functions` shall fail and return a non-zero value. **]**
+
+**SRS_UMOCK_C_01_037: [** If the module is not initialized, `umock_c_set_lock_functions` shall do nothing. **]**
+
+**SRS_UMOCK_C_01_038: [** `umock_c_set_lock_functions` shall save `lock_function`, `unlock_function` and `context` for later use. **]**
+
+**SRS_UMOCK_C_01_039: [** On success `umock_c_set_lock_functions` shall return 0. **]**
+
 ## umock_c_deinit
 
 ```c

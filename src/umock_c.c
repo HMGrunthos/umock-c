@@ -84,6 +84,14 @@ int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error)
     return result;
 }
 
+int umock_c_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context)
+{
+    (void)lock_function;
+    (void)unlock_function;
+    (void)context;
+    return 0;
+}
+
 void umock_c_deinit(void)
 {
     /* Codes_SRS_UMOCK_C_LIB_01_012: [If umock_c was not initialized, umock_c_deinit shall do nothing.] */
