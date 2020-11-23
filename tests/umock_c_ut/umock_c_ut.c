@@ -526,6 +526,18 @@ TEST_FUNCTION(umock_c_set_lock_functions_with_non_NULL_lock_function_and_NULL_un
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
 }
 
+/* Tests_SRS_UMOCK_C_01_037: [ If the module is not initialized, `umock_c_set_lock_functions` shall do nothing. ]*/
+TEST_FUNCTION(umock_c_set_lock_functions_when_not_initialized_fails)
+{
+    // arrange
+
+    // act
+    int result = umock_c_set_lock_functions(test_lock_function, test_unlock_function, (void*)0x4242);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+}
+
 #if 0
 /* umock_c_deinit */
 

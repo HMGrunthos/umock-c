@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+#include "macro_utils/macro_utils.h"
+
 #include "umock_c/umock_c.h"
 #include "umock_c/umockcall.h"
 #include "umock_c/umocktypes.h"
@@ -8,11 +10,12 @@
 #include "umock_c/umockcallrecorder.h"
 #include "umock_c/umock_log.h"
 
-typedef enum UMOCK_C_STATE_TAG
-{
-    UMOCK_C_STATE_NOT_INITIALIZED,
-    UMOCK_C_STATE_INITIALIZED
-} UMOCK_C_STATE;
+#define UMOCK_C_STATE_VALUES \
+    UMOCK_C_STATE_NOT_INITIALIZED, \
+    UMOCK_C_STATE_INITIALIZED \
+
+MU_DEFINE_ENUM(UMOCK_C_STATE, UMOCK_C_STATE_VALUES);
+MU_DEFINE_ENUM_STRINGS(UMOCK_C_STATE, UMOCK_C_STATE_VALUES);
 
 static ON_UMOCK_C_ERROR on_umock_c_error_function;
 static UMOCK_C_STATE umock_c_state = UMOCK_C_STATE_NOT_INITIALIZED;
@@ -100,7 +103,15 @@ int umock_c_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLO
     }
     else
     {
-        result = 0;
+        if (umock_c_state != UMOCK_C_STATE_INITIALIZED)
+        {
+            UMOCK_LOG("umock not initialized, state is %" PRI_MU_ENUM"", MU_ENUM_VALUE(UMOCK_C_STATE, umock_c_state));
+            result = MU_FAILURE;
+        }
+        else
+        {
+            result = 0;
+        }
     }
     return result;
 }
