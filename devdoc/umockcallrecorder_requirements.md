@@ -87,6 +87,8 @@ int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_record
 
 **SRS_UMOCKCALLRECORDER_01_006: [** On success `umockcallrecorder_reset_all_calls` shall return 0. **]**
 
+**SRS_UMOCKCALLRECORDER_01_067: [** If any error occurs, `umockcallrecorder_reset_all_calls` shall fail and return a non-zero value. **]**
+
 ### umockcallrecorder_add_expected_call
 
 ```c
