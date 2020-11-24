@@ -155,7 +155,7 @@ const char* umockcallrecorder_get_actual_calls(UMOCKCALLRECORDER_HANDLE umock_ca
 
 **SRS_UMOCKCALLRECORDER_01_073: [** If lock functions have been setup, `umockcallrecorder_get_actual_calls` shall call the lock function with `UMOCK_C_LOCK_TYPE_READ`. **]**
 
-If the lock function fails, `umockcallrecorder_get_actual_calls` shall fail and return `NULL`.
+**SRS_UMOCKCALLRECORDER_01_075: [** If the lock function fails, `umockcallrecorder_get_actual_calls` shall fail and return `NULL`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_022: [** `umockcallrecorder_get_actual_calls` shall return a pointer to the string representation of all the actual calls. **]**
 
@@ -175,11 +175,15 @@ const char* umockcallrecorder_get_expected_calls(UMOCKCALLRECORDER_HANDLE umock_
 
 `umockcallrecorder_get_expected_calls` gets a string that contains all the expected calls tracked by `umock_call_recorder`.
 
+**SRS_UMOCKCALLRECORDER_01_029: [** If the `umock_call_recorder` is `NULL`, `umockcallrecorder_get_expected_calls` shall fail and return `NULL`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_076: [** If lock functions have been setup, `umockcallrecorder_get_expected_calls` shall call the lock function with `UMOCK_C_LOCK_TYPE_READ`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_078: [** If the lock function fails, `umockcallrecorder_get_expected_calls` shall fail and return `NULL`. **]**
+
 **SRS_UMOCKCALLRECORDER_01_027: [** `umockcallrecorder_get_expected_calls` shall return a pointer to the string representation of all the expected calls. **]**
 
 **SRS_UMOCKCALLRECORDER_01_028: [** The string for each call shall be obtained by calling `umockcall_stringify`. **]**
-
-**SRS_UMOCKCALLRECORDER_01_029: [** If the `umock_call_recorder` is `NULL`, `umockcallrecorder_get_expected_calls` shall fail and return `NULL`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_030: [** If `umockcall_stringify` fails, `umockcallrecorder_get_expected_calls` shall fail and return `NULL`. **]**
 
@@ -188,6 +192,8 @@ const char* umockcallrecorder_get_expected_calls(UMOCKCALLRECORDER_HANDLE umock_
 **SRS_UMOCKCALLRECORDER_01_054: [** Calls that have the `ignore_all_calls` property set shall not be reported in the expected call list. **]**
 
 **SRS_UMOCKCALLRECORDER_01_055: [** Getting the `ignore_all_calls` property shall be done by calling `umockcall_get_ignore_all_calls`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_077: [** If lock functions have been setup, `umockcallrecorder_get_expected_calls` shall call the unlock function with `UMOCK_C_LOCK_TYPE_READ`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_056: [** If `umockcall_get_ignore_all_calls` returns a negative value then `umockcallrecorder_get_expected_calls` shall fail and return NULL. **]**
 

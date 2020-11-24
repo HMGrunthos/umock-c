@@ -396,82 +396,95 @@ const char* umockcallrecorder_get_expected_calls(UMOCKCALLRECORDER_HANDLE umock_
         char* new_expected_calls_string;
         size_t current_length = 0;
 
-        for (i = 0; i < umock_call_recorder->expected_call_count; i++)
+        /* Codes_SRS_UMOCKCALLRECORDER_01_076: [ If lock functions have been setup, `umockcallrecorder_get_expected_calls` shall call the lock function with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+        if (internal_lock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ) != 0)
         {
-            /* Codes_SRS_UMOCKCALLRECORDER_01_055: [ Getting the ignore_all_calls property shall be done by calling umockcall_get_ignore_all_calls. ]*/
-            int ignore_all_calls = umockcall_get_ignore_all_calls(umock_call_recorder->expected_calls[i].umockcall);
-            if (ignore_all_calls < 0)
-            {
-                /* Codes_SRS_UMOCKCALLRECORDER_01_056: [ If umockcall_get_ignore_all_calls returns a negative value then umockcallrecorder_get_expected_calls shall fail and return NULL. ]*/
-                UMOCK_LOG("umockcallrecorder: Cannot get the ignore_all_calls flag.");
-                break;
-            }
-            else
-            {
-                if ((umock_call_recorder->expected_calls[i].is_matched == 0) &&
-                    /* Codes_SRS_UMOCKCALLRECORDER_01_054: [ Calls that have the ignore_all_calls property set shall not be reported in the expected call list. ]*/
-                    (ignore_all_calls == 0))
-                {
-                    /* Codes_SRS_UMOCKCALLRECORDER_01_028: [ The string for each call shall be obtained by calling umockcall_stringify. ]*/
-                    char* stringified_call = umockcall_stringify(umock_call_recorder->expected_calls[i].umockcall);
-                    if (stringified_call == NULL)
-                    {
-                        /* Codes_SRS_UMOCKCALLRECORDER_01_030: [ If umockcall_stringify fails, umockcallrecorder_get_expected_calls shall fail and return NULL. ]*/
-                        break;
-                    }
-                    else
-                    {
-                        size_t stringified_call_length = strlen(stringified_call);
-                        new_expected_calls_string = (char*)umockalloc_realloc(umock_call_recorder->expected_calls_string, current_length + stringified_call_length + 1);
-                        if (new_expected_calls_string == NULL)
-                        {
-                            umockalloc_free(stringified_call);
-
-                            /* Codes_SRS_UMOCKCALLRECORDER_01_031: [ If allocating memory for the resulting string fails, umockcallrecorder_get_expected_calls shall fail and return NULL. ]*/
-                            break;
-                        }
-                        else
-                        {
-                            umock_call_recorder->expected_calls_string = new_expected_calls_string;
-                            (void)memcpy(umock_call_recorder->expected_calls_string + current_length, stringified_call, stringified_call_length + 1);
-                            current_length += stringified_call_length;
-                        }
-
-                        umockalloc_free(stringified_call);
-                    }
-                }
-            }
-        }
-
-        if (i < umock_call_recorder->expected_call_count)
-        {
+            /* Codes_SRS_UMOCKCALLRECORDER_01_078: [ If the lock function fails, `umockcallrecorder_get_expected_calls` shall fail and return `NULL`. ]*/
+            UMOCK_LOG("lock failed");
             result = NULL;
         }
         else
         {
-            if (current_length == 0)
+            for (i = 0; i < umock_call_recorder->expected_call_count; i++)
             {
-                new_expected_calls_string = (char*)umockalloc_realloc(umock_call_recorder->expected_calls_string, 1);
-                if (new_expected_calls_string == NULL)
+                /* Codes_SRS_UMOCKCALLRECORDER_01_055: [ Getting the ignore_all_calls property shall be done by calling umockcall_get_ignore_all_calls. ]*/
+                int ignore_all_calls = umockcall_get_ignore_all_calls(umock_call_recorder->expected_calls[i].umockcall);
+                if (ignore_all_calls < 0)
                 {
-                    /* Codes_SRS_UMOCKCALLRECORDER_01_031: [ If allocating memory for the resulting string fails, umockcallrecorder_get_expected_calls shall fail and return NULL. ]*/
-                    UMOCK_LOG("umockcallrecorder: Cannot allocate memory for expected calls.");
-                    result = NULL;
+                    /* Codes_SRS_UMOCKCALLRECORDER_01_056: [ If umockcall_get_ignore_all_calls returns a negative value then umockcallrecorder_get_expected_calls shall fail and return NULL. ]*/
+                    UMOCK_LOG("umockcallrecorder: Cannot get the ignore_all_calls flag.");
+                    break;
                 }
                 else
                 {
-                    umock_call_recorder->expected_calls_string = new_expected_calls_string;
-                    umock_call_recorder->expected_calls_string[0] = '\0';
+                    if ((umock_call_recorder->expected_calls[i].is_matched == 0) &&
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_054: [ Calls that have the ignore_all_calls property set shall not be reported in the expected call list. ]*/
+                        (ignore_all_calls == 0))
+                    {
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_028: [ The string for each call shall be obtained by calling umockcall_stringify. ]*/
+                        char* stringified_call = umockcall_stringify(umock_call_recorder->expected_calls[i].umockcall);
+                        if (stringified_call == NULL)
+                        {
+                            /* Codes_SRS_UMOCKCALLRECORDER_01_030: [ If umockcall_stringify fails, umockcallrecorder_get_expected_calls shall fail and return NULL. ]*/
+                            break;
+                        }
+                        else
+                        {
+                            size_t stringified_call_length = strlen(stringified_call);
+                            new_expected_calls_string = (char*)umockalloc_realloc(umock_call_recorder->expected_calls_string, current_length + stringified_call_length + 1);
+                            if (new_expected_calls_string == NULL)
+                            {
+                                umockalloc_free(stringified_call);
 
+                                /* Codes_SRS_UMOCKCALLRECORDER_01_031: [ If allocating memory for the resulting string fails, umockcallrecorder_get_expected_calls shall fail and return NULL. ]*/
+                                break;
+                            }
+                            else
+                            {
+                                umock_call_recorder->expected_calls_string = new_expected_calls_string;
+                                (void)memcpy(umock_call_recorder->expected_calls_string + current_length, stringified_call, stringified_call_length + 1);
+                                current_length += stringified_call_length;
+                            }
+
+                            umockalloc_free(stringified_call);
+                        }
+                    }
+                }
+            }
+
+            if (i < umock_call_recorder->expected_call_count)
+            {
+                result = NULL;
+            }
+            else
+            {
+                if (current_length == 0)
+                {
+                    new_expected_calls_string = (char*)umockalloc_realloc(umock_call_recorder->expected_calls_string, 1);
+                    if (new_expected_calls_string == NULL)
+                    {
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_031: [ If allocating memory for the resulting string fails, umockcallrecorder_get_expected_calls shall fail and return NULL. ]*/
+                        UMOCK_LOG("umockcallrecorder: Cannot allocate memory for expected calls.");
+                        result = NULL;
+                    }
+                    else
+                    {
+                        umock_call_recorder->expected_calls_string = new_expected_calls_string;
+                        umock_call_recorder->expected_calls_string[0] = '\0';
+
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_027: [ umockcallrecorder_get_expected_calls shall return a pointer to the string representation of all the expected calls. ]*/
+                        result = umock_call_recorder->expected_calls_string;
+                    }
+                }
+                else
+                {
                     /* Codes_SRS_UMOCKCALLRECORDER_01_027: [ umockcallrecorder_get_expected_calls shall return a pointer to the string representation of all the expected calls. ]*/
                     result = umock_call_recorder->expected_calls_string;
                 }
             }
-            else
-            {
-                /* Codes_SRS_UMOCKCALLRECORDER_01_027: [ umockcallrecorder_get_expected_calls shall return a pointer to the string representation of all the expected calls. ]*/
-                result = umock_call_recorder->expected_calls_string;
-            }
+
+            /* Codes_SRS_UMOCKCALLRECORDER_01_077: [ If lock functions have been setup, `umockcallrecorder_get_expected_calls` shall call the unlock function with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+            internal_unlock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ);
         }
     }
 
