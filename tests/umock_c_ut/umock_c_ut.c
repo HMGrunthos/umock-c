@@ -609,7 +609,7 @@ TEST_FUNCTION(umock_c_deinit_when_not_initialized_does_nothing)
 
 /* umock_c_set_lock_functions */
 
-/* Tests_SRS_UMOCK_C_01_037: [ If the module is not initialized, `umock_c_set_lock_functions` shall do nothing. ]*/
+/* Tests_SRS_UMOCK_C_01_037: [ If the module is not initialized, umock_c_set_lock_functions shall do nothing. ]*/
 TEST_FUNCTION(umock_c_set_lock_functions_when_not_initialized_fails)
 {
     // arrange
@@ -621,7 +621,7 @@ TEST_FUNCTION(umock_c_set_lock_functions_when_not_initialized_fails)
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
 }
 
-/* Tests_SRS_UMOCK_C_01_040: [ `umock_c_set_lock_functions` shall call `umockcallrecorder_set_lock_functions` for the current call recorder, passing `lock_function`, `unlock_function` and `context`. ]*/
+/* Tests_SRS_UMOCK_C_01_040: [ umock_c_set_lock_functions shall call umockcallrecorder_set_lock_functions for the current call recorder, passing lock_function, unlock_function and context. ]*/
 TEST_FUNCTION(umock_c_set_lock_functions_calls_the_underlying_call_recorder_and_succeeds)
 {
     // arrange
@@ -640,7 +640,7 @@ TEST_FUNCTION(umock_c_set_lock_functions_calls_the_underlying_call_recorder_and_
     ASSERT_ARE_EQUAL(void_ptr, (void*)0x4242, mocked_calls[0].u.umockcallrecorder_set_lock_functions.context);
 }
 
-/* Tests_SRS_UMOCK_C_01_040: [ `umock_c_set_lock_functions` shall call `umockcallrecorder_set_lock_functions` for the current call recorder, passing `lock_function`, `unlock_function` and `context`. ]*/
+/* Tests_SRS_UMOCK_C_01_040: [ umock_c_set_lock_functions shall call umockcallrecorder_set_lock_functions for the current call recorder, passing lock_function, unlock_function and context. ]*/
 TEST_FUNCTION(umock_c_set_lock_functions_calls_the_underlying_call_recorder_with_NULL_values_and_succeeds)
 {
     // arrange
@@ -659,7 +659,7 @@ TEST_FUNCTION(umock_c_set_lock_functions_calls_the_underlying_call_recorder_with
     ASSERT_ARE_EQUAL(void_ptr, NULL, mocked_calls[0].u.umockcallrecorder_set_lock_functions.context);
 }
 
-/* Tests_SRS_UMOCK_C_01_041: [ If any error occurs, `umock_c_set_lock_functions` shall fail and return a non-zero value. ]*/
+/* Tests_SRS_UMOCK_C_01_041: [ If any error occurs, umock_c_set_lock_functions shall fail and return a non-zero value. ]*/
 TEST_FUNCTION(when_the_underlying_call_fails_umock_c_set_lock_functions_also_fails)
 {
     // arrange

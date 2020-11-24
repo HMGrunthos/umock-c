@@ -76,14 +76,14 @@ int umockcallrecorder_set_lock_functions(UMOCKCALLRECORDER_HANDLE umock_call_rec
 {
     int result;
 
-    /* Codes_SRS_UMOCKCALLRECORDER_01_063: [ `context` may be `NULL`. ]*/
+    /* Codes_SRS_UMOCKCALLRECORDER_01_063: [ context may be NULL. ]*/
 
     if (
-        /* Codes_SRS_UMOCKCALLRECORDER_01_064: [ If `umock_call_recorder` is `NULL`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+        /* Codes_SRS_UMOCKCALLRECORDER_01_064: [ If umock_call_recorder is NULL, umockcallrecorder_set_lock_functions shall fail and return a non-zero value. ]*/
         (umock_call_recorder == NULL) ||
-        /* Codes_SRS_UMOCKCALLRECORDER_01_059: [ If `umockcallrecorder_set_lock_functions` is called with a `NULL` `lock_function` and non-`NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+        /* Codes_SRS_UMOCKCALLRECORDER_01_059: [ If umockcallrecorder_set_lock_functions is called with a NULL lock_function and non-NULL unlock_function, umockcallrecorder_set_lock_functions shall fail and return a non-zero value. ]*/
         ((lock_function == NULL) && (unlock_function != NULL)) ||
-        /* Codes_SRS_UMOCKCALLRECORDER_01_060: [ If `umockcallrecorder_set_lock_functions` is called with a non-`NULL` `lock_function` and a `NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+        /* Codes_SRS_UMOCKCALLRECORDER_01_060: [ If umockcallrecorder_set_lock_functions is called with a non-NULL lock_function and a NULL unlock_function, umockcallrecorder_set_lock_functions shall fail and return a non-zero value. ]*/
         ((lock_function != NULL) && (unlock_function == NULL))
         )
     {
@@ -93,11 +93,11 @@ int umockcallrecorder_set_lock_functions(UMOCKCALLRECORDER_HANDLE umock_call_rec
     }
     else
     {
-        /* Codes_SRS_UMOCKCALLRECORDER_01_061: [ `umockcallrecorder_set_lock_functions` shall save `lock_function`, `unlock_function` and `context` for later use. ]*/
+        /* Codes_SRS_UMOCKCALLRECORDER_01_061: [ umockcallrecorder_set_lock_functions shall save lock_function, unlock_function and context for later use. ]*/
         umock_call_recorder->lock_function = lock_function;
         umock_call_recorder->unlock_function = unlock_function;
 
-        /* Codes_SRS_UMOCKCALLRECORDER_01_062: [ On success `umockcallrecorder_set_lock_functions` shall return 0. ]*/
+        /* Codes_SRS_UMOCKCALLRECORDER_01_062: [ On success umockcallrecorder_set_lock_functions shall return 0. ]*/
         result = 0;
     }
 

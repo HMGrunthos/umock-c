@@ -519,7 +519,7 @@ TEST_FUNCTION(umockcallrecorder_destroy_with_one_expected_call_frees_the_call_re
 
 /* umockcallrecorder_set_lock_functions */
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_064: [ If `umock_call_recorder` is `NULL`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_064: [ If umock_call_recorder is NULL, umockcallrecorder_set_lock_functions shall fail and return a non-zero value. ]*/
 TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_NULL_umock_call_recorder_fails)
 {
     // arrange
@@ -531,7 +531,7 @@ TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_NULL_umock_call_recorder
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_059: [ If `umockcallrecorder_set_lock_functions` is called with a `NULL` `lock_function` and non-`NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_059: [ If umockcallrecorder_set_lock_functions is called with a NULL lock_function and non-NULL unlock_function, umockcallrecorder_set_lock_functions shall fail and return a non-zero value. ]*/
 TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_NULL_lock_function_and_non_NULL_unlock_function_fails)
 {
     // arrange
@@ -548,7 +548,7 @@ TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_NULL_lock_function_and_n
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_060: [ If `umockcallrecorder_set_lock_functions` is called with a non-`NULL` `lock_function` and a `NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_060: [ If umockcallrecorder_set_lock_functions is called with a non-NULL lock_function and a NULL unlock_function, umockcallrecorder_set_lock_functions shall fail and return a non-zero value. ]*/
 TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_non_NULL_lock_function_and_NULL_unlock_function_fails)
 {
     // arrange
@@ -565,8 +565,8 @@ TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_non_NULL_lock_function_a
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_061: [ `umockcallrecorder_set_lock_functions` shall save `lock_function`, `unlock_function` and `context` for later use. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_062: [ On success `umockcallrecorder_set_lock_functions` shall return 0. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_061: [ umockcallrecorder_set_lock_functions shall save lock_function, unlock_function and context for later use. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_062: [ On success umockcallrecorder_set_lock_functions shall return 0. ]*/
 TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_non_NULL_lock_function_and_non_NULL_unlock_function_succeeds)
 {
     // arrange
@@ -583,8 +583,8 @@ TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_non_NULL_lock_function_a
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_061: [ `umockcallrecorder_set_lock_functions` shall save `lock_function`, `unlock_function` and `context` for later use. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_062: [ On success `umockcallrecorder_set_lock_functions` shall return 0. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_061: [ umockcallrecorder_set_lock_functions shall save lock_function, unlock_function and context for later use. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_062: [ On success umockcallrecorder_set_lock_functions shall return 0. ]*/
 TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_NULL_lock_function_and_NULL_unlock_function_succeeds)
 {
     // arrange
@@ -601,7 +601,7 @@ TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_NULL_lock_function_and_N
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_063: [ `context` may be `NULL`. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_063: [ context may be NULL. ]*/
 TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_non_NULL_lock_function_and_non_NULL_unlock_function_and_NULL_context_succeeds)
 {
     // arrange
