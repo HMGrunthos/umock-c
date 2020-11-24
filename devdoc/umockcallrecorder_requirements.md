@@ -231,6 +231,10 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_clone(UMOCKCALLRECORDER_HANDLE umock_
 
 **SRS_UMOCKCALLRECORDER_01_037: [** If allocating memory for the new umock call recorder instance fails, `umockcallrecorder_clone` shall fail and return `NULL`. **]**
 
+**SRS_UMOCKCALLRECORDER_01_082: [** If lock functions have been setup on `umock_call_recorder`, `umockcallrecorder_clone` shall call the lock function of `umock_call_recorder` with `UMOCK_C_LOCK_TYPE_READ`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_084: [** If locking fails, `umockcallrecorder_clone` shall fail and return `NULL`. **]**
+
 **SRS_UMOCKCALLRECORDER_01_038: [** `umockcallrecorder_clone` shall clone all the expected calls. **]**
 
 **SRS_UMOCKCALLRECORDER_01_039: [** Each expected call shall be cloned by calling `umockcall_clone`. **]**
@@ -242,6 +246,10 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_clone(UMOCKCALLRECORDER_HANDLE umock_
 **SRS_UMOCKCALLRECORDER_01_042: [** Each actual call shall be cloned by calling `umockcall_clone`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_043: [** If cloning an actual call fails, `umockcallrecorder_clone` shall fail and return `NULL`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_085: [** `umockcallrecorder_clone` shall also copy the `lock_function`, `unlock_function` and lock `context` from `umock_call_recorder` to the cloned call recorder. **]**
+
+**SRS_UMOCKCALLRECORDER_01_083: [** If lock functions have been setup on `umock_call_recorder`, `umockcallrecorder_clone` shall call the unlock function of `umock_call_recorder` with `UMOCK_C_LOCK_TYPE_READ`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_052: [** If allocating memory for the expected calls fails, `umockcallrecorder_clone` shall fail and return `NULL`. **]**
 

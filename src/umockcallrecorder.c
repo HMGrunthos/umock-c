@@ -641,107 +641,124 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_clone(UMOCKCALLRECORDER_HANDLE umock_
     }
     else
     {
-        /* Codes_SRS_UMOCKCALLRECORDER_01_037: [ If allocating memory for the new umock call recorder instance fails, umockcallrecorder_clone shall fail and return NULL. ]*/
-        result = umockcallrecorder_create();
-        if (result != NULL)
+        /* Codes_SRS_UMOCKCALLRECORDER_01_082: [ If lock functions have been setup on `umock_call_recorder`, `umockcallrecorder_clone` shall call the lock function of `umock_call_recorder` with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+        if (internal_lock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ) != 0)
         {
-            size_t i;
-
-            result->expected_calls = (UMOCK_EXPECTED_CALL*)umockalloc_malloc(sizeof(UMOCK_EXPECTED_CALL) * umock_call_recorder->expected_call_count);
-            if (result->expected_calls == NULL)
+            UMOCK_LOG("lock failed");
+            result = NULL;
+        }
+        else
+        {
+            /* Codes_SRS_UMOCKCALLRECORDER_01_037: [ If allocating memory for the new umock call recorder instance fails, umockcallrecorder_clone shall fail and return NULL. ]*/
+            result = umockcallrecorder_create();
+            if (result != NULL)
             {
-                /* Codes_SRS_UMOCKCALLRECORDER_01_052: [ If allocating memory for the expected calls fails, umockcallrecorder_clone shall fail and return NULL. ]*/
-                umockcallrecorder_destroy(result);
-                result = NULL;
-                UMOCK_LOG("umockcallrecorder: clone call recorder failed - cannot allocate expected_calls.");
-            }
-            else
-            {
-                for (i = 0; i < umock_call_recorder->expected_call_count; i++)
+                size_t i;
+
+                /* Codes_SRS_UMOCKCALLRECORDER_01_085: [ `umockcallrecorder_clone` shall also copy the `lock_function`, `unlock_function` and lock `context` from `umock_call_recorder` to the cloned call recorder. ]*/
+                result->lock_function = umock_call_recorder->lock_function;
+                result->unlock_function = umock_call_recorder->unlock_function;
+                result->lock_context = umock_call_recorder->lock_context;
+
+                result->expected_calls = (UMOCK_EXPECTED_CALL*)umockalloc_malloc(sizeof(UMOCK_EXPECTED_CALL) * umock_call_recorder->expected_call_count);
+                if (result->expected_calls == NULL)
                 {
-                    result->expected_calls[i].umockcall = NULL;
-                }
-
-                /* Codes_SRS_UMOCKCALLRECORDER_01_038: [ umockcallrecorder_clone shall clone all the expected calls. ]*/
-                for (i = 0; i < umock_call_recorder->expected_call_count; i++)
-                {
-                    result->expected_calls[i].is_matched = umock_call_recorder->expected_calls[i].is_matched;
-
-                    /* Codes_SRS_UMOCKCALLRECORDER_01_039: [ Each expected call shall be cloned by calling umockcall_clone. ]*/
-                    result->expected_calls[i].umockcall = umockcall_clone(umock_call_recorder->expected_calls[i].umockcall);
-                    if (result->expected_calls[i].umockcall == NULL)
-                    {
-                        break;
-                    }
-                }
-
-                if (i < umock_call_recorder->expected_call_count)
-                {
-                    size_t j;
-
-                    /* Codes_SRS_UMOCKCALLRECORDER_01_040: [ If cloning an expected call fails, umockcallrecorder_clone shall fail and return NULL. ]*/
-                    for (j = 0; j < i; j++)
-                    {
-                        umockcall_destroy(result->expected_calls[j].umockcall);
-                        result->expected_calls[j].umockcall = NULL;
-                    }
-
+                    /* Codes_SRS_UMOCKCALLRECORDER_01_052: [ If allocating memory for the expected calls fails, umockcallrecorder_clone shall fail and return NULL. ]*/
                     umockcallrecorder_destroy(result);
                     result = NULL;
-                    UMOCK_LOG("umockcallrecorder: clone call recorder failed - cannot clone all expected calls.");
+                    UMOCK_LOG("umockcallrecorder: clone call recorder failed - cannot allocate expected_calls.");
                 }
                 else
                 {
-                    result->expected_call_count = umock_call_recorder->expected_call_count;
-
-                    result->actual_calls = (UMOCKCALL_HANDLE*)umockalloc_malloc(sizeof(UMOCKCALL_HANDLE) * umock_call_recorder->actual_call_count);
-                    if (result->actual_calls == NULL)
+                    for (i = 0; i < umock_call_recorder->expected_call_count; i++)
                     {
-                        /* Codes_SRS_UMOCKCALLRECORDER_01_053: [ If allocating memory for the actual calls fails, umockcallrecorder_clone shall fail and return NULL. ]*/
+                        result->expected_calls[i].umockcall = NULL;
+                    }
+
+                    /* Codes_SRS_UMOCKCALLRECORDER_01_038: [ umockcallrecorder_clone shall clone all the expected calls. ]*/
+                    for (i = 0; i < umock_call_recorder->expected_call_count; i++)
+                    {
+                        result->expected_calls[i].is_matched = umock_call_recorder->expected_calls[i].is_matched;
+
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_039: [ Each expected call shall be cloned by calling umockcall_clone. ]*/
+                        result->expected_calls[i].umockcall = umockcall_clone(umock_call_recorder->expected_calls[i].umockcall);
+                        if (result->expected_calls[i].umockcall == NULL)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (i < umock_call_recorder->expected_call_count)
+                    {
+                        size_t j;
+
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_040: [ If cloning an expected call fails, umockcallrecorder_clone shall fail and return NULL. ]*/
+                        for (j = 0; j < i; j++)
+                        {
+                            umockcall_destroy(result->expected_calls[j].umockcall);
+                            result->expected_calls[j].umockcall = NULL;
+                        }
+
                         umockcallrecorder_destroy(result);
                         result = NULL;
-                        UMOCK_LOG("umockcallrecorder: clone call recorder failed - cannot allocate expected_calls.");
+                        UMOCK_LOG("umockcallrecorder: clone call recorder failed - cannot clone all expected calls.");
                     }
                     else
                     {
-                        for (i = 0; i < umock_call_recorder->actual_call_count; i++)
+                        result->expected_call_count = umock_call_recorder->expected_call_count;
+
+                        result->actual_calls = (UMOCKCALL_HANDLE*)umockalloc_malloc(sizeof(UMOCKCALL_HANDLE) * umock_call_recorder->actual_call_count);
+                        if (result->actual_calls == NULL)
                         {
-                            result->actual_calls[i] = NULL;
-                        }
-
-                        /* Codes_SRS_UMOCKCALLRECORDER_01_041: [ umockcallrecorder_clone shall clone all the actual calls. ]*/
-                        for (i = 0; i < umock_call_recorder->actual_call_count; i++)
-                        {
-                            /* Codes_SRS_UMOCKCALLRECORDER_01_042: [ Each actual call shall be cloned by calling umockcall_clone. ]*/
-                            result->actual_calls[i] = umockcall_clone(umock_call_recorder->actual_calls[i]);
-                            if (result->actual_calls[i] == NULL)
-                            {
-                                break;
-                            }
-                        }
-
-                        if (i < umock_call_recorder->actual_call_count)
-                        {
-                            size_t j;
-
-                            /* Codes_SRS_UMOCKCALLRECORDER_01_043: [ If cloning an actual call fails, umockcallrecorder_clone shall fail and return NULL. ]*/
-                            for (j = 0; j < i; j++)
-                            {
-                                umockcall_destroy(result->actual_calls[j]);
-                                result->actual_calls[j] = NULL;
-                            }
-
+                            /* Codes_SRS_UMOCKCALLRECORDER_01_053: [ If allocating memory for the actual calls fails, umockcallrecorder_clone shall fail and return NULL. ]*/
                             umockcallrecorder_destroy(result);
                             result = NULL;
-                            UMOCK_LOG("umockcallrecorder: clone call recorder failed - cannot clone all actual calls.");
+                            UMOCK_LOG("umockcallrecorder: clone call recorder failed - cannot allocate expected_calls.");
                         }
                         else
                         {
-                            result->actual_call_count = umock_call_recorder->actual_call_count;
+                            for (i = 0; i < umock_call_recorder->actual_call_count; i++)
+                            {
+                                result->actual_calls[i] = NULL;
+                            }
+
+                            /* Codes_SRS_UMOCKCALLRECORDER_01_041: [ umockcallrecorder_clone shall clone all the actual calls. ]*/
+                            for (i = 0; i < umock_call_recorder->actual_call_count; i++)
+                            {
+                                /* Codes_SRS_UMOCKCALLRECORDER_01_042: [ Each actual call shall be cloned by calling umockcall_clone. ]*/
+                                result->actual_calls[i] = umockcall_clone(umock_call_recorder->actual_calls[i]);
+                                if (result->actual_calls[i] == NULL)
+                                {
+                                    break;
+                                }
+                            }
+
+                            if (i < umock_call_recorder->actual_call_count)
+                            {
+                                size_t j;
+
+                                /* Codes_SRS_UMOCKCALLRECORDER_01_043: [ If cloning an actual call fails, umockcallrecorder_clone shall fail and return NULL. ]*/
+                                for (j = 0; j < i; j++)
+                                {
+                                    umockcall_destroy(result->actual_calls[j]);
+                                    result->actual_calls[j] = NULL;
+                                }
+
+                                umockcallrecorder_destroy(result);
+                                result = NULL;
+                                UMOCK_LOG("umockcallrecorder: clone call recorder failed - cannot clone all actual calls.");
+                            }
+                            else
+                            {
+                                result->actual_call_count = umock_call_recorder->actual_call_count;
+                            }
                         }
                     }
                 }
             }
+
+            /* Codes_SRS_UMOCKCALLRECORDER_01_083: [ If lock functions have been setup on `umock_call_recorder`, `umockcallrecorder_clone` shall call the unlock function of `umock_call_recorder` with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+            internal_unlock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ);
         }
     }
 
