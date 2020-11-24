@@ -95,29 +95,23 @@ all_ok:
 int umock_c_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context)
 {
     int result;
-    if (
-        /* Codes_SRS_UMOCK_C_01_035: [ If `umock_c_set_lock_functions` is called with a `NULL` lock_function and non-`NULL` unlock_function, `umock_c_set_lock_functions` shall fail and return a non-zero value. ]*/
-        ((lock_function == NULL) && (unlock_function != NULL)) ||
-        /* Codes_SRS_UMOCK_C_01_036: [ If `umock_c_set_lock_functions` is called with a non-`NULL` `lock_function` and a `NULL` `unlock_function`, `umock_c_set_lock_functions` shall fail and return a non-zero value. ]*/
-        ((lock_function != NULL) && (unlock_function == NULL))
-        )
+    if (umock_c_state != UMOCK_C_STATE_INITIALIZED)
     {
-        UMOCK_LOG("Invalid arguments: UMOCK_C_LOCK_FUNCTION lock_function=%p, UMOCK_C_UNLOCK_FUNCTION unlock_function=%p, void* context=%p",
-            lock_function, unlock_function, context);
+        /* Codes_SRS_UMOCK_C_01_037: [ If the module is not initialized, `umock_c_set_lock_functions` shall do nothing. ]*/
+        UMOCK_LOG("umock not initialized, state is %" PRI_MU_ENUM"", MU_ENUM_VALUE(UMOCK_C_STATE, umock_c_state));
         result = MU_FAILURE;
     }
     else
     {
-        if (umock_c_state != UMOCK_C_STATE_INITIALIZED)
+        /* Codes_SRS_UMOCK_C_01_040: [ `umock_c_set_lock_functions` shall call `umockcallrecorder_set_lock_functions` for the current call recorder, passing `lock_function`, `unlock_function` and `context`. ]*/
+        if (umockcallrecorder_set_lock_functions(umock_call_recorder, lock_function, unlock_function, context) != 0)
         {
-            /* Codes_SRS_UMOCK_C_01_037: [ If the module is not initialized, `umock_c_set_lock_functions` shall do nothing. ]*/
-            UMOCK_LOG("umock not initialized, state is %" PRI_MU_ENUM"", MU_ENUM_VALUE(UMOCK_C_STATE, umock_c_state));
+            /* Codes_SRS_UMOCK_C_01_041: [ If any error occurs, `umock_c_set_lock_functions` shall fail and return a non-zero value. ]*/
+            UMOCK_LOG("umockcallrecorder_set_lock_functions failed");
             result = MU_FAILURE;
         }
         else
         {
-            /* Codes_SRS_UMOCK_C_01_038: [ `umock_c_set_lock_functions` shall save `lock_function`, `unlock_function` and `context` for later use. ]*/
-
             /* Codes_SRS_UMOCK_C_01_039: [ On success `umock_c_set_lock_functions` shall return 0. ]*/
             result = 0;
         }
