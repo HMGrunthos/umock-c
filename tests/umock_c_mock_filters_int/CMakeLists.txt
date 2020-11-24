@@ -10,6 +10,7 @@ umock_c_mock_filters_int.c
 )
 
 set(${theseTestsName}_c_files
+../../src/umock_lock_functions.c
 ../../src/umock_c.c
 ../../src/umockalloc.c
 ../../src/umockstring.c

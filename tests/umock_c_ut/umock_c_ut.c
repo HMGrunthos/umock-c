@@ -126,21 +126,6 @@ typedef struct test_on_umock_c_error_CALL_TAG
     UMOCK_C_ERROR_CODE error_code;
 } test_on_umock_c_error_CALL;
 
-static int test_lock_function_result;
-static int test_unlock_function_result;
-
-typedef struct test_lock_function_CALL_TAG
-{
-    void* context;
-    UMOCK_C_LOCK_TYPE lock_type;
-} test_lock_function_CALL;
-
-typedef struct test_unlock_function_CALL_TAG
-{
-    void* context;
-    UMOCK_C_LOCK_TYPE lock_type;
-} test_unlock_function_CALL;
-
 typedef union TEST_MOCK_CALL_UNION_TAG
 {
     test_on_umock_c_error_CALL test_on_umock_c_error;
@@ -157,8 +142,6 @@ typedef union TEST_MOCK_CALL_UNION_TAG
     umocktypes_init_CALL umocktypes_init;
     umocktypes_deinit_CALL umocktypes_deinit;
     umocktypes_c_register_types_CALL umocktypes_c_register_types;
-    test_lock_function_CALL test_lock_function;
-    test_unlock_function_CALL test_unlock_function;
 } TEST_MOCK_CALL_UNION;
 
 #define TEST_MOCK_CALL_TYPE_VALUES \
@@ -175,16 +158,13 @@ typedef union TEST_MOCK_CALL_UNION_TAG
     TEST_MOCK_CALL_TYPE_umockcallrecorder_set_lock_functions, \
     TEST_MOCK_CALL_TYPE_umocktypes_init, \
     TEST_MOCK_CALL_TYPE_umocktypes_deinit, \
-    TEST_MOCK_CALL_TYPE_umocktypes_c_register_types, \
-    TEST_MOCK_CALL_TYPE_test_lock_function, \
-    TEST_MOCK_CALL_TYPE_test_unlock_function \
+    TEST_MOCK_CALL_TYPE_umocktypes_c_register_types \
 
 MU_DEFINE_ENUM(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
 MU_DEFINE_ENUM_STRINGS(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
 TEST_DEFINE_ENUM_TYPE(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
 
 TEST_DEFINE_ENUM_TYPE(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
-TEST_DEFINE_ENUM_TYPE(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_VALUES)
 
 typedef struct TEST_MOCK_CALL_TAG
 {
@@ -407,8 +387,6 @@ void reset_all_calls(void)
     umockcallrecorder_add_actual_call_result = 0;
     umockcallrecorder_clone_result = test_cloned_call_recorder;
     umockcallrecorder_set_lock_functions_result = 0;
-    test_lock_function_result = 0;
-    test_unlock_function_result = 0;
 }
 
 void* umockalloc_malloc(size_t size)

@@ -3,11 +3,15 @@
 
 #include <stddef.h>
 #include <string.h>
+
+#include "macro_utils/macro_utils.h"
+
+#include "umock_c/umock_lock_functions.h"
+#include "umock_c/umock_log.h"
+#include "umock_c/umockalloc.h"
 #include "umock_c/umockcallrecorder.h"
 #include "umock_c/umockcall.h"
 #include "umock_c/umocktypes.h"
-#include "umock_c/umockalloc.h"
-#include "umock_c/umock_log.h"
 
 typedef struct UMOCK_EXPECTED_CALL_TAG
 {
@@ -25,7 +29,58 @@ typedef struct UMOCKCALLRECORDER_TAG
     char* actual_calls_string;
     UMOCK_C_LOCK_FUNCTION lock_function;
     UMOCK_C_UNLOCK_FUNCTION unlock_function;
+    void* lock_context;
 } UMOCKCALLRECORDER;
+
+static int internal_lock_if_needed(UMOCKCALLRECORDER_HANDLE call_recorder)
+{
+    int result;
+
+    if (call_recorder->lock_function != NULL)
+    {
+        if (call_recorder->lock_function(call_recorder->lock_context, UMOCK_C_LOCK_TYPE_WRITE) != 0)
+        {
+            UMOCK_LOG("lock_function(%p, %" PRI_MU_ENUM ") failed",
+                call_recorder->lock_context, MU_ENUM_VALUE(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_WRITE));
+            result = MU_FAILURE;
+        }
+        else
+        {
+            result = 0;
+        }
+    }
+    else
+    {
+        result = 0;
+    }
+
+    return result;
+}
+
+static int internal_unlock_if_needed(UMOCKCALLRECORDER_HANDLE call_recorder)
+{
+    int result;
+
+    if (call_recorder->lock_function != NULL)
+    {
+        if (call_recorder->unlock_function(call_recorder->lock_context, UMOCK_C_LOCK_TYPE_WRITE) != 0)
+        {
+            UMOCK_LOG("unlock_function(%p, %" PRI_MU_ENUM ") failed",
+                call_recorder->lock_context, MU_ENUM_VALUE(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_WRITE));
+            result = MU_FAILURE;
+        }
+        else
+        {
+            result = 0;
+        }
+    }
+    else
+    {
+        result = 0;
+    }
+
+    return result;
+}
 
 UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void)
 {
@@ -116,35 +171,45 @@ int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_record
     }
     else
     {
-        /* Codes_SRS_UMOCKCALLRECORDER_01_005: [ umockcallrecorder_reset_all_calls shall free all the expected and actual calls for the call recorder identified by umock_call_recorder. ]*/
-        if (umock_call_recorder->expected_calls != NULL)
+        if (internal_lock_if_needed(umock_call_recorder) != 0)
         {
-            size_t i;
-            for (i = 0; i < umock_call_recorder->expected_call_count; i++)
-            {
-                umockcall_destroy(umock_call_recorder->expected_calls[i].umockcall);
-            }
-
-            umockalloc_free(umock_call_recorder->expected_calls);
-            umock_call_recorder->expected_calls = NULL;
+            UMOCK_LOG("lock failed");
+            result = __LINE__;
         }
-        umock_call_recorder->expected_call_count = 0;
-
-        if (umock_call_recorder->actual_calls != NULL)
+        else
         {
-            size_t i;
-            for (i = 0; i < umock_call_recorder->actual_call_count; i++)
+            /* Codes_SRS_UMOCKCALLRECORDER_01_005: [ umockcallrecorder_reset_all_calls shall free all the expected and actual calls for the call recorder identified by umock_call_recorder. ]*/
+            if (umock_call_recorder->expected_calls != NULL)
             {
-                umockcall_destroy(umock_call_recorder->actual_calls[i]);
+                size_t i;
+                for (i = 0; i < umock_call_recorder->expected_call_count; i++)
+                {
+                    umockcall_destroy(umock_call_recorder->expected_calls[i].umockcall);
+                }
+
+                umockalloc_free(umock_call_recorder->expected_calls);
+                umock_call_recorder->expected_calls = NULL;
             }
+            umock_call_recorder->expected_call_count = 0;
 
-            umockalloc_free(umock_call_recorder->actual_calls);
-            umock_call_recorder->actual_calls = NULL;
+            if (umock_call_recorder->actual_calls != NULL)
+            {
+                size_t i;
+                for (i = 0; i < umock_call_recorder->actual_call_count; i++)
+                {
+                    umockcall_destroy(umock_call_recorder->actual_calls[i]);
+                }
+
+                umockalloc_free(umock_call_recorder->actual_calls);
+                umock_call_recorder->actual_calls = NULL;
+            }
+            umock_call_recorder->actual_call_count = 0;
+
+            /* Codes_SRS_UMOCKCALLRECORDER_01_006: [ On success umockcallrecorder_reset_all_calls shall return 0. ]*/
+            result = 0;
+
+            internal_unlock_if_needed(umock_call_recorder);
         }
-        umock_call_recorder->actual_call_count = 0;
-
-        /* Codes_SRS_UMOCKCALLRECORDER_01_006: [ On success umockcallrecorder_reset_all_calls shall return 0. ]*/
-        result = 0;
     }
 
     return result;

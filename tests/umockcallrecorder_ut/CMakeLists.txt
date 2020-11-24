@@ -11,6 +11,7 @@ umockcallrecorder_ut.c
 
 set(${theseTestsName}_c_files
 umockcallrecorder_mocked.c
+../../src/
 )
 
 set(${theseTestsName}_h_files

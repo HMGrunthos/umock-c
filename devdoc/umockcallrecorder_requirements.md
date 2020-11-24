@@ -77,11 +77,15 @@ int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_record
 
 `umockcallrecorder_reset_all_calls` resets all the calls (expected and actual on the call recorder `umock_call_recorder`.
 
+**SRS_UMOCKCALLRECORDER_01_007: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_reset_all_calls` shall fail and return a non-zero value. **]**
+
+**SRS_UMOCKCALLRECORDER_01_065: [** If lock functions have been setup, `umockcallrecorder_reset_all_calls` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. **]**
+
 **SRS_UMOCKCALLRECORDER_01_005: [** `umockcallrecorder_reset_all_calls` shall free all the expected and actual calls for the call recorder identified by `umock_call_recorder`. **]**
 
-**SRS_UMOCKCALLRECORDER_01_006: [** On success `umockcallrecorder_reset_all_calls` shall return 0. **]**
+**SRS_UMOCKCALLRECORDER_01_066: [** If lock functions have been setup, `umockcallrecorder_reset_all_calls` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. **]**
 
-**SRS_UMOCKCALLRECORDER_01_007: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_reset_all_calls` shall fail and return a non-zero value. **]**
+**SRS_UMOCKCALLRECORDER_01_006: [** On success `umockcallrecorder_reset_all_calls` shall return 0. **]**
 
 ### umockcallrecorder_add_expected_call
 

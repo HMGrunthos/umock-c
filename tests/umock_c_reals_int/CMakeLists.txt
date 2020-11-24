@@ -11,6 +11,7 @@ umock_c_reals_int.c
 
 set(${theseTestsName}_c_files
 ../../src/umock_c.c
+../../src/umock_lock_functions.c
 ../../src/umockalloc.c
 ../../src/umockstring.c
 ../../src/umockautoignoreargs.c
