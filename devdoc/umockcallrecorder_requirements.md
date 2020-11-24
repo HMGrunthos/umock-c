@@ -97,13 +97,17 @@ int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_reco
 
 `umockcallrecorder_add_expected_call` adds an expected call to the calls tracked by the call recorder `umock_call_recorder`.
 
+**SRS_UMOCKCALLRECORDER_01_012: [** If any of the arguments is `NULL`, `umockcallrecorder_add_expected_call` shall fail and return a non-zero value. **]**
+
+If lock functions have been setup, `umockcallrecorder_add_expected_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`.
+
 **SRS_UMOCKCALLRECORDER_01_008: [** `umockcallrecorder_add_expected_call` shall add the mock_call call to the expected call list maintained by the call recorder identified by `umock_call_recorder`. **]**
+
+If lock functions have been setup, `umockcallrecorder_add_expected_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`.
 
 **SRS_UMOCKCALLRECORDER_01_009: [** On success `umockcallrecorder_add_expected_call` shall return 0. **]**
 
-**SRS_UMOCKCALLRECORDER_01_012: [** If any of the arguments is `NULL`, `umockcallrecorder_add_expected_call` shall fail and return a non-zero value. **]**
-
-**SRS_UMOCKCALLRECORDER_01_013: [** If allocating memory for the expected calls fails, `umockcallrecorder_add_expected_call` shall fail and return a non-zero value. **]**
+**SRS_UMOCKCALLRECORDER_01_013: [** If any error occurs, `umockcallrecorder_add_expected_call` shall fail and return a non-zero value. **]**
 
 ### umockcallrecorder_add_actual_call
 

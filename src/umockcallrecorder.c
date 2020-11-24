@@ -207,11 +207,11 @@ int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_record
             }
             umock_call_recorder->actual_call_count = 0;
 
-            /* Codes_SRS_UMOCKCALLRECORDER_01_006: [ On success umockcallrecorder_reset_all_calls shall return 0. ]*/
-            result = 0;
-
             /* Codes_SRS_UMOCKCALLRECORDER_01_066: [ If lock functions have been setup, `umockcallrecorder_reset_all_calls` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
             internal_unlock_if_needed(umock_call_recorder);
+
+            /* Codes_SRS_UMOCKCALLRECORDER_01_006: [ On success umockcallrecorder_reset_all_calls shall return 0. ]*/
+            result = 0;
         }
     }
 
@@ -232,22 +232,35 @@ int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_reco
     }
     else
     {
-        UMOCK_EXPECTED_CALL* new_expected_calls = (UMOCK_EXPECTED_CALL*)umockalloc_realloc(umock_call_recorder->expected_calls, sizeof(UMOCK_EXPECTED_CALL) * (umock_call_recorder->expected_call_count + 1));
-        if (new_expected_calls == NULL)
+        /* Codes_SRS_UMOCKCALLRECORDER_01_068: [ If lock functions have been setup, `umockcallrecorder_add_expected_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+        if (internal_lock_if_needed(umock_call_recorder) != 0)
         {
-            /* Codes_SRS_UMOCKCALLRECORDER_01_013: [ If allocating memory for the expected calls fails, umockcallrecorder_add_expected_call shall fail and return a non-zero value. ] */
-            UMOCK_LOG("umockcallrecorder: Cannot allocate memory in add expected call.");
+            /* Codes_SRS_UMOCKCALLRECORDER_01_067: [ If any error occurs, `umockcallrecorder_reset_all_calls` shall fail and return a non-zero value. ]*/
+            UMOCK_LOG("lock failed");
             result = __LINE__;
         }
         else
         {
-            /* Codes_SRS_UMOCKCALLRECORDER_01_008: [ umockcallrecorder_add_expected_call shall add the mock_call call to the expected call list maintained by the call recorder identified by umock_call_recorder. ]*/
-            umock_call_recorder->expected_calls = new_expected_calls;
-            umock_call_recorder->expected_calls[umock_call_recorder->expected_call_count].umockcall = mock_call;
-            umock_call_recorder->expected_calls[umock_call_recorder->expected_call_count++].is_matched = 0;
+            UMOCK_EXPECTED_CALL* new_expected_calls = (UMOCK_EXPECTED_CALL*)umockalloc_realloc(umock_call_recorder->expected_calls, sizeof(UMOCK_EXPECTED_CALL) * (umock_call_recorder->expected_call_count + 1));
+            if (new_expected_calls == NULL)
+            {
+                /* Codes_SRS_UMOCKCALLRECORDER_01_013: [ If any error occurs, `umockcallrecorder_add_expected_call` shall fail and return a non-zero value. ]*/
+                UMOCK_LOG("umockcallrecorder: Cannot allocate memory in add expected call.");
+                result = __LINE__;
+            }
+            else
+            {
+                /* Codes_SRS_UMOCKCALLRECORDER_01_008: [ umockcallrecorder_add_expected_call shall add the mock_call call to the expected call list maintained by the call recorder identified by umock_call_recorder. ]*/
+                umock_call_recorder->expected_calls = new_expected_calls;
+                umock_call_recorder->expected_calls[umock_call_recorder->expected_call_count].umockcall = mock_call;
+                umock_call_recorder->expected_calls[umock_call_recorder->expected_call_count++].is_matched = 0;
 
-            /* Codes_SRS_UMOCKCALLRECORDER_01_009: [ On success umockcallrecorder_add_expected_call shall return 0. ]*/
-            result = 0;
+                /* Codes_SRS_UMOCKCALLRECORDER_01_009: [ On success umockcallrecorder_add_expected_call shall return 0. ]*/
+                result = 0;
+            }
+
+            /* Codes_SRS_UMOCKCALLRECORDER_01_069: [ If lock functions have been setup, `umockcallrecorder_add_expected_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+            internal_unlock_if_needed(umock_call_recorder);
         }
     }
 
