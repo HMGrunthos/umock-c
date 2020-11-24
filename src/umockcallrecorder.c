@@ -23,6 +23,8 @@ typedef struct UMOCKCALLRECORDER_TAG
     UMOCKCALL_HANDLE* actual_calls;
     char* expected_calls_string;
     char* actual_calls_string;
+    UMOCK_C_LOCK_FUNCTION lock_function;
+    UMOCK_C_UNLOCK_FUNCTION unlock_function;
 } UMOCKCALLRECORDER;
 
 UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void)
@@ -31,8 +33,12 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void)
 
     /* Codes_SRS_UMOCKCALLRECORDER_01_001: [ umockcallrecorder_create shall create a new instance of a call recorder and return a non-NULL handle to it on success. ]*/
     result = (UMOCKCALLRECORDER_HANDLE)umockalloc_malloc(sizeof(UMOCKCALLRECORDER));
-    /* Codes_SRS_UMOCKCALLRECORDER_01_002: [ If allocating memory for the call recorder fails, umockcallrecorder_create shall return NULL. ]*/
-    if (result != NULL)
+    if (result == NULL)
+    {
+        /* Codes_SRS_UMOCKCALLRECORDER_01_002: [ If allocating memory for the call recorder fails, umockcallrecorder_create shall return NULL. ]*/
+        UMOCK_LOG("umockalloc_malloc(%zu) failed", sizeof(UMOCKCALLRECORDER));
+    }
+    else
     {
         result->expected_call_count = 0;
         result->expected_calls = NULL;
@@ -40,6 +46,8 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void)
         result->actual_call_count = 0;
         result->actual_calls = NULL;
         result->actual_calls_string = NULL;
+        result->lock_function = NULL;
+        result->unlock_function = NULL;
     }
 
     return result;
@@ -64,12 +72,36 @@ void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder)
     }
 }
 
-int umockcallrecorder_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context)
+int umockcallrecorder_set_lock_functions(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context)
 {
-    (void)lock_function;
-    (void)unlock_function;
-    (void)context;
-    return 0;
+    int result;
+
+    /* Codes_SRS_UMOCKCALLRECORDER_01_063: [ `context` may be `NULL`. ]*/
+
+    if (
+        /* Codes_SRS_UMOCKCALLRECORDER_01_064: [ If `umock_call_recorder` is `NULL`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+        (umock_call_recorder == NULL) ||
+        /* Codes_SRS_UMOCKCALLRECORDER_01_059: [ If `umockcallrecorder_set_lock_functions` is called with a `NULL` `lock_function` and non-`NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+        ((lock_function == NULL) && (unlock_function != NULL)) ||
+        /* Codes_SRS_UMOCKCALLRECORDER_01_060: [ If `umockcallrecorder_set_lock_functions` is called with a non-`NULL` `lock_function` and a `NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+        ((lock_function != NULL) && (unlock_function == NULL))
+        )
+    {
+        UMOCK_LOG("Invalid arguments: UMOCK_C_LOCK_FUNCTION lock_function=%p, UMOCK_C_UNLOCK_FUNCTION unlock_function=%p, void* context=%p",
+            lock_function, unlock_function, context);
+        result = MU_FAILURE;
+    }
+    else
+    {
+        /* Codes_SRS_UMOCKCALLRECORDER_01_061: [ `umockcallrecorder_set_lock_functions` shall save `lock_function`, `unlock_function` and `context` for later use. ]*/
+        umock_call_recorder->lock_function = lock_function;
+        umock_call_recorder->unlock_function = unlock_function;
+
+        /* Codes_SRS_UMOCKCALLRECORDER_01_062: [ On success `umockcallrecorder_set_lock_functions` shall return 0. ]*/
+        result = 0;
+    }
+
+    return result;
 }
 
 int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_recorder)

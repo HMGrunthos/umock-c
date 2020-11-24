@@ -12,7 +12,7 @@
 
     UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void);
     void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
-    int umockcallrecorder_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);
+    int umockcallrecorder_set_lock_functions(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);
     int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
     int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCKCALL_HANDLE mock_call);
     int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCKCALL_HANDLE mock_call, UMOCKCALL_HANDLE* matched_call);
@@ -52,16 +52,20 @@ void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
 ### umockcallrecorder_set_lock_functions
 
 ```c
-int umockcallrecorder_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);
+int umockcallrecorder_set_lock_functions(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context)
 ```
 
 `umockcallrecorder_set_lock_functions` sets up the lock and unlock functions to be used for accessing the expected and actual calls.
+
+**SRS_UMOCKCALLRECORDER_01_064: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. **]**
 
 **SRS_UMOCKCALLRECORDER_01_059: [** If `umockcallrecorder_set_lock_functions` is called with a `NULL` `lock_function` and non-`NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. **]**
 
 **SRS_UMOCKCALLRECORDER_01_060: [** If `umockcallrecorder_set_lock_functions` is called with a non-`NULL` `lock_function` and a `NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. **]**
 
 **SRS_UMOCKCALLRECORDER_01_061: [** `umockcallrecorder_set_lock_functions` shall save `lock_function`, `unlock_function` and `context` for later use. **]**
+
+**SRS_UMOCKCALLRECORDER_01_063: [** `context` may be `NULL`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_062: [** On success `umockcallrecorder_set_lock_functions` shall return 0. **]**
 

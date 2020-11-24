@@ -382,6 +382,20 @@ static void reset_all_calls(void)
     mocked_call_count = 0;
 }
 
+static int test_lock_function(void* context, UMOCK_C_LOCK_TYPE lock_type)
+{
+    (void)context;
+    (void)lock_type;
+    return 0;
+}
+
+static int test_unlock_function(void* context, UMOCK_C_LOCK_TYPE lock_type)
+{
+    (void)context;
+    (void)lock_type;
+    return 0;
+}
+
 static TEST_MUTEX_HANDLE test_mutex;
 static TEST_MUTEX_HANDLE global_mutex;
 
@@ -501,6 +515,107 @@ TEST_FUNCTION(umockcallrecorder_destroy_with_one_expected_call_frees_the_call_re
     ASSERT_ARE_EQUAL(void_ptr, (void*)test_actual_umockcall_1, mocked_calls[3].u.umockcall_destroy.umockcall);
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_free, mocked_calls[4].call_type);
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_free, mocked_calls[5].call_type);
+}
+
+/* umockcallrecorder_set_lock_functions */
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_064: [ If `umock_call_recorder` is `NULL`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_NULL_umock_call_recorder_fails)
+{
+    // arrange
+
+    // act
+    int result = umockcallrecorder_set_lock_functions(NULL, test_lock_function, test_unlock_function, (void*)0x4242);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+}
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_059: [ If `umockcallrecorder_set_lock_functions` is called with a `NULL` `lock_function` and non-`NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_NULL_lock_function_and_non_NULL_unlock_function_fails)
+{
+    // arrange
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create();
+    reset_all_calls();
+
+    // act
+    int result = umockcallrecorder_set_lock_functions(call_recorder, NULL, test_unlock_function, (void*)0x4242);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
+}
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_060: [ If `umockcallrecorder_set_lock_functions` is called with a non-`NULL` `lock_function` and a `NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. ]*/
+TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_non_NULL_lock_function_and_NULL_unlock_function_fails)
+{
+    // arrange
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create();
+    reset_all_calls();
+
+    // act
+    int result = umockcallrecorder_set_lock_functions(call_recorder, test_lock_function, NULL, (void*)0x4242);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
+}
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_061: [ `umockcallrecorder_set_lock_functions` shall save `lock_function`, `unlock_function` and `context` for later use. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_062: [ On success `umockcallrecorder_set_lock_functions` shall return 0. ]*/
+TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_non_NULL_lock_function_and_non_NULL_unlock_function_succeeds)
+{
+    // arrange
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create();
+    reset_all_calls();
+
+    // act
+    int result = umockcallrecorder_set_lock_functions(call_recorder, test_lock_function, test_unlock_function, (void*)0x4242);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
+}
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_061: [ `umockcallrecorder_set_lock_functions` shall save `lock_function`, `unlock_function` and `context` for later use. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_062: [ On success `umockcallrecorder_set_lock_functions` shall return 0. ]*/
+TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_NULL_lock_function_and_NULL_unlock_function_succeeds)
+{
+    // arrange
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create();
+    reset_all_calls();
+
+    // act
+    int result = umockcallrecorder_set_lock_functions(call_recorder, test_lock_function, test_unlock_function, (void*)0x4242);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
+}
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_063: [ `context` may be `NULL`. ]*/
+TEST_FUNCTION(umockcallrecorder_set_lock_functions_with_non_NULL_lock_function_and_non_NULL_unlock_function_and_NULL_context_succeeds)
+{
+    // arrange
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create();
+    reset_all_calls();
+
+    // act
+    int result = umockcallrecorder_set_lock_functions(call_recorder, test_lock_function, test_unlock_function, NULL);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
 }
 
 /* umockcallrecorder_reset_all_calls */
