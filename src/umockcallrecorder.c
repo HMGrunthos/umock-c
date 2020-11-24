@@ -52,8 +52,14 @@ void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder)
     {
         /* Codes_SRS_UMOCKCALLRECORDER_01_003: [ umockcallrecorder_destroy shall free the resources associated with a the call recorder identified by the umock_call_recorder argument. ]*/
         (void)umockcallrecorder_reset_all_calls(umock_call_recorder);
-        umockalloc_free(umock_call_recorder->actual_calls_string);
-        umockalloc_free(umock_call_recorder->expected_calls_string);
+        if (umock_call_recorder->actual_calls_string != NULL)
+        {
+            umockalloc_free(umock_call_recorder->actual_calls_string);
+        }
+        if (umock_call_recorder->expected_calls_string != NULL)
+        {
+            umockalloc_free(umock_call_recorder->expected_calls_string);
+        }
         umockalloc_free(umock_call_recorder);
     }
 }
