@@ -58,6 +58,14 @@ void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder)
     }
 }
 
+int umockcallrecorder_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context)
+{
+    (void)lock_function;
+    (void)unlock_function;
+    (void)context;
+    return 0;
+}
+
 int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_recorder)
 {
     int result;

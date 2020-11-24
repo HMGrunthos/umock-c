@@ -98,7 +98,7 @@ int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error);
 int umock_c_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);
 ```
 
-`umock_c_set_lock_functions` sets up the lock and unlock functions to be used doe accessing the expected and actual calls.
+`umock_c_set_lock_functions` sets up the lock and unlock functions to be used for accessing the expected and actual calls.
 
 **SRS_UMOCK_C_01_035: [** If `umock_c_set_lock_functions` is called with a `NULL` `lock_function` and non-`NULL` `unlock_function`, `umock_c_set_lock_functions` shall fail and return a non-zero value. **]**
 
