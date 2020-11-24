@@ -287,93 +287,106 @@ int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_record
 
         *matched_call = NULL;
 
-        /* Codes_SRS_UMOCKCALLRECORDER_01_014: [ umockcallrecorder_add_actual_call shall check whether the call mock_call matches any of the expected calls maintained by umock_call_recorder. ]*/
-        /* Codes_SRS_UMOCK_C_LIB_01_115: [ umock_c shall compare calls in order. ]*/
-        for (i = 0; i < umock_call_recorder->expected_call_count; i++)
+        /* Codes_SRS_UMOCKCALLRECORDER_01_071: [ If lock functions have been setup, `umockcallrecorder_add_actual_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+        if (internal_lock_if_needed(umock_call_recorder) != 0)
         {
-            int ignore_all_calls = umockcall_get_ignore_all_calls(umock_call_recorder->expected_calls[i].umockcall);
-            if (ignore_all_calls < 0)
-            {
-                /* Codes_SRS_UMOCKCALLRECORDER_01_058: [ If getting ignore_all_calls by calling umockcall_get_ignore_all_calls fails, umockcallrecorder_add_actual_call shall fail and return a non-zero value. ]*/
-                UMOCK_LOG("umockcallrecorder: Cannot get the ignore_all_calls flag.");
-                is_error = 1;
-                break;
-            }
-            else
-            {
-                if ((umock_call_recorder->expected_calls[i].is_matched == 0) ||
-                    /* Codes_SRS_UMOCKCALLRECORDER_01_057: [ If any expected call has ignore_all_calls set and the actual call is equal to it when comparing the 2 calls, then the call shall be considered matched and not added to the actual calls list. ]*/
-                    (ignore_all_calls > 0))
-                {
-                    /* Codes_SRS_UMOCKCALLRECORDER_01_017: [ Comparing the calls shall be done by calling umockcall_are_equal. ]*/
-                    int are_equal_result = umockcall_are_equal(umock_call_recorder->expected_calls[i].umockcall, mock_call);
-                    if (are_equal_result == 1)
-                    {
-                        /* Codes_SRS_UMOCKCALLRECORDER_01_016: [ If the call matches one of the expected calls, a handle to the matched call shall be filled into the matched_call argument. ]*/
-                        *matched_call = umock_call_recorder->expected_calls[i].umockcall;
-                        break;
-                    }
-                    /* Codes_SRS_UMOCKCALLRECORDER_01_021: [ If umockcall_are_equal fails, umockcallrecorder_add_actual_call shall fail and return a non-zero value. ]*/
-                    else if (are_equal_result != 0)
-                    {
-                        is_error = 1;
-                        break;
-                    }
-                    else
-                    {
-                        if (ignore_all_calls == 0)
-                        {
-                            i = umock_call_recorder->expected_call_count;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        if ((umock_call_recorder->actual_call_count == 0) && (i < umock_call_recorder->expected_call_count))
-        {
-            umock_call_recorder->expected_calls[i].is_matched = 1;
-        }
-        else
-        {
-            i = umock_call_recorder->expected_call_count;
-        }
-
-        if (is_error)
-        {
-            UMOCK_LOG("umockcallrecorder: Error in finding a matched call.");
+            /* Codes_SRS_UMOCKCALLRECORDER_01_072: [ If the lock function fails, `umockcallrecorder_add_actual_call` shall fail and return a non-zero value. ]*/
+            UMOCK_LOG("lock failed");
             result = __LINE__;
         }
         else
         {
-            if (i == umock_call_recorder->expected_call_count)
+            /* Codes_SRS_UMOCKCALLRECORDER_01_014: [ umockcallrecorder_add_actual_call shall check whether the call mock_call matches any of the expected calls maintained by umock_call_recorder. ]*/
+            /* Codes_SRS_UMOCK_C_LIB_01_115: [ umock_c shall compare calls in order. ]*/
+            for (i = 0; i < umock_call_recorder->expected_call_count; i++)
             {
-                /* Codes_SRS_UMOCKCALLRECORDER_01_015: [ If the call does not match any of the expected calls, then umockcallrecorder_add_actual_call shall add the mock_call call to the actual call list maintained by umock_call_recorder. ]*/
-                /* an unexpected call */
-                UMOCKCALL_HANDLE* new_actual_calls = (UMOCKCALL_HANDLE*)umockalloc_realloc(umock_call_recorder->actual_calls, sizeof(UMOCKCALL_HANDLE) * (umock_call_recorder->actual_call_count + 1));
-                if (new_actual_calls == NULL)
+                int ignore_all_calls = umockcall_get_ignore_all_calls(umock_call_recorder->expected_calls[i].umockcall);
+                if (ignore_all_calls < 0)
                 {
-                    /* Codes_SRS_UMOCKCALLRECORDER_01_020: [ If allocating memory for the actual calls fails, umockcallrecorder_add_actual_call shall fail and return a non-zero value. ]*/
-                    UMOCK_LOG("umockcallrecorder: Cannot allocate memory for actual calls.");
-                    result = __LINE__;
+                    /* Codes_SRS_UMOCKCALLRECORDER_01_058: [ If getting ignore_all_calls by calling umockcall_get_ignore_all_calls fails, umockcallrecorder_add_actual_call shall fail and return a non-zero value. ]*/
+                    UMOCK_LOG("umockcallrecorder: Cannot get the ignore_all_calls flag.");
+                    is_error = 1;
+                    break;
                 }
                 else
                 {
-                    umock_call_recorder->actual_calls = new_actual_calls;
-                    umock_call_recorder->actual_calls[umock_call_recorder->actual_call_count++] = mock_call;
+                    if ((umock_call_recorder->expected_calls[i].is_matched == 0) ||
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_057: [ If any expected call has ignore_all_calls set and the actual call is equal to it when comparing the 2 calls, then the call shall be considered matched and not added to the actual calls list. ]*/
+                        (ignore_all_calls > 0))
+                    {
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_017: [ Comparing the calls shall be done by calling umockcall_are_equal. ]*/
+                        int are_equal_result = umockcall_are_equal(umock_call_recorder->expected_calls[i].umockcall, mock_call);
+                        if (are_equal_result == 1)
+                        {
+                            /* Codes_SRS_UMOCKCALLRECORDER_01_016: [ If the call matches one of the expected calls, a handle to the matched call shall be filled into the matched_call argument. ]*/
+                            *matched_call = umock_call_recorder->expected_calls[i].umockcall;
+                            break;
+                        }
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_021: [ If umockcall_are_equal fails, umockcallrecorder_add_actual_call shall fail and return a non-zero value. ]*/
+                        else if (are_equal_result != 0)
+                        {
+                            is_error = 1;
+                            break;
+                        }
+                        else
+                        {
+                            if (ignore_all_calls == 0)
+                            {
+                                i = umock_call_recorder->expected_call_count;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ((umock_call_recorder->actual_call_count == 0) && (i < umock_call_recorder->expected_call_count))
+            {
+                umock_call_recorder->expected_calls[i].is_matched = 1;
+            }
+            else
+            {
+                i = umock_call_recorder->expected_call_count;
+            }
+
+            if (is_error)
+            {
+                UMOCK_LOG("umockcallrecorder: Error in finding a matched call.");
+                result = __LINE__;
+            }
+            else
+            {
+                if (i == umock_call_recorder->expected_call_count)
+                {
+                    /* Codes_SRS_UMOCKCALLRECORDER_01_015: [ If the call does not match any of the expected calls, then umockcallrecorder_add_actual_call shall add the mock_call call to the actual call list maintained by umock_call_recorder. ]*/
+                    /* an unexpected call */
+                    UMOCKCALL_HANDLE* new_actual_calls = (UMOCKCALL_HANDLE*)umockalloc_realloc(umock_call_recorder->actual_calls, sizeof(UMOCKCALL_HANDLE) * (umock_call_recorder->actual_call_count + 1));
+                    if (new_actual_calls == NULL)
+                    {
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_020: [ If allocating memory for the actual calls fails, umockcallrecorder_add_actual_call shall fail and return a non-zero value. ]*/
+                        UMOCK_LOG("umockcallrecorder: Cannot allocate memory for actual calls.");
+                        result = __LINE__;
+                    }
+                    else
+                    {
+                        umock_call_recorder->actual_calls = new_actual_calls;
+                        umock_call_recorder->actual_calls[umock_call_recorder->actual_call_count++] = mock_call;
+
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_018: [ When no error is encountered, umockcallrecorder_add_actual_call shall return 0. ]*/
+                        result = 0;
+                    }
+                }
+                else
+                {
+                    umockcall_destroy(mock_call);
 
                     /* Codes_SRS_UMOCKCALLRECORDER_01_018: [ When no error is encountered, umockcallrecorder_add_actual_call shall return 0. ]*/
                     result = 0;
                 }
             }
-            else
-            {
-                umockcall_destroy(mock_call);
 
-                /* Codes_SRS_UMOCKCALLRECORDER_01_018: [ When no error is encountered, umockcallrecorder_add_actual_call shall return 0. ]*/
-                result = 0;
-            }
+            /* Codes_SRS_UMOCKCALLRECORDER_01_070: [ If lock functions have been setup, `umockcallrecorder_add_actual_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+            internal_unlock_if_needed(umock_call_recorder);
         }
     }
 

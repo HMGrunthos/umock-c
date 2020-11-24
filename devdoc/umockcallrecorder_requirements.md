@@ -99,11 +99,11 @@ int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_reco
 
 **SRS_UMOCKCALLRECORDER_01_012: [** If any of the arguments is `NULL`, `umockcallrecorder_add_expected_call` shall fail and return a non-zero value. **]**
 
-If lock functions have been setup, `umockcallrecorder_add_expected_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`.
+**SRS_UMOCKCALLRECORDER_01_068: [** If lock functions have been setup, `umockcallrecorder_add_expected_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_008: [** `umockcallrecorder_add_expected_call` shall add the mock_call call to the expected call list maintained by the call recorder identified by `umock_call_recorder`. **]**
 
-If lock functions have been setup, `umockcallrecorder_add_expected_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`.
+**SRS_UMOCKCALLRECORDER_01_069: [** If lock functions have been setup, `umockcallrecorder_add_expected_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_009: [** On success `umockcallrecorder_add_expected_call` shall return 0. **]**
 
@@ -116,6 +116,10 @@ int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_record
 ```
 
 `umockcallrecorder_add_actual_call` adds an actual call to the calls tracked by the call recorder `umock_call_recorder`.
+
+**SRS_UMOCKCALLRECORDER_01_071: [** If lock functions have been setup, `umockcallrecorder_add_actual_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_072: [** If the lock function fails, `umockcallrecorder_add_actual_call` shall fail and return a non-zero value. **]**
 
 **SRS_UMOCKCALLRECORDER_01_014: [** `umockcallrecorder_add_actual_call` shall check whether the call mock_call matches any of the expected calls maintained by `umock_call_recorder`. **]**
 
@@ -136,6 +140,8 @@ int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_record
 **SRS_UMOCKCALLRECORDER_01_057: [** If any expected call has `ignore_all_calls` set and the actual call is equal to it when comparing the 2 calls, then the call shall be considered matched and not added to the actual calls list. **]**
 
 **SRS_UMOCKCALLRECORDER_01_058: [** If getting `ignore_all_calls` by calling `umockcall_get_ignore_all_calls` fails, `umockcallrecorder_add_actual_call` shall fail and return a non-zero value. **]**
+
+**SRS_UMOCKCALLRECORDER_01_070: [** If lock functions have been setup, `umockcallrecorder_add_actual_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. **]**
 
 ### umockcallrecorder_get_actual_calls
 
