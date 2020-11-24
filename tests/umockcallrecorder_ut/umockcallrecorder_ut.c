@@ -2465,7 +2465,6 @@ TEST_FUNCTION(umockcallrecorder_clone_copies_the_lock_functions)
     umockcallrecorder_destroy(cloned_call_recorder);
 }
 
-#if 0
 /* umockcallrecorder_get_expected_call_count */
 
 /* Tests_SRS_UMOCKCALLRECORDER_01_044: [ umockcallrecorder_get_expected_call_count shall return in the expected_call_count argument the number of expected calls associated with the call recorder. ]*/
@@ -2534,6 +2533,57 @@ TEST_FUNCTION(umockcallrecorder_get_expected_call_with_NULL_expected_call_count_
 
     // assert
     ASSERT_ARE_NOT_EQUAL(int, 0, result);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
+}
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_086: [ If lock functions have been setup, `umockcallrecorder_get_expected_call_count` shall call the lock function with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_087: [ If lock functions have been setup, `umockcallrecorder_get_expected_call_count` shall call the unlock function with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+TEST_FUNCTION(umockcallrecorder_get_expected_call_count_with_lock_functions_setup_locks_and_unlocks)
+{
+    // arrange
+    int result;
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create();
+    size_t expected_call_count;
+    ASSERT_ARE_EQUAL(int, 0, umockcallrecorder_set_lock_functions(call_recorder, test_lock_function, test_unlock_function, (void*)0x4242));
+    reset_all_calls();
+
+    // act
+    result = umockcallrecorder_get_expected_call_count(call_recorder, &expected_call_count);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(size_t, 0, expected_call_count);
+    ASSERT_ARE_EQUAL(size_t, 2, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_function, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_READ, mocked_calls[0].u.test_lock_function.lock_type);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_unlock_function, mocked_calls[1].call_type);
+    ASSERT_ARE_EQUAL(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_READ, mocked_calls[1].u.test_unlock_function.lock_type);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
+}
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_088: [ If any error occurs, `umockcallrecorder_get_expected_call_count` shall fail and return -1. ]*/
+TEST_FUNCTION(when_locking_fails_umockcallrecorder_get_expected_call_count_also_fails)
+{
+    // arrange
+    int result;
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create();
+    size_t expected_call_count;
+    ASSERT_ARE_EQUAL(int, 0, umockcallrecorder_set_lock_functions(call_recorder, test_lock_function, test_unlock_function, (void*)0x4242));
+    reset_all_calls();
+    test_lock_function_result = MU_FAILURE;
+
+    // act
+    result = umockcallrecorder_get_expected_call_count(call_recorder, &expected_call_count);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(size_t, 1, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_function, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_READ, mocked_calls[0].u.test_lock_function.lock_type);
 
     // cleanup
     umockcallrecorder_destroy(call_recorder);
@@ -2686,6 +2736,59 @@ TEST_FUNCTION(when_umockcall_set_fail_call_fails_then_umockcallrecorder_fail_cal
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcall_set_fail_call, mocked_calls[0].call_type);
     ASSERT_ARE_EQUAL(void_ptr, test_expected_umockcall_1, mocked_calls[0].u.umockcall_set_fail_call.umockcall);
     ASSERT_ARE_EQUAL(int, 1, mocked_calls[0].u.umockcall_set_fail_call.fail_call);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
+}
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_089: [ If lock functions have been setup, `umockcallrecorder_fail_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_090: [ If lock functions have been setup, `umockcallrecorder_fail_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+TEST_FUNCTION(umockcallrecorder_fail_call_with_lock_functions_set_locks_and_unlocks)
+{
+    // arrange
+    int result;
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create();
+    ASSERT_ARE_EQUAL(int, 0, umockcallrecorder_add_expected_call(call_recorder, test_expected_umockcall_1));
+    ASSERT_ARE_EQUAL(int, 0, umockcallrecorder_set_lock_functions(call_recorder, test_lock_function, test_unlock_function, (void*)0x4242));
+    reset_all_calls();
+
+    // act
+    result = umockcallrecorder_fail_call(call_recorder, 0);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(size_t, 3, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_function, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_WRITE, mocked_calls[0].u.test_lock_function.lock_type);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcall_set_fail_call, mocked_calls[1].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, test_expected_umockcall_1, mocked_calls[1].u.umockcall_set_fail_call.umockcall);
+    ASSERT_ARE_EQUAL(int, 1, mocked_calls[1].u.umockcall_set_fail_call.fail_call);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_unlock_function, mocked_calls[2].call_type);
+    ASSERT_ARE_EQUAL(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_WRITE, mocked_calls[2].u.test_unlock_function.lock_type);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
+}
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_091: [ If locking fails, `umockcallrecorder_fail_call` shall fail and return a non-zero value. ]*/
+TEST_FUNCTION(when_locking_fails_umockcallrecorder_fail_call_also_fails)
+{
+    // arrange
+    int result;
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create();
+    ASSERT_ARE_EQUAL(int, 0, umockcallrecorder_add_expected_call(call_recorder, test_expected_umockcall_1));
+    ASSERT_ARE_EQUAL(int, 0, umockcallrecorder_set_lock_functions(call_recorder, test_lock_function, test_unlock_function, (void*)0x4242));
+    reset_all_calls();
+    test_lock_function_result = MU_FAILURE;
+
+    // act
+    result = umockcallrecorder_fail_call(call_recorder, 0);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(size_t, 1, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_function, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_WRITE, mocked_calls[0].u.test_lock_function.lock_type);
 
     // cleanup
     umockcallrecorder_destroy(call_recorder);
@@ -2855,6 +2958,61 @@ TEST_FUNCTION(umockcallrecorder_can_call_fail_when_umockcall_fails)
     // cleanup
     umockcallrecorder_destroy(call_recorder);
 }
-#endif
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_092: [ If lock functions have been setup, `umockcallrecorder_can_call_fail` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_094: [ If lock functions have been setup, `umockcallrecorder_can_call_fail` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+TEST_FUNCTION(umockcallrecorder_can_call_fail_with_lock_functions_setup_locks_and_unlocks)
+{
+    // arrange
+    int result;
+    int can_call_fail;
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create();
+    ASSERT_ARE_EQUAL(int, 0, umockcallrecorder_add_expected_call(call_recorder, test_expected_umockcall_1));
+    ASSERT_ARE_EQUAL(int, 0, umockcallrecorder_set_lock_functions(call_recorder, test_lock_function, test_unlock_function, (void*)0x4242));
+    reset_all_calls();
+    umockcall_get_call_can_fail_result = 0;
+
+    // act
+    result = umockcallrecorder_can_call_fail(call_recorder, 0, &can_call_fail);
+
+    // assert
+    ASSERT_ARE_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(int, 0, can_call_fail);
+    ASSERT_ARE_EQUAL(size_t, 3, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_function, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_READ, mocked_calls[0].u.test_lock_function.lock_type);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcall_get_call_can_fail, mocked_calls[1].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, test_expected_umockcall_1, mocked_calls[1].u.umockcall_get_call_can_fail.umockcall);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_unlock_function, mocked_calls[2].call_type);
+    ASSERT_ARE_EQUAL(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_READ, mocked_calls[2].u.test_unlock_function.lock_type);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
+}
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_093: [ If locking fails, `umockcallrecorder_can_call_fail` shall fail and return a non-zero value. ]*/
+TEST_FUNCTION(when_locking_fails_umockcallrecorder_can_call_fail_also_fails)
+{
+    // arrange
+    int result;
+    int can_call_fail;
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create();
+    ASSERT_ARE_EQUAL(int, 0, umockcallrecorder_add_expected_call(call_recorder, test_expected_umockcall_1));
+    ASSERT_ARE_EQUAL(int, 0, umockcallrecorder_set_lock_functions(call_recorder, test_lock_function, test_unlock_function, (void*)0x4242));
+    reset_all_calls();
+    test_lock_function_result = MU_FAILURE;
+
+    // act
+    result = umockcallrecorder_can_call_fail(call_recorder, 0, &can_call_fail);
+
+    // assert
+    ASSERT_ARE_NOT_EQUAL(int, 0, result);
+    ASSERT_ARE_EQUAL(size_t, 1, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_function, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_READ, mocked_calls[0].u.test_lock_function.lock_type);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
+}
 
 END_TEST_SUITE(umockcallrecorder_unittests)

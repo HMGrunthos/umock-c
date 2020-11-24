@@ -779,10 +779,23 @@ int umockcallrecorder_get_expected_call_count(UMOCKCALLRECORDER_HANDLE umock_cal
     }
     else
     {
-        /* Codes_SRS_UMOCKCALLRECORDER_01_044: [ umockcallrecorder_get_expected_call_count shall return in the expected_call_count argument the number of expected calls associated with the call recorder. ]*/
-        *expected_call_count = umock_call_recorder->expected_call_count;
-        /* Codes_SRS_UMOCKCALLRECORDER_01_045: [ On success umockcallrecorder_get_expected_call_count shall return 0. ]*/
-        result = 0;
+        /* Codes_SRS_UMOCKCALLRECORDER_01_086: [ If lock functions have been setup, `umockcallrecorder_get_expected_call_count` shall call the lock function with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+        if (internal_lock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ) != 0)
+        {
+            /* Codes_SRS_UMOCKCALLRECORDER_01_088: [ If any error occurs, `umockcallrecorder_get_expected_call_count` shall fail and return -1. ]*/
+            UMOCK_LOG("lock failed");
+            result = MU_FAILURE;
+        }
+        else
+        {
+            /* Codes_SRS_UMOCKCALLRECORDER_01_044: [ umockcallrecorder_get_expected_call_count shall return in the expected_call_count argument the number of expected calls associated with the call recorder. ]*/
+            *expected_call_count = umock_call_recorder->expected_call_count;
+            /* Codes_SRS_UMOCKCALLRECORDER_01_045: [ On success umockcallrecorder_get_expected_call_count shall return 0. ]*/
+            result = 0;
+
+            /* Codes_SRS_UMOCKCALLRECORDER_01_087: [ If lock functions have been setup, `umockcallrecorder_get_expected_call_count` shall call the unlock function with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+            internal_unlock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ);
+        }
     }
 
     return result;
@@ -803,17 +816,30 @@ int umockcallrecorder_fail_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, si
     }
     else
     {
-        /* Codes_SRS_UMOCKCALLRECORDER_01_047: [ umockcallrecorder_fail_call shall mark an expected call as to be failed by calling umockcall_set_fail_call with a 1 value for fail_call. ]*/
-        if (umockcall_set_fail_call(umock_call_recorder->expected_calls[index].umockcall, 1) != 0)
+        /* Codes_SRS_UMOCKCALLRECORDER_01_089: [ If lock functions have been setup, `umockcallrecorder_fail_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+        if (internal_lock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_WRITE) != 0)
         {
-            /* Codes_SRS_UMOCKCALLRECORDER_01_051: [ If umockcall_set_fail_call fails, umockcallrecorder_fail_call shall return a non-zero value. ]*/
+            /* Codes_SRS_UMOCKCALLRECORDER_01_091: [ If locking fails, `umockcallrecorder_fail_call` shall fail and return a non-zero value. ]*/
+            UMOCK_LOG("lock failed");
             result = MU_FAILURE;
-            UMOCK_LOG("umockcallrecorder_fail_call: umockcall_set_fail_call failed.");
         }
         else
         {
-            /* Codes_SRS_UMOCKCALLRECORDER_01_048: [ On success, umockcallrecorder_fail_call shall return 0. ]*/
-            result = 0;
+            /* Codes_SRS_UMOCKCALLRECORDER_01_047: [ umockcallrecorder_fail_call shall mark an expected call as to be failed by calling umockcall_set_fail_call with a 1 value for fail_call. ]*/
+            if (umockcall_set_fail_call(umock_call_recorder->expected_calls[index].umockcall, 1) != 0)
+            {
+                /* Codes_SRS_UMOCKCALLRECORDER_01_051: [ If umockcall_set_fail_call fails, umockcallrecorder_fail_call shall return a non-zero value. ]*/
+                result = MU_FAILURE;
+                UMOCK_LOG("umockcallrecorder_fail_call: umockcall_set_fail_call failed.");
+            }
+            else
+            {
+                /* Codes_SRS_UMOCKCALLRECORDER_01_048: [ On success, umockcallrecorder_fail_call shall return 0. ]*/
+                result = 0;
+            }
+
+            /* Codes_SRS_UMOCKCALLRECORDER_01_090: [ If lock functions have been setup, `umockcallrecorder_fail_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+            internal_unlock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_WRITE);
         }
     }
 
@@ -836,20 +862,33 @@ int umockcallrecorder_can_call_fail(UMOCKCALLRECORDER_HANDLE umock_call_recorder
     }
     else
     {
-        /* Codes_SRS_UMOCKCALLRECORDER_31_061: [ umockcallrecorder_can_call_fail shall determine whether given call can fail or not by calling umockcall_get_call_can_fail. ]*/
-        int can_call_fail_result = umockcall_get_call_can_fail(umock_call_recorder->expected_calls[index].umockcall);
-        if (can_call_fail_result == -1)
+        /* Codes_SRS_UMOCKCALLRECORDER_01_092: [ If lock functions have been setup, `umockcallrecorder_can_call_fail` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+        if (internal_lock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ) != 0)
         {
-            /* Codes_SRS_UMOCKCALLRECORDER_31_058: [ If umockcall_get_call_can_fail returns -1, umockcallrecorder_can_call_fail shall return an error to the caller  ]*/
+            /* Codes_SRS_UMOCKCALLRECORDER_01_093: [ If locking fails, `umockcallrecorder_can_call_fail` shall fail and return a non-zero value. ]*/
+            UMOCK_LOG("lock failed");
             result = MU_FAILURE;
-            UMOCK_LOG("umockcallrecorder_fail_call: umockcall_set_fail_call failed.");
         }
         else
         {
-            /* Codes_SRS_UMOCKCALLRECORDER_31_059: [ umockcallrecorder_can_call_fail shall return in the can_call_fail argument whether the call can fail or not. ]*/
-            *can_call_fail = can_call_fail_result;
-            /* Codes_SRS_UMOCKCALLRECORDER_31_060: [ On success umockcallrecorder_can_call_fail shall return 0. ]*/
-            result = 0;
+            /* Codes_SRS_UMOCKCALLRECORDER_31_061: [ umockcallrecorder_can_call_fail shall determine whether given call can fail or not by calling umockcall_get_call_can_fail. ]*/
+            int can_call_fail_result = umockcall_get_call_can_fail(umock_call_recorder->expected_calls[index].umockcall);
+            if (can_call_fail_result == -1)
+            {
+                /* Codes_SRS_UMOCKCALLRECORDER_31_058: [ If umockcall_get_call_can_fail returns -1, umockcallrecorder_can_call_fail shall return an error to the caller  ]*/
+                result = MU_FAILURE;
+                UMOCK_LOG("umockcallrecorder_fail_call: umockcall_set_fail_call failed.");
+            }
+            else
+            {
+                /* Codes_SRS_UMOCKCALLRECORDER_31_059: [ umockcallrecorder_can_call_fail shall return in the can_call_fail argument whether the call can fail or not. ]*/
+                *can_call_fail = can_call_fail_result;
+                /* Codes_SRS_UMOCKCALLRECORDER_31_060: [ On success umockcallrecorder_can_call_fail shall return 0. ]*/
+                result = 0;
+            }
+
+            /* Codes_SRS_UMOCKCALLRECORDER_01_094: [ If lock functions have been setup, `umockcallrecorder_can_call_fail` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
+            internal_unlock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ);
         }
     }
 

@@ -263,11 +263,17 @@ int umockcallrecorder_get_expected_call_count(UMOCKCALLRECORDER_HANDLE umock_cal
 
 `umockcallrecorder_get_expected_call_count` gets the expected call count that is tracked by `umock_call_recorder`.
 
+**SRS_UMOCKCALLRECORDER_01_046: [** If any of the arguments is `NULL`, `umockcallrecorder_get_expected_call_count` shall return a non-zero value. **]**
+
+**SRS_UMOCKCALLRECORDER_01_086: [** If lock functions have been setup, `umockcallrecorder_get_expected_call_count` shall call the lock function with `UMOCK_C_LOCK_TYPE_READ`. **]**
+
 **SRS_UMOCKCALLRECORDER_01_044: [** `umockcallrecorder_get_expected_call_count` shall return in the `expected_call_count` argument the number of expected calls associated with the call recorder. **]**
+
+**SRS_UMOCKCALLRECORDER_01_087: [** If lock functions have been setup, `umockcallrecorder_get_expected_call_count` shall call the unlock function with `UMOCK_C_LOCK_TYPE_READ`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_045: [** On success `umockcallrecorder_get_expected_call_count` shall return 0. **]**
 
-**SRS_UMOCKCALLRECORDER_01_046: [** If any of the arguments is `NULL`, `umockcallrecorder_get_expected_call_count` shall return a non-zero value. **]**
+**SRS_UMOCKCALLRECORDER_01_088: [** If any error occurs, `umockcallrecorder_get_expected_call_count` shall fail and return a non-zero value. **]**
 
 ### umockcallrecorder_fail_call
 
@@ -277,13 +283,19 @@ int umockcallrecorder_fail_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, si
 
 `umockcallrecorder_fail_call` marks the `index`-th call tracked by `umock_call_recorder` as a call to be failed.
 
+**SRS_UMOCKCALLRECORDER_01_049: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_fail_call` shall return a non-zero value. **]**
+
+**SRS_UMOCKCALLRECORDER_01_089: [** If lock functions have been setup, `umockcallrecorder_fail_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_091: [** If locking fails, `umockcallrecorder_fail_call` shall fail and return a non-zero value. **]**
+
 **SRS_UMOCKCALLRECORDER_01_047: [** `umockcallrecorder_fail_call` shall mark an expected call as to be failed by calling `umockcall_set_fail_call` with a 1 value for `fail_call`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_048: [** On success, `umockcallrecorder_fail_call` shall return 0. **]**
 
-**SRS_UMOCKCALLRECORDER_01_049: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_fail_call` shall return a non-zero value. **]**
-
 **SRS_UMOCKCALLRECORDER_01_050: [** If index is invalid, `umockcallrecorder_fail_call` shall return a non-zero value. **]**
+
+**SRS_UMOCKCALLRECORDER_01_090: [** If lock functions have been setup, `umockcallrecorder_fail_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_051: [** If `umockcall_set_fail_call` fails, `umockcallrecorder_fail_call` shall return a non-zero value. **]**
 
@@ -297,6 +309,10 @@ int umockcallrecorder_can_call_fail(UMOCKCALLRECORDER_HANDLE umock_call_recorder
 
 **SRS_UMOCKCALLRECORDER_31_056: [** If `umock_call_recorder` or `call_can_fail` is `NULL`, `umockcallrecorder_can_call_fail` shall return a non-zero value. **]**
 
+**SRS_UMOCKCALLRECORDER_01_092: [** If lock functions have been setup, `umockcallrecorder_can_call_fail` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_093: [** If locking fails, `umockcallrecorder_can_call_fail` shall fail and return a non-zero value. **]**
+
 **SRS_UMOCKCALLRECORDER_31_057: [** If `index` is greater or equal to the current expected calls count, `umockcallrecorder_can_call_fail` shall return a non-zero value. **]**
 
 **SRS_UMOCKCALLRECORDER_31_061: [** `umockcallrecorder_can_call_fail` shall determine whether given call can fail or not by calling `umockcall_get_call_can_fail`. **]**
@@ -305,4 +321,6 @@ int umockcallrecorder_can_call_fail(UMOCKCALLRECORDER_HANDLE umock_call_recorder
 
 **SRS_UMOCKCALLRECORDER_31_059: [** `umockcallrecorder_can_call_fail` shall return in the `can_call_fail` argument whether the call can fail or not. **]**
 
-**SRS_UMOCKCALLRECORDER_31_060: [** On success `umockcallrecorder_can_call_fail` shall return 0. ]*/
+**SRS_UMOCKCALLRECORDER_01_094: [** If lock functions have been setup, `umockcallrecorder_can_call_fail` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. **]**
+
+**SRS_UMOCKCALLRECORDER_31_060: [** On success `umockcallrecorder_can_call_fail` shall return 0. **]**
