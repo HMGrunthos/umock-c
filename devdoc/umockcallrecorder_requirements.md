@@ -205,11 +205,17 @@ UMOCKCALL_HANDLE umockcallrecorder_get_last_expected_call(UMOCKCALLRECORDER_HAND
 
 `umockcallrecorder_get_last_expected_call` gets the last expected call recorded by `umock_call_recorder`.
 
-**SRS_UMOCKCALLRECORDER_01_032: [** `umockcallrecorder_get_last_expected_call` shall return the last expected call for the `umock_call_recorder` call recorder. **]**
-
 **SRS_UMOCKCALLRECORDER_01_033: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_get_last_expected_call` shall fail and return `NULL`. **]**
 
+**SRS_UMOCKCALLRECORDER_01_079: [** If lock functions have been setup, `umockcallrecorder_get_last_expected_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_READ`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_032: [** `umockcallrecorder_get_last_expected_call` shall return the last expected call for the `umock_call_recorder` call recorder. **]**
+
 **SRS_UMOCKCALLRECORDER_01_034: [** If no expected call has been recorded for `umock_call_recorder` then `umockcallrecorder_get_last_expected_call` shall fail and return `NULL`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_080: [** If lock functions have been setup, `umockcallrecorder_get_last_expected_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_READ`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_081: [** If any error occurs, `umockcallrecorder_get_last_expected_call` shall fail and return `NULL`. **]**
 
 ### umockcallrecorder_clone
 

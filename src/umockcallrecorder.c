@@ -599,16 +599,29 @@ UMOCKCALL_HANDLE umockcallrecorder_get_last_expected_call(UMOCKCALLRECORDER_HAND
     }
     else
     {
-        if (umock_call_recorder->expected_call_count == 0)
+        /* Codes_SRS_UMOCKCALLRECORDER_01_079: [ If lock functions have been setup, `umockcallrecorder_get_last_expected_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+        if (internal_lock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ) != 0)
         {
-            /* Codes_SRS_UMOCKCALLRECORDER_01_034: [ If no expected call has been recorded for umock_call_recorder then umockcallrecorder_get_last_expected_call shall fail and return NULL. ]*/
-            UMOCK_LOG("umockcallrecorder: No expected calls recorded.");
+            /* Codes_SRS_UMOCKCALLRECORDER_01_081: [ If any error occurs, `umockcallrecorder_get_last_expected_call` shall fail and return `NULL`. ]*/
+            UMOCK_LOG("lock failed");
             result = NULL;
         }
         else
         {
-            /* Codes_SRS_UMOCKCALLRECORDER_01_032: [ umockcallrecorder_get_last_expected_call shall return the last expected call for the umock_call_recorder call recorder. ]*/
-            result = umock_call_recorder->expected_calls[umock_call_recorder->expected_call_count - 1].umockcall;
+            if (umock_call_recorder->expected_call_count == 0)
+            {
+                /* Codes_SRS_UMOCKCALLRECORDER_01_034: [ If no expected call has been recorded for umock_call_recorder then umockcallrecorder_get_last_expected_call shall fail and return NULL. ]*/
+                UMOCK_LOG("umockcallrecorder: No expected calls recorded.");
+                result = NULL;
+            }
+            else
+            {
+                /* Codes_SRS_UMOCKCALLRECORDER_01_032: [ umockcallrecorder_get_last_expected_call shall return the last expected call for the umock_call_recorder call recorder. ]*/
+                result = umock_call_recorder->expected_calls[umock_call_recorder->expected_call_count - 1].umockcall;
+            }
+
+            /* Codes_SRS_UMOCKCALLRECORDER_01_080: [ If lock functions have been setup, `umockcallrecorder_get_last_expected_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+            internal_unlock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ);
         }
     }
 
