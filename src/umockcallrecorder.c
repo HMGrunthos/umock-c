@@ -32,16 +32,16 @@ typedef struct UMOCKCALLRECORDER_TAG
     void* lock_context;
 } UMOCKCALLRECORDER;
 
-static int internal_lock_if_needed(UMOCKCALLRECORDER_HANDLE call_recorder)
+static int internal_lock_if_needed(UMOCKCALLRECORDER_HANDLE call_recorder, UMOCK_C_LOCK_TYPE lock_type)
 {
     int result;
 
     if (call_recorder->lock_function != NULL)
     {
-        if (call_recorder->lock_function(call_recorder->lock_context, UMOCK_C_LOCK_TYPE_WRITE) != 0)
+        if (call_recorder->lock_function(call_recorder->lock_context, lock_type) != 0)
         {
             UMOCK_LOG("lock_function(%p, %" PRI_MU_ENUM ") failed",
-                call_recorder->lock_context, MU_ENUM_VALUE(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_WRITE));
+                call_recorder->lock_context, MU_ENUM_VALUE(UMOCK_C_LOCK_TYPE, lock_type));
             result = MU_FAILURE;
         }
         else
@@ -57,29 +57,16 @@ static int internal_lock_if_needed(UMOCKCALLRECORDER_HANDLE call_recorder)
     return result;
 }
 
-static int internal_unlock_if_needed(UMOCKCALLRECORDER_HANDLE call_recorder)
+static void internal_unlock_if_needed(UMOCKCALLRECORDER_HANDLE call_recorder, UMOCK_C_LOCK_TYPE lock_type)
 {
-    int result;
-
     if (call_recorder->lock_function != NULL)
     {
-        if (call_recorder->unlock_function(call_recorder->lock_context, UMOCK_C_LOCK_TYPE_WRITE) != 0)
+        if (call_recorder->unlock_function(call_recorder->lock_context, lock_type) != 0)
         {
             UMOCK_LOG("unlock_function(%p, %" PRI_MU_ENUM ") failed",
-                call_recorder->lock_context, MU_ENUM_VALUE(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_WRITE));
-            result = MU_FAILURE;
-        }
-        else
-        {
-            result = 0;
+                call_recorder->lock_context, MU_ENUM_VALUE(UMOCK_C_LOCK_TYPE, lock_type));
         }
     }
-    else
-    {
-        result = 0;
-    }
-
-    return result;
 }
 
 UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void)
@@ -167,16 +154,16 @@ int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_record
     {
         /* Codes_SRS_UMOCKCALLRECORDER_01_007: [ If umock_call_recorder is NULL, umockcallrecorder_reset_all_calls shall fail and return a non-zero value. ]*/
         UMOCK_LOG("umockcallrecorder: Reset all calls failed: NULL umock_call_recorder.");
-        result = __LINE__;
+        result = MU_FAILURE;
     }
     else
     {
         /* Codes_SRS_UMOCKCALLRECORDER_01_065: [ If lock functions have been setup, `umockcallrecorder_reset_all_calls` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
-        if (internal_lock_if_needed(umock_call_recorder) != 0)
+        if (internal_lock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_WRITE) != 0)
         {
             /* Codes_SRS_UMOCKCALLRECORDER_01_067: [ If any error occurs, `umockcallrecorder_reset_all_calls` shall fail and return a non-zero value. ]*/
             UMOCK_LOG("lock failed");
-            result = __LINE__;
+            result = MU_FAILURE;
         }
         else
         {
@@ -208,7 +195,7 @@ int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_record
             umock_call_recorder->actual_call_count = 0;
 
             /* Codes_SRS_UMOCKCALLRECORDER_01_066: [ If lock functions have been setup, `umockcallrecorder_reset_all_calls` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
-            internal_unlock_if_needed(umock_call_recorder);
+            internal_unlock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_WRITE);
 
             /* Codes_SRS_UMOCKCALLRECORDER_01_006: [ On success umockcallrecorder_reset_all_calls shall return 0. ]*/
             result = 0;
@@ -228,16 +215,16 @@ int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_reco
         /* Codes_SRS_UMOCKCALLRECORDER_01_012: [ If any of the arguments is NULL, umockcallrecorder_add_expected_call shall fail and return a non-zero value. ]*/
         UMOCK_LOG("umockcallrecorder: Bad arguments in add expected call: umock_call_recorder = %p, mock_call = %p.",
             umock_call_recorder, mock_call);
-        result = __LINE__;
+        result = MU_FAILURE;
     }
     else
     {
         /* Codes_SRS_UMOCKCALLRECORDER_01_068: [ If lock functions have been setup, `umockcallrecorder_add_expected_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
-        if (internal_lock_if_needed(umock_call_recorder) != 0)
+        if (internal_lock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_WRITE) != 0)
         {
             /* Codes_SRS_UMOCKCALLRECORDER_01_067: [ If any error occurs, `umockcallrecorder_reset_all_calls` shall fail and return a non-zero value. ]*/
             UMOCK_LOG("lock failed");
-            result = __LINE__;
+            result = MU_FAILURE;
         }
         else
         {
@@ -246,7 +233,7 @@ int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_reco
             {
                 /* Codes_SRS_UMOCKCALLRECORDER_01_013: [ If any error occurs, `umockcallrecorder_add_expected_call` shall fail and return a non-zero value. ]*/
                 UMOCK_LOG("umockcallrecorder: Cannot allocate memory in add expected call.");
-                result = __LINE__;
+                result = MU_FAILURE;
             }
             else
             {
@@ -260,7 +247,7 @@ int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_reco
             }
 
             /* Codes_SRS_UMOCKCALLRECORDER_01_069: [ If lock functions have been setup, `umockcallrecorder_add_expected_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
-            internal_unlock_if_needed(umock_call_recorder);
+            internal_unlock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_WRITE);
         }
     }
 
@@ -278,7 +265,7 @@ int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_record
         /* Codes_SRS_UMOCKCALLRECORDER_01_019: [ If any of the arguments is NULL, umockcallrecorder_add_actual_call shall fail and return a non-zero value. ]*/
         UMOCK_LOG("umockcallrecorder: Bad arguments in add actual call: umock_call_recorder = %p, mock_call = %p, matched_call = %p.",
             umock_call_recorder, mock_call, matched_call);
-        result = __LINE__;
+        result = MU_FAILURE;
     }
     else
     {
@@ -288,11 +275,11 @@ int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_record
         *matched_call = NULL;
 
         /* Codes_SRS_UMOCKCALLRECORDER_01_071: [ If lock functions have been setup, `umockcallrecorder_add_actual_call` shall call the lock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
-        if (internal_lock_if_needed(umock_call_recorder) != 0)
+        if (internal_lock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_WRITE) != 0)
         {
             /* Codes_SRS_UMOCKCALLRECORDER_01_072: [ If the lock function fails, `umockcallrecorder_add_actual_call` shall fail and return a non-zero value. ]*/
             UMOCK_LOG("lock failed");
-            result = __LINE__;
+            result = MU_FAILURE;
         }
         else
         {
@@ -352,7 +339,7 @@ int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_record
             if (is_error)
             {
                 UMOCK_LOG("umockcallrecorder: Error in finding a matched call.");
-                result = __LINE__;
+                result = MU_FAILURE;
             }
             else
             {
@@ -365,7 +352,7 @@ int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_record
                     {
                         /* Codes_SRS_UMOCKCALLRECORDER_01_020: [ If allocating memory for the actual calls fails, umockcallrecorder_add_actual_call shall fail and return a non-zero value. ]*/
                         UMOCK_LOG("umockcallrecorder: Cannot allocate memory for actual calls.");
-                        result = __LINE__;
+                        result = MU_FAILURE;
                     }
                     else
                     {
@@ -386,7 +373,7 @@ int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_record
             }
 
             /* Codes_SRS_UMOCKCALLRECORDER_01_070: [ If lock functions have been setup, `umockcallrecorder_add_actual_call` shall call the unlock function with `UMOCK_C_LOCK_TYPE_WRITE`. ]*/
-            internal_unlock_if_needed(umock_call_recorder);
+            internal_unlock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_WRITE);
         }
     }
 
@@ -506,68 +493,81 @@ const char* umockcallrecorder_get_actual_calls(UMOCKCALLRECORDER_HANDLE umock_ca
         size_t i;
         char* new_actual_calls_string;
 
-        if (umock_call_recorder->actual_call_count == 0)
+        /* Codes_SRS_UMOCKCALLRECORDER_01_073: [ If lock functions have been setup, `umockcallrecorder_get_actual_calls` shall call the lock function with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+        if (internal_lock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ) != 0)
         {
-            new_actual_calls_string = (char*)umockalloc_realloc(umock_call_recorder->actual_calls_string, 1);
-            if (new_actual_calls_string == NULL)
-            {
-                /* Codes_SRS_UMOCKCALLRECORDER_01_026: [ If allocating memory for the resulting string fails, umockcallrecorder_get_actual_calls shall fail and return NULL. ]*/
-                UMOCK_LOG("umockcallrecorder: Cannot allocate memory for actual calls.");
-                result = NULL;
-            }
-            else
-            {
-                umock_call_recorder->actual_calls_string = new_actual_calls_string;
-                umock_call_recorder->actual_calls_string[0] = '\0';
-
-                /* Codes_SRS_UMOCKCALLRECORDER_01_022: [ umockcallrecorder_get_actual_calls shall return a pointer to the string representation of all the actual calls. ]*/
-                result = umock_call_recorder->actual_calls_string;
-            }
+            /* Codes_SRS_UMOCKCALLRECORDER_01_075: [ If the lock function fails, `umockcallrecorder_get_actual_calls` shall fail and return `NULL`. ]*/
+            UMOCK_LOG("lock failed");
+            result = NULL;
         }
         else
         {
-            size_t current_length = 0;
-
-            for (i = 0; i < umock_call_recorder->actual_call_count; i++)
+            if (umock_call_recorder->actual_call_count == 0)
             {
-                /* Codes_SRS_UMOCKCALLRECORDER_01_023: [ The string for each call shall be obtained by calling umockcall_stringify. ]*/
-                char* stringified_call = umockcall_stringify(umock_call_recorder->actual_calls[i]);
-                if (stringified_call == NULL)
+                new_actual_calls_string = (char*)umockalloc_realloc(umock_call_recorder->actual_calls_string, 1);
+                if (new_actual_calls_string == NULL)
                 {
-                    /* Codes_SRS_UMOCKCALLRECORDER_01_025: [ If umockcall_stringify fails, umockcallrecorder_get_actual_calls shall fail and return NULL. ]*/
-                    break;
+                    /* Codes_SRS_UMOCKCALLRECORDER_01_026: [ If allocating memory for the resulting string fails, umockcallrecorder_get_actual_calls shall fail and return NULL. ]*/
+                    UMOCK_LOG("umockcallrecorder: Cannot allocate memory for actual calls.");
+                    result = NULL;
                 }
                 else
                 {
-                    size_t stringified_call_length = strlen(stringified_call);
-                    new_actual_calls_string = (char*)umockalloc_realloc(umock_call_recorder->actual_calls_string, current_length + stringified_call_length + 1);
-                    if (new_actual_calls_string == NULL)
-                    {
-                        umockalloc_free(stringified_call);
+                    umock_call_recorder->actual_calls_string = new_actual_calls_string;
+                    umock_call_recorder->actual_calls_string[0] = '\0';
 
-                        /* Codes_SRS_UMOCKCALLRECORDER_01_026: [ If allocating memory for the resulting string fails, umockcallrecorder_get_actual_calls shall fail and return NULL. ]*/
+                    /* Codes_SRS_UMOCKCALLRECORDER_01_022: [ umockcallrecorder_get_actual_calls shall return a pointer to the string representation of all the actual calls. ]*/
+                    result = umock_call_recorder->actual_calls_string;
+                }
+            }
+            else
+            {
+                size_t current_length = 0;
+
+                for (i = 0; i < umock_call_recorder->actual_call_count; i++)
+                {
+                    /* Codes_SRS_UMOCKCALLRECORDER_01_023: [ The string for each call shall be obtained by calling umockcall_stringify. ]*/
+                    char* stringified_call = umockcall_stringify(umock_call_recorder->actual_calls[i]);
+                    if (stringified_call == NULL)
+                    {
+                        /* Codes_SRS_UMOCKCALLRECORDER_01_025: [ If umockcall_stringify fails, umockcallrecorder_get_actual_calls shall fail and return NULL. ]*/
                         break;
                     }
                     else
                     {
-                        umock_call_recorder->actual_calls_string = new_actual_calls_string;
-                        (void)memcpy(umock_call_recorder->actual_calls_string + current_length, stringified_call, stringified_call_length + 1);
-                        current_length += stringified_call_length;
-                    }
+                        size_t stringified_call_length = strlen(stringified_call);
+                        new_actual_calls_string = (char*)umockalloc_realloc(umock_call_recorder->actual_calls_string, current_length + stringified_call_length + 1);
+                        if (new_actual_calls_string == NULL)
+                        {
+                            umockalloc_free(stringified_call);
 
-                    umockalloc_free(stringified_call);
+                            /* Codes_SRS_UMOCKCALLRECORDER_01_026: [ If allocating memory for the resulting string fails, umockcallrecorder_get_actual_calls shall fail and return NULL. ]*/
+                            break;
+                        }
+                        else
+                        {
+                            umock_call_recorder->actual_calls_string = new_actual_calls_string;
+                            (void)memcpy(umock_call_recorder->actual_calls_string + current_length, stringified_call, stringified_call_length + 1);
+                            current_length += stringified_call_length;
+                        }
+
+                        umockalloc_free(stringified_call);
+                    }
+                }
+
+                if (i < umock_call_recorder->actual_call_count)
+                {
+                    result = NULL;
+                }
+                else
+                {
+                    /* Codes_SRS_UMOCKCALLRECORDER_01_022: [ umockcallrecorder_get_actual_calls shall return a pointer to the string representation of all the actual calls. ]*/
+                    result = umock_call_recorder->actual_calls_string;
                 }
             }
 
-            if (i < umock_call_recorder->actual_call_count)
-            {
-                result = NULL;
-            }
-            else
-            {
-                /* Codes_SRS_UMOCKCALLRECORDER_01_022: [ umockcallrecorder_get_actual_calls shall return a pointer to the string representation of all the actual calls. ]*/
-                result = umock_call_recorder->actual_calls_string;
-            }
+            /* Codes_SRS_UMOCKCALLRECORDER_01_074: [ If lock functions have been setup, `umockcallrecorder_get_actual_calls` shall call the unlock function with `UMOCK_C_LOCK_TYPE_READ`. ]*/
+            internal_unlock_if_needed(umock_call_recorder, UMOCK_C_LOCK_TYPE_READ);
         }
     }
 
@@ -730,7 +730,7 @@ int umockcallrecorder_get_expected_call_count(UMOCKCALLRECORDER_HANDLE umock_cal
         (expected_call_count == NULL))
     {
         /* Codes_SRS_UMOCKCALLRECORDER_01_046: [ If any of the arguments is NULL, umockcallrecorder_get_expected_call_count shall return a non-zero value. ]*/
-        result = __LINE__;
+        result = MU_FAILURE;
         UMOCK_LOG("umockcallrecorder_get_expected_call_count: Invalid arguments, umock_call_recorder = %p, expected_call_count = %p",
             umock_call_recorder, expected_call_count);
     }
@@ -754,7 +754,7 @@ int umockcallrecorder_fail_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, si
         /* Codes_SRS_UMOCKCALLRECORDER_01_050: [ If index is invalid, umockcallrecorder_fail_call shall return a non-zero value. ]*/
         (index >= umock_call_recorder->expected_call_count))
     {
-        result = __LINE__;
+        result = MU_FAILURE;
         UMOCK_LOG("umockcallrecorder_fail_call: NULL Invalid arguments, umock_call_recorder = %p, index = %zu",
             umock_call_recorder, index);
     }
@@ -764,7 +764,7 @@ int umockcallrecorder_fail_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, si
         if (umockcall_set_fail_call(umock_call_recorder->expected_calls[index].umockcall, 1) != 0)
         {
             /* Codes_SRS_UMOCKCALLRECORDER_01_051: [ If umockcall_set_fail_call fails, umockcallrecorder_fail_call shall return a non-zero value. ]*/
-            result = __LINE__;
+            result = MU_FAILURE;
             UMOCK_LOG("umockcallrecorder_fail_call: umockcall_set_fail_call failed.");
         }
         else
@@ -787,7 +787,7 @@ int umockcallrecorder_can_call_fail(UMOCKCALLRECORDER_HANDLE umock_call_recorder
         /* Codes_SRS_UMOCKCALLRECORDER_31_057: [ If index is greater or equal to the current expected calls count, umockcallrecorder_can_call_fail shall return a non-zero value. ]*/
         (index >= umock_call_recorder->expected_call_count))
     {
-        result = __LINE__;
+        result = MU_FAILURE;
         UMOCK_LOG("umockcallrecorder_can_call_fail: NULL Invalid arguments, umock_call_recorder = %p, index = %zu",
             umock_call_recorder, index);
     }
@@ -798,7 +798,7 @@ int umockcallrecorder_can_call_fail(UMOCKCALLRECORDER_HANDLE umock_call_recorder
         if (can_call_fail_result == -1)
         {
             /* Codes_SRS_UMOCKCALLRECORDER_31_058: [ If umockcall_get_call_can_fail returns -1, umockcallrecorder_can_call_fail shall return an error to the caller  ]*/
-            result = __LINE__;
+            result = MU_FAILURE;
             UMOCK_LOG("umockcallrecorder_fail_call: umockcall_set_fail_call failed.");
         }
         else

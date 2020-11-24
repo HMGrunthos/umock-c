@@ -151,11 +151,17 @@ const char* umockcallrecorder_get_actual_calls(UMOCKCALLRECORDER_HANDLE umock_ca
 
 `umockcallrecorder_get_actual_calls` gets a string that contains all the actual calls tracked by `umock_call_recorder`.
 
+**SRS_UMOCKCALLRECORDER_01_024: [** If the `umock_call_recorder` is `NULL`, `umockcallrecorder_get_actual_calls` shall fail and return `NULL`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_073: [** If lock functions have been setup, `umockcallrecorder_get_actual_calls` shall call the lock function with `UMOCK_C_LOCK_TYPE_READ`. **]**
+
+If the lock function fails, `umockcallrecorder_get_actual_calls` shall fail and return `NULL`.
+
 **SRS_UMOCKCALLRECORDER_01_022: [** `umockcallrecorder_get_actual_calls` shall return a pointer to the string representation of all the actual calls. **]**
 
 **SRS_UMOCKCALLRECORDER_01_023: [** The string for each call shall be obtained by calling `umockcall_stringify`. **]**
 
-**SRS_UMOCKCALLRECORDER_01_024: [** If the `umock_call_recorder` is `NULL`, `umockcallrecorder_get_actual_calls` shall fail and return `NULL`. **]**
+**SRS_UMOCKCALLRECORDER_01_074: [** If lock functions have been setup, `umockcallrecorder_get_actual_calls` shall call the unlock function with `UMOCK_C_LOCK_TYPE_READ`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_025: [** If `umockcall_stringify` fails, `umockcallrecorder_get_actual_calls` shall fail and return `NULL`. **]**
 
