@@ -533,12 +533,12 @@ TEST_SUITE_CLEANUP(suite_cleanup)
 TEST_FUNCTION_INITIALIZE(test_function_init)
 {
     ASSERT_ARE_EQUAL(int, 0, TEST_MUTEX_ACQUIRE(test_mutex));
-
     reset_all_calls();
 }
 
 TEST_FUNCTION_CLEANUP(test_function_cleanup)
 {
+    reset_all_calls();
     TEST_MUTEX_RELEASE(test_mutex);
 }
 

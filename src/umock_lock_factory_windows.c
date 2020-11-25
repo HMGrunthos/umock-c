@@ -42,7 +42,8 @@ static void umock_lock_windows_release_exclusive(UMOCK_C_LOCK_HANDLE lock)
 
 static void umock_lock_windows_destroy(UMOCK_C_LOCK_HANDLE lock)
 {
-    (void)lock;
+    UMOCK_C_LOCK_WINDOWS* wmock_c_lock_windows = (UMOCK_C_LOCK_WINDOWS*)lock;
+    umockalloc_free(wmock_c_lock_windows);
 }
 
 UMOCK_C_LOCK_HANDLE umock_lock_factory_create_lock(void* params)
