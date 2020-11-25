@@ -7,6 +7,6 @@
 int main(void)
 {
     size_t failedTestCount = 0;
-    RUN_TEST_SUITE(umock_c_lock_unlock_integrationtests, failedTestCount);
+    RUN_TEST_SUITE(umock_c_with_lock_factory_integrationtests, failedTestCount);
     return failedTestCount;
 }
