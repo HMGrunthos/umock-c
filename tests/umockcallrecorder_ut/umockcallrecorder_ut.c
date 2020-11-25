@@ -545,8 +545,8 @@ TEST_FUNCTION_CLEANUP(test_function_cleanup)
 /* umockcallrecorder_create */
 
 /* Tests_SRS_UMOCKCALLRECORDER_01_001: [ umockcallrecorder_create shall create a new instance of a call recorder and return a non-NULL handle to it on success. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_095: [ `lock_factory_create_lock` may be `NULL`. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_096: [ `lock_factory_create_lock` shall be saved for later use. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_095: [ lock_factory_create_lock may be NULL. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_096: [ lock_factory_create_lock shall be saved for later use. ]*/
 TEST_FUNCTION(umockcallrecorder_create_succeeds)
 {
     // arrange
@@ -561,7 +561,7 @@ TEST_FUNCTION(umockcallrecorder_create_succeeds)
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_002: [ If any error occurs, `umockcallrecorder_create` shall return `NULL`. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_002: [ If any error occurs, umockcallrecorder_create shall return NULL. ]*/
 TEST_FUNCTION(when_allocating_memory_fails_then_umockcallrecorder_create_fails)
 {
     // arrange
@@ -575,7 +575,7 @@ TEST_FUNCTION(when_allocating_memory_fails_then_umockcallrecorder_create_fails)
     ASSERT_IS_NULL(call_recorder);
 }
 
-/* Codes_SRS_UMOCKCALLRECORDER_01_097: [ If `lock_factory_create_lock` is not `NULL`, `umockcallrecorder_create` shall call `lock_factory_create_lock` to create the lock used when working with the stored calls. ]*/
+/* Codes_SRS_UMOCKCALLRECORDER_01_097: [ If lock_factory_create_lock is not NULL, umockcallrecorder_create shall call lock_factory_create_lock to create the lock used when working with the stored calls. ]*/
 TEST_FUNCTION(umockcallrecorder_create_with_non_NULL_lock_factory_succeeds)
 {
     // arrange
@@ -595,7 +595,7 @@ TEST_FUNCTION(umockcallrecorder_create_with_non_NULL_lock_factory_succeeds)
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_002: [ If any error occurs, `umockcallrecorder_create` shall return `NULL`. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_002: [ If any error occurs, umockcallrecorder_create shall return NULL. ]*/
 TEST_FUNCTION(if_creating_the_lock_fails_umockcallrecorder_create_also_fails)
 {
     // arrange
@@ -675,7 +675,7 @@ TEST_FUNCTION(umockcallrecorder_destroy_with_one_expected_call_frees_the_call_re
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_free, mocked_calls[5].call_type);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_098: [ If a lock was created in `umockcallrecorder_create`, the lock shall be destroyed. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_098: [ If a lock was created in umockcallrecorder_create, the lock shall be destroyed. ]*/
 TEST_FUNCTION(umockcallrecorder_destroy_destroys_the_lock_created_in_create)
 {
     // arrange
@@ -743,8 +743,8 @@ TEST_FUNCTION(umockcallrecorder_reset_all_calls_with_NULL_call_recorder_fails)
     ASSERT_ARE_EQUAL(size_t, 0, mocked_call_count);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_065: [ If a lock was created for the call recorder, `umockcallrecorder_reset_all_calls` shall acquire the lock in exclusive mode. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_066: [ If a lock was created for the call recorder, `umockcallrecorder_reset_all_calls` shall release the exclusive lock. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_065: [ If a lock was created for the call recorder, umockcallrecorder_reset_all_calls shall acquire the lock in exclusive mode. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_066: [ If a lock was created for the call recorder, umockcallrecorder_reset_all_calls shall release the exclusive lock. ]*/
 TEST_FUNCTION(umockcallrecorder_reset_all_calls_with_lock_functions_locks_and_unlocks)
 {
     // arrange
@@ -823,7 +823,7 @@ TEST_FUNCTION(umockcallrecorder_add_expected_call_with_NULL_mock_call_fails)
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_013: [ If any error occurs, `umockcallrecorder_add_expected_call` shall fail and return a non-zero value. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_013: [ If any error occurs, umockcallrecorder_add_expected_call shall fail and return a non-zero value. ]*/
 TEST_FUNCTION(when_allocating_memory_fails_umockcallrecorder_add_expected_call_fails)
 {
     // arrange
@@ -842,8 +842,8 @@ TEST_FUNCTION(when_allocating_memory_fails_umockcallrecorder_add_expected_call_f
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_068: [ If a lock was created for the call recorder, `umockcallrecorder_add_expected_call` shall acquire the lock in exclusive mode. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_069: [ If a lock was created for the call recorder, `umockcallrecorder_add_expected_call` shall release the exclusive lock. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_068: [ If a lock was created for the call recorder, umockcallrecorder_add_expected_call shall acquire the lock in exclusive mode. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_069: [ If a lock was created for the call recorder, umockcallrecorder_add_expected_call shall release the exclusive lock. ]*/
 TEST_FUNCTION(umockcallrecorder_add_expected_call_with_locks_setup_locks_and_unlocks)
 {
     // arrange
@@ -1249,8 +1249,8 @@ TEST_FUNCTION(if_expected_call_has_ignore_all_calls_and_umockcall_get_ignore_all
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_071: [ If a lock was created for the call recorder, `umockcallrecorder_add_actual_call` shall acquire the lock in exclusive mode. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_070: [ If a lock was created for the call recorder, `umockcallrecorder_add_actual_call` shall release the exclusive lock. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_071: [ If a lock was created for the call recorder, umockcallrecorder_add_actual_call shall acquire the lock in exclusive mode. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_070: [ If a lock was created for the call recorder, umockcallrecorder_add_actual_call shall release the exclusive lock. ]*/
 TEST_FUNCTION(umockcallrecorder_add_actual_call_with_lock_functions_set_locks_and_unlocks)
 {
     // arrange
@@ -1458,8 +1458,8 @@ TEST_FUNCTION(umockcallrecorder_get_actual_calls_when_the_actual_call_does_not_m
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_073: [ If a lock was created for the call recorder, `umockcallrecorder_get_actual_calls` shall acquire the lock in shared mode. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_074: [ If a lock was created for the call recorder, `umockcallrecorder_get_actual_calls` shall release the shared lock. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_073: [ If a lock was created for the call recorder, umockcallrecorder_get_actual_calls shall acquire the lock in shared mode. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_074: [ If a lock was created for the call recorder, umockcallrecorder_get_actual_calls shall release the shared lock. ]*/
 TEST_FUNCTION(umockcallrecorder_get_actual_calls_with_lock_functions_setup_locks_and_unlocks)
 {
     // arrange
@@ -1714,8 +1714,8 @@ TEST_FUNCTION(when_getting_the_ignore_all_cals_fails_umockcallrecorder_get_expec
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_076: [ If a lock was created for the call recorder, `umockcallrecorder_get_expected_calls` shall acquire the lock in shared mode. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_077: [ If a lock was created for the call recorder, `umockcallrecorder_get_expected_calls` shall release the shared lock. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_076: [ If a lock was created for the call recorder, umockcallrecorder_get_expected_calls shall acquire the lock in shared mode. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_077: [ If a lock was created for the call recorder, umockcallrecorder_get_expected_calls shall release the shared lock. ]*/
 TEST_FUNCTION(umockcallrecorder_get_expected_calls_with_lock_functions_setup_locks_and_unlocks)
 {
     // arrange
@@ -1811,8 +1811,8 @@ TEST_FUNCTION(umockcallrecorder_get_last_expected_call_with_2_expected_calls_ret
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_079: [ If a lock was created for the call recorder, `umockcallrecorder_get_last_expected_call` shall acquire the lock in shared mode. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_080: [ If a lock was created for the call recorder, `umockcallrecorder_get_last_expected_call` shall release the shared lock. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_079: [ If a lock was created for the call recorder, umockcallrecorder_get_last_expected_call shall acquire the lock in shared mode. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_080: [ If a lock was created for the call recorder, umockcallrecorder_get_last_expected_call shall release the shared lock. ]*/
 TEST_FUNCTION(umockcallrecorder_get_last_expected_call_with_lock_functions_setup_locks_and_unlocks)
 {
     // arrange
@@ -2031,7 +2031,7 @@ TEST_FUNCTION(when_cloning_the_2nd_out_of_2_expected_calls_fails_umockcallrecord
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_052: [ If any error occurs, `umockcallrecorder_clone` shall fail and return `NULL`. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_052: [ If any error occurs, umockcallrecorder_clone shall fail and return NULL. ]*/
 TEST_FUNCTION(when_allocating_memory_for_expected_calls_fails_umockcallrecorder_clone_fails)
 {
     // arrange
@@ -2215,7 +2215,7 @@ TEST_FUNCTION(when_cloning_the_2nd_of_2_actual_calls_fails_umockcallrecorder_clo
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Codes_SRS_UMOCKCALLRECORDER_01_052: [ If any error occurs, `umockcallrecorder_clone` shall fail and return `NULL`. ]*/
+/* Codes_SRS_UMOCKCALLRECORDER_01_052: [ If any error occurs, umockcallrecorder_clone shall fail and return NULL. ]*/
 TEST_FUNCTION(when_allocating_memory_for_actual_calls_fails_umockcallrecorder_clone_fails)
 {
     // arrange
@@ -2241,9 +2241,9 @@ TEST_FUNCTION(when_allocating_memory_for_actual_calls_fails_umockcallrecorder_cl
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_082: [ If a lock was created for the call recorder `umock_call_recorder`, `umockcallrecorder_clone` shall acquire_the lock in shared mode for `umock_call_recorder`. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_083: [ If a lock was created for the call recorder `umock_call_recorder`, `umockcallrecorder_clone` shall release the shared lock for `umock_call_recorder`. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_085: [ If the `lock_factory_create_lock` associated with `umock_call_recorder` is not `NULL`, `umockcallrecorder_clone` shall create a new lock for the cloned call recorder. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_082: [ If a lock was created for the call recorder umock_call_recorder, umockcallrecorder_clone shall acquire_the lock in shared mode for umock_call_recorder. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_083: [ If a lock was created for the call recorder umock_call_recorder, umockcallrecorder_clone shall release the shared lock for umock_call_recorder. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_085: [ If the lock_factory_create_lock associated with umock_call_recorder is not NULL, umockcallrecorder_clone shall create a new lock for the cloned call recorder. ]*/
 TEST_FUNCTION(umockcallrecorder_clone_with_lock_functions_setup_locks_and_unlocks)
 {
     // arrange
@@ -2276,7 +2276,7 @@ TEST_FUNCTION(umockcallrecorder_clone_with_lock_functions_setup_locks_and_unlock
     umockcallrecorder_destroy(result);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_052: [ If any error occurs, `umockcallrecorder_clone` shall fail and return `NULL`. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_052: [ If any error occurs, umockcallrecorder_clone shall fail and return NULL. ]*/
 TEST_FUNCTION(when_creating_the_new_lock_fails_umockcallrecorder_clone_fails)
 {
     // arrange
@@ -2305,7 +2305,7 @@ TEST_FUNCTION(when_creating_the_new_lock_fails_umockcallrecorder_clone_fails)
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_052: [ If any error occurs, `umockcallrecorder_clone` shall fail and return `NULL`. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_052: [ If any error occurs, umockcallrecorder_clone shall fail and return NULL. ]*/
 TEST_FUNCTION(when_cloning_the_call_fails_the_newly_created_lock_gets_destroyed)
 {
     // arrange
@@ -2415,8 +2415,8 @@ TEST_FUNCTION(umockcallrecorder_get_expected_call_with_NULL_expected_call_count_
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_086: [ If a lock was created for the call recorder, `umockcallrecorder_get_expected_call_count` shall acquire the lock in shared mode. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_087: [ If a lock was created for the call recorder, `umockcallrecorder_get_expected_call_count` shall release the shared lock. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_086: [ If a lock was created for the call recorder, umockcallrecorder_get_expected_call_count shall acquire the lock in shared mode. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_087: [ If a lock was created for the call recorder, umockcallrecorder_get_expected_call_count shall release the shared lock. ]*/
 TEST_FUNCTION(umockcallrecorder_get_expected_call_count_with_lock_functions_setup_locks_and_unlocks)
 {
     // arrange
@@ -2591,8 +2591,8 @@ TEST_FUNCTION(when_umockcall_set_fail_call_fails_then_umockcallrecorder_fail_cal
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_089: [ If a lock was created for the call recorder, `umockcallrecorder_fail_call` shall acquire the lock in exclusive mode. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_090: [ If a lock was created for the call recorder, `umockcallrecorder_fail_call` shall release the exclusive lock. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_089: [ If a lock was created for the call recorder, umockcallrecorder_fail_call shall acquire the lock in exclusive mode. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_090: [ If a lock was created for the call recorder, umockcallrecorder_fail_call shall release the exclusive lock. ]*/
 TEST_FUNCTION(umockcallrecorder_fail_call_with_lock_functions_set_locks_and_unlocks)
 {
     // arrange
@@ -2782,8 +2782,8 @@ TEST_FUNCTION(umockcallrecorder_can_call_fail_when_umockcall_fails)
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_092: [ If a lock was created for the call recorder, `umockcallrecorder_can_call_fail` shall acquire the lock in exclusive mode. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_094: [ If a lock was created for the call recorder, `umockcallrecorder_can_call_fail` shall release the exclusive lock. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_092: [ If a lock was created for the call recorder, umockcallrecorder_can_call_fail shall acquire the lock in exclusive mode. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_094: [ If a lock was created for the call recorder, umockcallrecorder_can_call_fail shall release the exclusive lock. ]*/
 TEST_FUNCTION(umockcallrecorder_can_call_fail_with_lock_functions_setup_locks_and_unlocks)
 {
     // arrange

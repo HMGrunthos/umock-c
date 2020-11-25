@@ -517,8 +517,8 @@ TEST_FUNCTION(umock_c_init_with_NULL_callback_succeeds)
 
 /* umock_c_init_with_lock_factory */
 
-/* Tests_SRS_UMOCK_C_01_042: [ `umock_c_init_with_lock_factory` shall perform the same initialization like `umock_c_init` while passing `lock_factory_create_lock` and `lock_factory_create_lock_params` as arguments to `umockcallrecorder_create`. ] */
-/* Tests_SRS_UMOCK_C_01_043: [ On success, `umock_c_init_with_lock_factory` shall return 0. ]*/
+/* Tests_SRS_UMOCK_C_01_042: [ umock_c_init_with_lock_factory shall perform the same initialization like umock_c_init while passing lock_factory_create_lock and lock_factory_create_lock_params as arguments to umockcallrecorder_create. ] */
+/* Tests_SRS_UMOCK_C_01_043: [ On success, umock_c_init_with_lock_factory shall return 0. ]*/
 TEST_FUNCTION(umock_c_init_with_lock_factory_succeeds)
 {
     // arrange
@@ -536,7 +536,7 @@ TEST_FUNCTION(umock_c_init_with_lock_factory_succeeds)
     ASSERT_ARE_EQUAL(void_ptr, (void*)0x4242, mocked_calls[2].u.umockcallrecorder_create.lock_factory_create_lock_params);
 }
 
-/* Tests_SRS_UMOCK_C_01_044: [ If any of the calls fails, `umock_c_init_with_lock_factory` shall fail and return a non-zero value. ]*/
+/* Tests_SRS_UMOCK_C_01_044: [ If any of the calls fails, umock_c_init_with_lock_factory shall fail and return a non-zero value. ]*/
 TEST_FUNCTION(when_umocktypes_init_fails_then_umock_c_init_with_lock_factory_fails)
 {
     // arrange
@@ -552,7 +552,7 @@ TEST_FUNCTION(when_umocktypes_init_fails_then_umock_c_init_with_lock_factory_fai
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umocktypes_init, mocked_calls[0].call_type);
 }
 
-/* Tests_SRS_UMOCK_C_01_044: [ If any of the calls fails, `umock_c_init_with_lock_factory` shall fail and return a non-zero value. ]*/
+/* Tests_SRS_UMOCK_C_01_044: [ If any of the calls fails, umock_c_init_with_lock_factory shall fail and return a non-zero value. ]*/
 TEST_FUNCTION(when_umocktypes_c_register_types_fails_then_umock_c_init_with_lock_factory_fails)
 {
     // arrange
@@ -569,7 +569,7 @@ TEST_FUNCTION(when_umocktypes_c_register_types_fails_then_umock_c_init_with_lock
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umocktypes_c_register_types, mocked_calls[1].call_type);
 }
 
-/* Tests_SRS_UMOCK_C_01_044: [ If any of the calls fails, `umock_c_init_with_lock_factory` shall fail and return a non-zero value. ]*/
+/* Tests_SRS_UMOCK_C_01_044: [ If any of the calls fails, umock_c_init_with_lock_factory shall fail and return a non-zero value. ]*/
 TEST_FUNCTION(when_creating_the_call_recorder_fails_then_umock_c_init_with_lock_factory_fails)
 {
     // arrange
