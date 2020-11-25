@@ -65,8 +65,13 @@ TEST_FUNCTION_CLEANUP(test_function_cleanup)
     TEST_MUTEX_RELEASE(test_mutex);
 }
 
+#if USE_VALGRIND
+#define THREAD_COUNT 8
+#define CALLS_PER_THREAD 500
+#else
 #define THREAD_COUNT 8
 #define CALLS_PER_THREAD 5000
+#endif
 
 static int actual_calls_thread(void* arg)
 {
