@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #endif
 
+#include "windows.h"
+
 #include "testrunnerswitcher.h"
 #include "umock_c/umock_lock_factory_default.h"
 #include "umock_c/umock_log.h"
@@ -28,32 +30,32 @@ typedef struct mock_malloc_CALL_TAG
 
 typedef struct mock_free_CALL_TAG
 {
-    void* ptr;
+    PSRWLOCK ptr;
 } mock_free_CALL;
 
 typedef struct mock_InitializeSRWLock_CALL_TAG
 {
-    void* SRWLock;
+    PSRWLOCK SRWLock;
 } mock_InitializeSRWLock_CALL;
 
 typedef struct mock_AcquireSRWLockShared_CALL_TAG
 {
-    void* SRWLock;
+    PSRWLOCK SRWLock;
 } mock_AcquireSRWLockShared_CALL;
 
 typedef struct mock_ReleaseSRWLockShared_CALL_TAG
 {
-    void* SRWLock;
+    PSRWLOCK SRWLock;
 } mock_ReleaseSRWLockShared_CALL;
 
 typedef struct mock_AcquireSRWLockExclusive_CALL_TAG
 {
-    void* SRWLock;
+    PSRWLOCK SRWLock;
 } mock_AcquireSRWLockExclusive_CALL;
 
 typedef struct mock_ReleaseSRWLockExclusive_CALL_TAG
 {
-    void* SRWLock;
+    PSRWLOCK SRWLock;
 } mock_ReleaseSRWLockExclusive_CALL;
 
 typedef union TEST_MOCK_CALL_UNION_TAG

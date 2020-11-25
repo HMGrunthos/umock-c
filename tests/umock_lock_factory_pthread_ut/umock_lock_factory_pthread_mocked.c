@@ -14,12 +14,14 @@ void mock_free(void* ptr);
 #define pthread_rwlock_rdlock(rwlock) mock_pthread_rwlock_rdlock(rwlock)
 #define pthread_rwlock_unlock(rwlock) mock_pthread_rwlock_unlock(rwlock)
 #define pthread_rwlock_wrlock(rwlock) mock_pthread_rwlock_wrlock(rwlock)
+#define pthread_rwlock_destroy(rwlock) mock_pthread_rwlock_destroy(rwlock)
 
 int mock_pthread_rwlock_init(pthread_rwlock_t *rwlock,
     const pthread_rwlockattr_t *attr);
 int mock_pthread_rwlock_rdlock(pthread_rwlock_t *rwlock);
 int mock_pthread_rwlock_unlock(pthread_rwlock_t *rwlock);
 int mock_pthread_rwlock_wrlock(pthread_rwlock_t *rwlock);
+int mock_pthread_rwlock_destroy(pthread_rwlock_t *rwlock);
 
 /* include code under test */
 #include "../../src/umock_lock_factory_pthread.c"

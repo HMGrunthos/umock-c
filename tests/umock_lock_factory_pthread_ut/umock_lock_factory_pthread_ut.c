@@ -54,6 +54,11 @@ typedef struct mock_pthread_rwlock_wrlock_CALL_TAG
     void* rwlock;
 } mock_pthread_rwlock_wrlock_CALL;
 
+typedef struct mock_pthread_rwlock_destroy_CALL_TAG
+{
+    void* rwlock;
+} mock_pthread_rwlock_destroy_CALL;
+
 typedef union TEST_MOCK_CALL_UNION_TAG
 {
     mock_malloc_CALL mock_malloc;
@@ -62,6 +67,7 @@ typedef union TEST_MOCK_CALL_UNION_TAG
     mock_pthread_rwlock_rdlock_CALL mock_pthread_rwlock_rdlock;
     mock_pthread_rwlock_unlock_CALL mock_pthread_rwlock_unlock;
     mock_pthread_rwlock_wrlock_CALL mock_pthread_rwlock_wrlock;
+    mock_pthread_rwlock_destroy_CALL mock_pthread_rwlock_destroy;
 } TEST_MOCK_CALL_UNION;
 
 #define TEST_MOCK_CALL_TYPE_VALUES \
@@ -70,7 +76,8 @@ typedef union TEST_MOCK_CALL_UNION_TAG
     TEST_MOCK_CALL_TYPE_mock_pthread_rwlock_init, \
     TEST_MOCK_CALL_TYPE_mock_pthread_rwlock_rdlock, \
     TEST_MOCK_CALL_TYPE_mock_pthread_rwlock_unlock, \
-    TEST_MOCK_CALL_TYPE_mock_pthread_rwlock_wrlock \
+    TEST_MOCK_CALL_TYPE_mock_pthread_rwlock_wrlock, \
+    TEST_MOCK_CALL_TYPE_mock_pthread_rwlock_destroy \
 
 MU_DEFINE_ENUM(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
 MU_DEFINE_ENUM_STRINGS(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
@@ -136,6 +143,7 @@ static int mock_pthread_rwlock_init_result;
 static int mock_pthread_rwlock_rdlock_result;
 static int mock_pthread_rwlock_unlock_result;
 static int mock_pthread_rwlock_wrlock_result;
+static int mock_pthread_rwlock_destroy_result;
 
 int mock_pthread_rwlock_init(pthread_rwlock_t *rwlock, const pthread_rwlockattr_t *attr)
 {
@@ -187,6 +195,18 @@ int mock_pthread_rwlock_wrlock(pthread_rwlock_t *rwlock)
     }
 }
 
+int mock_pthread_rwlock_destroy(pthread_rwlock_t *rwlock)
+{
+    TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
+    if (new_calls != NULL)
+    {
+        mocked_calls = new_calls;
+        mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_mock_pthread_rwlock_destroy;
+        mocked_calls[mocked_call_count].u.mock_pthread_rwlock_destroy.rwlock = rwlock;
+        mocked_call_count++;
+    }
+}
+
 static void reset_all_calls(void)
 {
     malloc_call_count = 0;
@@ -196,6 +216,7 @@ static void reset_all_calls(void)
     mock_pthread_rwlock_rdlock_result = 0;
     mock_pthread_rwlock_unlock_result = 0;
     mock_pthread_rwlock_wrlock_result = 0;
+    mock_pthread_rwlock_destroy_result = 0;
 
     if (mocked_calls != NULL)
     {
@@ -482,8 +503,9 @@ TEST_FUNCTION(umock_lock_pthread_destroy_frees_the_resources)
     lock->destroy(lock);
 
     // assert
-    ASSERT_ARE_EQUAL(size_t, 1, mocked_call_count);
-    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_free, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(size_t, 2, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_pthread_rwlock_destroy, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_free, mocked_calls[1].call_type);
 }
 
 END_TEST_SUITE(umock_lock_factory_windows_unittests)
