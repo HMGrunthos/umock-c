@@ -9,6 +9,18 @@ set(${theseTestsName}_test_files
 umock_c_with_lock_factory_int.c
 )
 
+if(WIN32)
+# For Windows use CreateThread et all
+set(test_platform_c_files
+./minipal/umock_threadapi_win32.c
+)
+else()
+# For others assume pthreads (this should be a real check for pthreads)
+set(test_platform_c_files
+./minipal/umock_threadapi_pthreads.c
+)
+endif()
+
 set(${theseTestsName}_c_files
 ../../src/umock_c.c
 ../../src/umock_lock_factory_windows.c
@@ -22,9 +34,11 @@ set(${theseTestsName}_c_files
 ../../src/umocktypes_charptr.c
 ../../src/umocktypes_c.c
 ../../src/umocktypename.c
+${test_platform_c_files}
 )
 
 set(${theseTestsName}_h_files
+./minipal/umock_threadapi.h
 )
 
 umockc_build_test_artifacts(${theseTestsName} ON)
