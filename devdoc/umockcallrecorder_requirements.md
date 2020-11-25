@@ -10,7 +10,7 @@
 ```c
     typedef struct UMOCKCALLRECORDER_TAG* UMOCKCALLRECORDER_HANDLE;
 
-    UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void);
+    UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock, void* lock_factory_create_lock_params);
     void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
     int umockcallrecorder_set_lock_functions(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);
     int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
@@ -28,14 +28,20 @@
 ### umockcallrecorder_create
 
 ```c
-UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void);
+UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock, void* lock_factory_create_lock_params);
 ```
 
 `umockcallrecorder_create` creates a new call recorder.
 
+**SRS_UMOCKCALLRECORDER_01_095: [** `lock_factory_create_lock` may be `NULL`. **]**
+
 **SRS_UMOCKCALLRECORDER_01_001: [** `umockcallrecorder_create` shall create a new instance of a call recorder and return a non-`NULL` handle to it on success. **]**
 
-**SRS_UMOCKCALLRECORDER_01_002: [** If allocating memory for the call recorder fails, `umockcallrecorder_create` shall return `NULL`. **]**
+**SRS_UMOCKCALLRECORDER_01_002: [** If any error occurs, `umockcallrecorder_create` shall return `NULL`. **]**
+
+**SRS_UMOCKCALLRECORDER_01_096: [** `lock_factory_create_lock` shall be saved for later use. **]**
+
+**SRS_UMOCKCALLRECORDER_01_097: [** If `lock_factory_create_lock` is not `NULL`, `umockcallrecorder_create` shall call `lock_factory_create_lock` to create the lock used when working with the stored calls. **]**
 
 ### umockcallrecorder_destroy
 

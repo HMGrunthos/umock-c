@@ -35,8 +35,10 @@ static size_t umock_c_get_last_expected_call_call_count;
 static size_t umock_c_add_expected_call_call_count;
 static size_t umock_c_add_actual_call_call_count;
 
-UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void)
+UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock, void* lock_factory_create_lock_params)
 {
+    (void)lock_factory_create_lock;
+    (void)lock_factory_create_lock_params;
     return NULL;
 }
 

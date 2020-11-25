@@ -12,6 +12,7 @@
 
 #include "umockcall.h"
 #include "umock_lock_functions.h"
+#include "umock_lock_factory.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +20,7 @@ extern "C" {
 
     typedef struct UMOCKCALLRECORDER_TAG* UMOCKCALLRECORDER_HANDLE;
 
-    UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void);
+    UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock, void* lock_factory_create_lock_params);
     void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
     int umockcallrecorder_set_lock_functions(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);
     int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_recorder);

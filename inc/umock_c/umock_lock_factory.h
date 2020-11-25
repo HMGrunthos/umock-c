@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-    typedef UMOCK_C_LOCK_HANDLE(*UMOCK_LOCK_FACTORY_CREATE_LOCK_FUNC)(void* arg);
+    typedef UMOCK_C_LOCK_HANDLE(*UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC)(void* params);
 
 #ifdef __cplusplus
 }

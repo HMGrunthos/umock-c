@@ -44,9 +44,9 @@ static void umock_lock_windows_destroy(UMOCK_C_LOCK_HANDLE lock)
     (void)lock;
 }
 
-UMOCK_C_LOCK_HANDLE umock_lock_factory_create_lock(void* arg)
+UMOCK_C_LOCK_HANDLE umock_lock_factory_create_lock(void* params)
 {
-    (void)arg;
+    (void)params;
 
     UMOCK_C_LOCK_HANDLE result;
     UMOCK_C_LOCK_WINDOWS* srw_lock_windows = umockalloc_malloc(sizeof(UMOCK_C_LOCK_WINDOWS));

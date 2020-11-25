@@ -62,7 +62,7 @@ int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error)
         else
         {
             /* Codes_SRS_UMOCK_C_01_003: [ umock_c_init shall create a call recorder by calling umockcallrecorder_create. ]*/
-            umock_call_recorder = umockcallrecorder_create();
+            umock_call_recorder = umockcallrecorder_create(NULL, NULL);
             if (umock_call_recorder == NULL)
             {
                 /* Codes_SRS_UMOCK_C_01_005: [ If any of the calls fails, umock_c_init shall fail and return a non-zero value. ]*/

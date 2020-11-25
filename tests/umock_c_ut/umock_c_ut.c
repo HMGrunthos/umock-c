@@ -34,7 +34,8 @@ static int umocktypes_c_register_types_result;
 
 typedef struct umockcallrecorder_create_CALL_TAG
 {
-    int dummy;
+    UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock;
+    void* lock_factory_create_lock_params;
 } umockcallrecorder_create_CALL;
 
 static UMOCKCALLRECORDER_HANDLE umockcallrecorder_create_result;
@@ -175,13 +176,15 @@ typedef struct TEST_MOCK_CALL_TAG
 static size_t mocked_call_count;
 static TEST_MOCK_CALL* mocked_calls;
 
-UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void)
+UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock, void* lock_factory_create_lock_params)
 {
     TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
     if (new_calls != NULL)
     {
         mocked_calls = new_calls;
         mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_umockcallrecorder_create;
+        mocked_calls[mocked_call_count].u.umockcallrecorder_create.lock_factory_create_lock = lock_factory_create_lock;
+        mocked_calls[mocked_call_count].u.umockcallrecorder_create.lock_factory_create_lock_params = lock_factory_create_lock_params;
         mocked_call_count++;
     }
 

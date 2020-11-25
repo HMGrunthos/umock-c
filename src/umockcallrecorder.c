@@ -7,6 +7,8 @@
 #include "macro_utils/macro_utils.h"
 
 #include "umock_c/umock_lock_functions.h"
+#include "umock_c/umock_lock_factory.h"
+#include "umock_c/umock_lock_if.h"
 #include "umock_c/umock_log.h"
 #include "umock_c/umockalloc.h"
 #include "umock_c/umockcallrecorder.h"
@@ -30,6 +32,8 @@ typedef struct UMOCKCALLRECORDER_TAG
     UMOCK_C_LOCK_FUNCTION lock_function;
     UMOCK_C_UNLOCK_FUNCTION unlock_function;
     void* lock_context;
+    UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock;
+    UMOCK_C_LOCK_HANDLE lock;
 } UMOCKCALLRECORDER;
 
 static int internal_lock_if_needed(UMOCKCALLRECORDER_HANDLE call_recorder, UMOCK_C_LOCK_TYPE lock_type)
@@ -69,19 +73,26 @@ static void internal_unlock_if_needed(UMOCKCALLRECORDER_HANDLE call_recorder, UM
     }
 }
 
-UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void)
+UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock, void* lock_factory_create_lock_params)
 {
     UMOCKCALLRECORDER_HANDLE result;
 
+    /* Codes_SRS_UMOCKCALLRECORDER_01_095: [ `lock_factory_create_lock` may be `NULL`. ]*/
     /* Codes_SRS_UMOCKCALLRECORDER_01_001: [ umockcallrecorder_create shall create a new instance of a call recorder and return a non-NULL handle to it on success. ]*/
     result = (UMOCKCALLRECORDER_HANDLE)umockalloc_malloc(sizeof(UMOCKCALLRECORDER));
     if (result == NULL)
     {
-        /* Codes_SRS_UMOCKCALLRECORDER_01_002: [ If allocating memory for the call recorder fails, umockcallrecorder_create shall return NULL. ]*/
+        /* Codes_SRS_UMOCKCALLRECORDER_01_002: [ If any error occurs, `umockcallrecorder_create` shall return `NULL`. ]*/
         UMOCK_LOG("umockalloc_malloc(%zu) failed", sizeof(UMOCKCALLRECORDER));
     }
     else
     {
+        /* Codes_SRS_UMOCKCALLRECORDER_01_097: [ If `lock_factory_create_lock` is not `NULL`, `umockcallrecorder_create` shall call `lock_factory_create_lock` to create the lock used when working with the stored calls. ]*/
+        if (lock_factory_create_lock != NULL)
+        {
+            result->lock = lock_factory_create_lock(lock_factory_create_lock_params);
+        }
+
         result->expected_call_count = 0;
         result->expected_calls = NULL;
         result->expected_calls_string = NULL;
@@ -90,6 +101,9 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(void)
         result->actual_calls_string = NULL;
         result->lock_function = NULL;
         result->unlock_function = NULL;
+
+        /* Codes_SRS_UMOCKCALLRECORDER_01_096: [ `lock_factory_create_lock` shall be saved for later use. ]*/
+        result->lock_factory_create_lock = lock_factory_create_lock;
     }
 
     return result;
@@ -650,7 +664,7 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_clone(UMOCKCALLRECORDER_HANDLE umock_
         else
         {
             /* Codes_SRS_UMOCKCALLRECORDER_01_037: [ If allocating memory for the new umock call recorder instance fails, umockcallrecorder_clone shall fail and return NULL. ]*/
-            result = umockcallrecorder_create();
+            result = umockcallrecorder_create(NULL, NULL);
             if (result != NULL)
             {
                 size_t i;
