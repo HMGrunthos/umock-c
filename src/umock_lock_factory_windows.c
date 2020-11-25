@@ -39,8 +39,15 @@ static void umock_lock_windows_release_exclusive(UMOCK_C_LOCK_HANDLE lock)
     ReleaseSRWLockExclusive(&wmock_c_lock_windows->srw_lock);
 }
 
-UMOCK_C_LOCK_HANDLE umock_lock_factory_create_lock(void)
+static void umock_lock_windows_destroy(UMOCK_C_LOCK_HANDLE lock)
 {
+    (void)lock;
+}
+
+UMOCK_C_LOCK_HANDLE umock_lock_factory_create_lock(void* arg)
+{
+    (void)arg;
+
     UMOCK_C_LOCK_HANDLE result;
     UMOCK_C_LOCK_WINDOWS* srw_lock_windows = umockalloc_malloc(sizeof(UMOCK_C_LOCK_WINDOWS));
     if (srw_lock_windows == NULL)
@@ -54,6 +61,7 @@ UMOCK_C_LOCK_HANDLE umock_lock_factory_create_lock(void)
         srw_lock_windows->lock_if.release_shared = umock_lock_windows_release_shared;
         srw_lock_windows->lock_if.acquire_exclusive = umock_lock_windows_acquire_exclusive;
         srw_lock_windows->lock_if.release_exclusive = umock_lock_windows_release_exclusive;
+        srw_lock_windows->lock_if.destroy = umock_lock_windows_destroy;
 
         InitializeSRWLock(&srw_lock_windows->srw_lock);
 

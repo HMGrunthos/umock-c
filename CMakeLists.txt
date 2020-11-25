@@ -108,6 +108,7 @@ set(umock_c_h_files
     ./inc/umock_c/umock_c_prod.h
     ./inc/umock_c/umock_lock_functions.h
     ./inc/umock_c/umock_lock_factory.h
+    ./inc/umock_c/umock_lock_factory_default.h
     ./inc/umock_c/umock_lock_if.h
     ./inc/umock_c/umock_log.h
     ./inc/umock_c/umockalloc.h
