@@ -30,7 +30,7 @@ typedef struct mock_malloc_CALL_TAG
 
 typedef struct mock_free_CALL_TAG
 {
-    PSRWLOCK ptr;
+    void* ptr;
 } mock_free_CALL;
 
 typedef struct mock_InitializeSRWLock_CALL_TAG
