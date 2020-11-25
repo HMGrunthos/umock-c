@@ -83,6 +83,7 @@ include_directories(${MACRO_UTILS_INC_FOLDER})
 set(umock_c_c_files
     ./src/umock_c.c
     ./src/umock_c_negative_tests.c
+    ./src/umock_lock_factory_windows.c
     ./src/umock_lock_functions.c
     ./src/umock_log.c
     ./src/umockalloc.c
@@ -106,6 +107,8 @@ set(umock_c_h_files
     ./inc/umock_c/umock_c_negative_tests.h
     ./inc/umock_c/umock_c_prod.h
     ./inc/umock_c/umock_lock_functions.h
+    ./inc/umock_c/umock_lock_factory.h
+    ./inc/umock_c/umock_lock_if.h
     ./inc/umock_c/umock_log.h
     ./inc/umock_c/umockalloc.h
     ./inc/umock_c/umockautoignoreargs.h
