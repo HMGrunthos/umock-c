@@ -100,6 +100,31 @@ typedef struct test_unlock_function_CALL_TAG
 
 static int test_unlock_function_result;
 
+typedef struct test_lock_acquire_shared_CALL_TAG
+{
+    UMOCK_C_LOCK_HANDLE lock;
+} test_lock_acquire_shared_CALL;
+
+typedef struct test_lock_release_shared_CALL_TAG
+{
+    UMOCK_C_LOCK_HANDLE lock;
+} test_lock_release_shared_CALL;
+
+typedef struct test_lock_acquire_exclusive_CALL_TAG
+{
+    UMOCK_C_LOCK_HANDLE lock;
+} test_lock_acquire_exclusive_CALL;
+
+typedef struct test_lock_release_exclusive_CALL_TAG
+{
+    UMOCK_C_LOCK_HANDLE lock;
+} test_lock_release_exclusive_CALL;
+
+typedef struct test_lock_destroy_CALL_TAG
+{
+    UMOCK_C_LOCK_HANDLE lock;
+} test_lock_destroy_CALL;
+
 static size_t malloc_call_count;
 static size_t realloc_call_count;
 
@@ -122,6 +147,13 @@ typedef struct mock_free_CALL_TAG
     void* ptr;
 } mock_free_CALL;
 
+typedef struct test_lock_factory_create_lock_CALL_TAG
+{
+    void* params;
+} test_lock_factory_create_lock_CALL;
+
+static UMOCK_C_LOCK_HANDLE test_lock_factory_create_lock_result;
+
 typedef union TEST_MOCK_CALL_UNION_TAG
 {
     umockcall_get_ignore_all_calls_CALL umockcall_get_ignore_all_calls;
@@ -137,6 +169,12 @@ typedef union TEST_MOCK_CALL_UNION_TAG
     mock_free_CALL mock_free;
     test_lock_function_CALL test_lock_function;
     test_unlock_function_CALL test_unlock_function;
+    test_lock_factory_create_lock_CALL test_lock_factory_create_lock;
+    test_lock_acquire_shared_CALL test_lock_acquire_shared;
+    test_lock_release_shared_CALL test_lock_release_shared;
+    test_lock_acquire_exclusive_CALL test_lock_acquire_exclusive;
+    test_lock_release_exclusive_CALL test_lock_release_exclusive;
+    test_lock_destroy_CALL test_lock_destroy;
 } TEST_MOCK_CALL_UNION;
 
 #define TEST_MOCK_CALL_TYPE_VALUES \
@@ -152,7 +190,13 @@ typedef union TEST_MOCK_CALL_UNION_TAG
     TEST_MOCK_CALL_TYPE_mock_realloc, \
     TEST_MOCK_CALL_TYPE_mock_free, \
     TEST_MOCK_CALL_TYPE_test_lock_function, \
-    TEST_MOCK_CALL_TYPE_test_unlock_function \
+    TEST_MOCK_CALL_TYPE_test_unlock_function, \
+    TEST_MOCK_CALL_TYPE_test_lock_factory_create_lock, \
+    TEST_MOCK_CALL_TYPE_test_lock_acquire_shared, \
+    TEST_MOCK_CALL_TYPE_test_lock_release_shared, \
+    TEST_MOCK_CALL_TYPE_test_lock_acquire_exclusive, \
+    TEST_MOCK_CALL_TYPE_test_lock_release_exclusive, \
+    TEST_MOCK_CALL_TYPE_test_lock_destroy \
 
 MU_DEFINE_ENUM(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
 MU_DEFINE_ENUM_STRINGS(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
@@ -399,6 +443,8 @@ static void reset_all_calls(void)
     test_lock_function_result = 0;
     test_unlock_function_result = 0;
 
+    test_lock_factory_create_lock_result = NULL;
+
     if (mocked_calls != NULL)
     {
         free(mocked_calls);
@@ -437,6 +483,91 @@ static int test_unlock_function(void* context, UMOCK_C_LOCK_TYPE lock_type)
 
     return test_unlock_function_result;
 }
+
+void test_lock_acquire_shared(UMOCK_C_LOCK_HANDLE lock)
+{
+    TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
+    if (new_calls != NULL)
+    {
+        mocked_calls = new_calls;
+        mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_test_lock_acquire_shared;
+        mocked_calls[mocked_call_count].u.test_lock_acquire_shared.lock = lock;
+        mocked_call_count++;
+    }
+}
+
+void test_lock_release_shared(UMOCK_C_LOCK_HANDLE lock)
+{
+    TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
+    if (new_calls != NULL)
+    {
+        mocked_calls = new_calls;
+        mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_test_lock_release_shared;
+        mocked_calls[mocked_call_count].u.test_lock_release_shared.lock = lock;
+        mocked_call_count++;
+    }
+}
+
+void test_lock_acquire_exclusive(UMOCK_C_LOCK_HANDLE lock)
+{
+    TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
+    if (new_calls != NULL)
+    {
+        mocked_calls = new_calls;
+        mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_test_lock_acquire_exclusive;
+        mocked_calls[mocked_call_count].u.test_lock_acquire_exclusive.lock = lock;
+        mocked_call_count++;
+    }
+}
+
+void test_lock_release_exclusive(UMOCK_C_LOCK_HANDLE lock)
+{
+    TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
+    if (new_calls != NULL)
+    {
+        mocked_calls = new_calls;
+        mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_test_lock_release_exclusive;
+        mocked_calls[mocked_call_count].u.test_lock_release_exclusive.lock = lock;
+        mocked_call_count++;
+    }
+}
+
+void test_lock_destroy(UMOCK_C_LOCK_HANDLE lock)
+{
+    TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
+    if (new_calls != NULL)
+    {
+        mocked_calls = new_calls;
+        mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_test_lock_destroy;
+        mocked_calls[mocked_call_count].u.test_lock_destroy.lock = lock;
+        mocked_call_count++;
+    }
+}
+
+UMOCK_C_LOCK_HANDLE test_lock_factory_create_lock(void* params)
+{
+    TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
+    if (new_calls != NULL)
+    {
+        mocked_calls = new_calls;
+        mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_test_lock_factory_create_lock;
+        mocked_calls[mocked_call_count].u.test_lock_factory_create_lock.params = params;
+        mocked_call_count++;
+    }
+
+    return test_lock_factory_create_lock_result;
+}
+
+static const UMOCK_C_LOCK_IF test_lock =
+{
+    test_lock_acquire_shared,
+    test_lock_release_shared,
+    test_lock_acquire_exclusive,
+    test_lock_release_exclusive,
+    test_lock_destroy
+};
+static UMOCK_C_LOCK_HANDLE test_lock_handle = &test_lock;
+
 
 static TEST_MUTEX_HANDLE test_mutex;
 static TEST_MUTEX_HANDLE global_mutex;
@@ -497,6 +628,43 @@ TEST_FUNCTION(when_allocating_memory_fails_then_umockcallrecorder_create_fails)
 
     // assert
     ASSERT_IS_NULL(call_recorder);
+}
+
+/* Codes_SRS_UMOCKCALLRECORDER_01_097: [ If `lock_factory_create_lock` is not `NULL`, `umockcallrecorder_create` shall call `lock_factory_create_lock` to create the lock used when working with the stored calls. ]*/
+TEST_FUNCTION(umockcallrecorder_create_with_non_NULL_lock_factory_succeeds)
+{
+    // arrange
+    test_lock_factory_create_lock_result = test_lock_handle;
+
+    // act
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create(test_lock_factory_create_lock, (void*)0x4242);
+
+    // assert
+    ASSERT_IS_NOT_NULL(call_recorder);
+    ASSERT_ARE_EQUAL(size_t, 2, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_malloc, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_factory_create_lock, mocked_calls[1].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, (void*)0x4242, mocked_calls[1].u.test_lock_factory_create_lock.params);
+
+    // cleanup
+    umockcallrecorder_destroy(call_recorder);
+}
+
+/* Tests_SRS_UMOCKCALLRECORDER_01_002: [ If any error occurs, `umockcallrecorder_create` shall return `NULL`. ]*/
+TEST_FUNCTION(if_creating_the_lock_fails_umockcallrecorder_create_also_fails)
+{
+    // arrange
+
+    // act
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create(test_lock_factory_create_lock, (void*)0x4242);
+
+    // assert
+    ASSERT_IS_NULL(call_recorder);
+    ASSERT_ARE_EQUAL(size_t, 3, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_malloc, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_factory_create_lock, mocked_calls[1].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, (void*)0x4242, mocked_calls[1].u.test_lock_factory_create_lock.params);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_free, mocked_calls[2].call_type);
 }
 
 /* umockcallrecorder_destroy */
@@ -561,6 +729,26 @@ TEST_FUNCTION(umockcallrecorder_destroy_with_one_expected_call_frees_the_call_re
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_free, mocked_calls[5].call_type);
 }
 
+/* Tests_SRS_UMOCKCALLRECORDER_01_098: [ If a lock was created in `umockcallrecorder_create`, the lock shall be destroyed. ]*/
+TEST_FUNCTION(umockcallrecorder_destroy_destroys_the_lock_created_in_create)
+{
+    // arrange
+    test_lock_factory_create_lock_result = test_lock_handle;
+    UMOCKCALLRECORDER_HANDLE call_recorder = umockcallrecorder_create(test_lock_factory_create_lock, NULL);
+    reset_all_calls();
+
+    // act
+    umockcallrecorder_destroy(call_recorder);
+
+    // assert
+    ASSERT_IS_NOT_NULL(call_recorder);
+    ASSERT_ARE_EQUAL(size_t, 2, mocked_call_count);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_destroy, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(void_ptr, test_lock_handle, mocked_calls[0].u.test_lock_destroy.lock);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_free, mocked_calls[1].call_type);
+}
+
+#if 0
 /* umockcallrecorder_set_lock_functions */
 
 /* Tests_SRS_UMOCKCALLRECORDER_01_064: [ If umock_call_recorder is NULL, umockcallrecorder_set_lock_functions shall fail and return a non-zero value. ]*/
@@ -3043,5 +3231,6 @@ TEST_FUNCTION(resetting_lock_functions_to_NULL_does_not_call_locks)
     // cleanup
     umockcallrecorder_destroy(call_recorder);
 }
+#endif
 
 END_TEST_SUITE(umockcallrecorder_unittests)

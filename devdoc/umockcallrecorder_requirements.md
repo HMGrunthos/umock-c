@@ -37,11 +37,11 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(UMOCK_C_LOCK_FACTORY_CREATE_LO
 
 **SRS_UMOCKCALLRECORDER_01_001: [** `umockcallrecorder_create` shall create a new instance of a call recorder and return a non-`NULL` handle to it on success. **]**
 
-**SRS_UMOCKCALLRECORDER_01_002: [** If any error occurs, `umockcallrecorder_create` shall return `NULL`. **]**
-
 **SRS_UMOCKCALLRECORDER_01_096: [** `lock_factory_create_lock` shall be saved for later use. **]**
 
 **SRS_UMOCKCALLRECORDER_01_097: [** If `lock_factory_create_lock` is not `NULL`, `umockcallrecorder_create` shall call `lock_factory_create_lock` to create the lock used when working with the stored calls. **]**
+
+**SRS_UMOCKCALLRECORDER_01_002: [** If any error occurs, `umockcallrecorder_create` shall return `NULL`. **]**
 
 ### umockcallrecorder_destroy
 
@@ -52,6 +52,8 @@ void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
 `umockcallrecorder_destroy` destroys the call recorder `umock_call_recorder`.
 
 **SRS_UMOCKCALLRECORDER_01_003: [** `umockcallrecorder_destroy` shall free the resources associated with a the call recorder identified by the `umock_call_recorder` argument. **]**
+
+**SRS_UMOCKCALLRECORDER_01_098: [** If a lock was created in `umockcallrecorder_create`, the lock shall be destroyed. **]**
 
 **SRS_UMOCKCALLRECORDER_01_004: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_destroy` shall do nothing. **]**
 
