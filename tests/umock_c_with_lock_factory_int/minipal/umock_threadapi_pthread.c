@@ -9,11 +9,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#ifdef TI_RTOS
-#include <ti/sysbios/knl/Task.h>
-#else
 #include <unistd.h>
-#endif
 
 #include <pthread.h>
 #include <time.h>
@@ -124,12 +120,8 @@ UMOCK_THREADAPI_RESULT umock_threadapi_join(UMOCK_THREAD_HANDLE threadHandle, in
 
 void umock_threadapi_sleep(unsigned int milliseconds)
 {
-#ifdef TI_RTOS
-    Task_sleep(milliseconds);
-#else
     time_t seconds = milliseconds / 1000;
     long nsRemainder = (milliseconds % 1000) * 1000000;
     struct timespec timeToSleep = { seconds, nsRemainder };
     (void)nanosleep(&timeToSleep, NULL);
-#endif
 }

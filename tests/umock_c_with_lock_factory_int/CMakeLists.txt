@@ -18,8 +18,8 @@ set(test_platform_c_files
 else()
 # For others assume pthreads (this should be a real check for pthreads)
 set(test_platform_c_files
-./minipal/umock_threadapi_pthreads.c
-../../src/umock_lock_factory_pthreads.c
+./minipal/umock_threadapi_pthread.c
+../../src/umock_lock_factory_pthread.c
 )
 endif()
 

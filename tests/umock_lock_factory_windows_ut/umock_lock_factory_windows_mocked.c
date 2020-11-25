@@ -17,11 +17,11 @@ void mock_free(void* ptr);
 #define AcquireSRWLockExclusive(SRWLock) mock_AcquireSRWLockExclusive(SRWLock)
 #define ReleaseSRWLockExclusive(SRWLock) mock_ReleaseSRWLockExclusive(SRWLock)
 
-extern void mock_InitializeSRWLock(PSRWLOCK SRWLock);
-extern void AcquireSRWLockShared(PSRWLOCK SRWLock);
-extern void ReleaseSRWLockShared(PSRWLOCK SRWLock);
-extern void AcquireSRWLockExclusive(PSRWLOCK SRWLock);
-extern void ReleaseSRWLockExclusive(PSRWLOCK SRWLock);
+void mock_InitializeSRWLock(PSRWLOCK SRWLock);
+void mock_AcquireSRWLockShared(PSRWLOCK SRWLock);
+void mock_ReleaseSRWLockShared(PSRWLOCK SRWLock);
+void mock_AcquireSRWLockExclusive(PSRWLOCK SRWLock);
+void mock_ReleaseSRWLockExclusive(PSRWLOCK SRWLock);
 
 /* include code under test */
 #include "../../src/umock_lock_factory_windows.c"

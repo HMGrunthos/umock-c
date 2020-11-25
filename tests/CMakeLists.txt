@@ -29,6 +29,9 @@ if(${run_unittests})
         add_subdirectory(umock_lock_factory_windows_ut)
         add_subdirectory(umocktypes_windows_ut)
     endif()
+    if(UNIX)
+        add_subdirectory(umock_lock_factory_pthread_ut)
+    endif()
 endif()
 
 #int tests

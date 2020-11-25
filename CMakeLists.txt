@@ -137,7 +137,7 @@ endif()
 
 if(UNIX)
 set(umock_c_c_files ${umock_c_c_files}
-    ./src/umock_lock_factory_pthreads.c
+    ./src/umock_lock_factory_pthread.c
 )
 endif()
 
