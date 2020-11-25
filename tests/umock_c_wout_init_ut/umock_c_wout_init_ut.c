@@ -100,15 +100,6 @@ UMOCKCALL_HANDLE umockcallrecorder_get_last_expected_call(UMOCKCALLRECORDER_HAND
     return NULL;
 }
 
-int umockcallrecorder_set_lock_functions(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context)
-{
-    (void)umock_call_recorder;
-    (void)lock_function;
-    (void)unlock_function;
-    (void)context;
-    return 0;
-}
-
 int umocktypes_init(void)
 {
     return 0;

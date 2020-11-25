@@ -84,22 +84,6 @@ typedef struct umockcall_get_call_can_fail_CALL_TAG
 
 static int umockcall_get_call_can_fail_result;
 
-typedef struct test_lock_function_CALL_TAG
-{
-    void* context;
-    UMOCK_C_LOCK_TYPE lock_type;
-} test_lock_function_CALL;
-
-static int test_lock_function_result;
-
-typedef struct test_unlock_function_CALL_TAG
-{
-    void* context;
-    UMOCK_C_LOCK_TYPE lock_type;
-} test_unlock_function_CALL;
-
-static int test_unlock_function_result;
-
 typedef struct test_lock_acquire_shared_CALL_TAG
 {
     UMOCK_C_LOCK_HANDLE lock;
@@ -167,8 +151,6 @@ typedef union TEST_MOCK_CALL_UNION_TAG
     mock_malloc_CALL mock_malloc;
     mock_realloc_CALL mock_realloc;
     mock_free_CALL mock_free;
-    test_lock_function_CALL test_lock_function;
-    test_unlock_function_CALL test_unlock_function;
     test_lock_factory_create_lock_CALL test_lock_factory_create_lock;
     test_lock_acquire_shared_CALL test_lock_acquire_shared;
     test_lock_release_shared_CALL test_lock_release_shared;
@@ -189,8 +171,6 @@ typedef union TEST_MOCK_CALL_UNION_TAG
     TEST_MOCK_CALL_TYPE_mock_malloc, \
     TEST_MOCK_CALL_TYPE_mock_realloc, \
     TEST_MOCK_CALL_TYPE_mock_free, \
-    TEST_MOCK_CALL_TYPE_test_lock_function, \
-    TEST_MOCK_CALL_TYPE_test_unlock_function, \
     TEST_MOCK_CALL_TYPE_test_lock_factory_create_lock, \
     TEST_MOCK_CALL_TYPE_test_lock_acquire_shared, \
     TEST_MOCK_CALL_TYPE_test_lock_release_shared, \
@@ -201,9 +181,6 @@ typedef union TEST_MOCK_CALL_UNION_TAG
 MU_DEFINE_ENUM(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
 MU_DEFINE_ENUM_STRINGS(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
 TEST_DEFINE_ENUM_TYPE(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_VALUES)
-
-MU_DEFINE_ENUM_STRINGS(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_VALUES)
-TEST_DEFINE_ENUM_TYPE(UMOCK_C_LOCK_TYPE, UMOCK_C_LOCK_TYPE_VALUES)
 
 typedef struct TEST_MOCK_CALL_TAG
 {
@@ -526,9 +503,6 @@ static void reset_all_calls(void)
     umockcall_are_equal_call_result = 1;
     umockcall_get_ignore_all_calls_call_result = 0;
 
-    test_lock_function_result = 0;
-    test_unlock_function_result = 0;
-
     test_lock_factory_create_lock_result = test_lock_handle;
 
     if (mocked_calls != NULL)
@@ -538,36 +512,6 @@ static void reset_all_calls(void)
     }
 
     mocked_call_count = 0;
-}
-
-static int test_lock_function(void* context, UMOCK_C_LOCK_TYPE lock_type)
-{
-    TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
-    if (new_calls != NULL)
-    {
-        mocked_calls = new_calls;
-        mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_test_lock_function;
-        mocked_calls[mocked_call_count].u.test_lock_function.context = context;
-        mocked_calls[mocked_call_count].u.test_lock_function.lock_type = lock_type;
-        mocked_call_count++;
-    }
-
-    return test_lock_function_result;
-}
-
-static int test_unlock_function(void* context, UMOCK_C_LOCK_TYPE lock_type)
-{
-    TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
-    if (new_calls != NULL)
-    {
-        mocked_calls = new_calls;
-        mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_test_unlock_function;
-        mocked_calls[mocked_call_count].u.test_unlock_function.context = context;
-        mocked_calls[mocked_call_count].u.test_unlock_function.lock_type = lock_type;
-        mocked_call_count++;
-    }
-
-    return test_unlock_function_result;
 }
 
 static TEST_MUTEX_HANDLE test_mutex;

@@ -4,6 +4,7 @@
 #include "macro_utils/macro_utils.h"
 
 #include "umock_c/umock_c.h"
+#include "umock_c/umock_lock_factory.h"
 #include "umock_c/umockcall.h"
 #include "umock_c/umocktypes.h"
 #include "umock_c/umocktypes_c.h"
@@ -21,7 +22,7 @@ static ON_UMOCK_C_ERROR on_umock_c_error_function;
 static UMOCK_C_STATE umock_c_state = UMOCK_C_STATE_NOT_INITIALIZED;
 static UMOCKCALLRECORDER_HANDLE umock_call_recorder = NULL;
 
-int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error)
+int internal_init_with_lock_factory(ON_UMOCK_C_ERROR on_umock_c_error, UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock, void* lock_factory_create_lock_params)
 {
     int result;
 
@@ -56,16 +57,18 @@ int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error)
             (umocktypes_c_register_types() != 0))
         {
             /* Codes_SRS_UMOCK_C_01_005: [ If any of the calls fails, umock_c_init shall fail and return a non-zero value. ]*/
+            /* Codes_SRS_UMOCK_C_01_044: [ If any of the calls fails, `umock_c_init_with_lock_factory` shall fail and return a non-zero value. ]*/
             UMOCK_LOG("umock_c: Could not register standard C types with umock_c.");
             result = __LINE__;
         }
         else
         {
             /* Codes_SRS_UMOCK_C_01_003: [ umock_c_init shall create a call recorder by calling umockcallrecorder_create. ]*/
-            umock_call_recorder = umockcallrecorder_create(NULL, NULL);
+            umock_call_recorder = umockcallrecorder_create(lock_factory_create_lock, lock_factory_create_lock_params);
             if (umock_call_recorder == NULL)
             {
                 /* Codes_SRS_UMOCK_C_01_005: [ If any of the calls fails, umock_c_init shall fail and return a non-zero value. ]*/
+                /* Codes_SRS_UMOCK_C_01_044: [ If any of the calls fails, `umock_c_init_with_lock_factory` shall fail and return a non-zero value. ]*/
                 UMOCK_LOG("umock_c: Could not create the call recorder.");
                 result = __LINE__;
             }
@@ -79,6 +82,7 @@ int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error)
                 umock_c_state = UMOCK_C_STATE_INITIALIZED;
 
                 /* Codes_SRS_UMOCK_C_01_004: [ On success, umock_c_init shall return 0. ]*/
+                /* Codes_SRS_UMOCK_C_01_043: [ On success, `umock_c_init_with_lock_factory` shall return 0. ]*/
                 result = 0;
 
                 goto all_ok;
@@ -92,31 +96,15 @@ all_ok:
     return result;
 }
 
-int umock_c_set_lock_functions(UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context)
+int umock_c_init(ON_UMOCK_C_ERROR on_umock_c_error)
 {
-    int result;
-    if (umock_c_state != UMOCK_C_STATE_INITIALIZED)
-    {
-        /* Codes_SRS_UMOCK_C_01_037: [ If the module is not initialized, umock_c_set_lock_functions shall do nothing. ]*/
-        UMOCK_LOG("umock not initialized, state is %" PRI_MU_ENUM"", MU_ENUM_VALUE(UMOCK_C_STATE, umock_c_state));
-        result = MU_FAILURE;
-    }
-    else
-    {
-        /* Codes_SRS_UMOCK_C_01_040: [ umock_c_set_lock_functions shall call umockcallrecorder_set_lock_functions for the current call recorder, passing lock_function, unlock_function and context. ]*/
-        if (umockcallrecorder_set_lock_functions(umock_call_recorder, lock_function, unlock_function, context) != 0)
-        {
-            /* Codes_SRS_UMOCK_C_01_041: [ If any error occurs, umock_c_set_lock_functions shall fail and return a non-zero value. ]*/
-            UMOCK_LOG("umockcallrecorder_set_lock_functions failed");
-            result = MU_FAILURE;
-        }
-        else
-        {
-            /* Codes_SRS_UMOCK_C_01_039: [ On success umock_c_set_lock_functions shall return 0. ]*/
-            result = 0;
-        }
-    }
-    return result;
+    return internal_init_with_lock_factory(on_umock_c_error, NULL, NULL);
+}
+
+int umock_c_init_with_lock_factory(ON_UMOCK_C_ERROR on_umock_c_error, UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock, void* lock_factory_create_lock_params)
+{
+    /* Codes_SRS_UMOCK_C_01_042: [ `umock_c_init_with_lock_factory` shall perform the same initialization like `umock_c_init` while passing `lock_factory_create_lock` and `lock_factory_create_lock_params` as arguments to `umockcallrecorder_create`. ] */
+    return internal_init_with_lock_factory(on_umock_c_error, lock_factory_create_lock, lock_factory_create_lock_params);
 }
 
 void umock_c_deinit(void)

@@ -10,9 +10,8 @@
 #include <stddef.h>
 #endif
 
-#include "umockcall.h"
-#include "umock_lock_functions.h"
-#include "umock_lock_factory.h"
+#include "umock_c/umockcall.h"
+#include "umock_c/umock_lock_factory.h"
 
 #ifdef __cplusplus
 extern "C" {

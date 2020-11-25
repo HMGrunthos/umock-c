@@ -14,6 +14,9 @@
 
 #include "testrunnerswitcher.h"
 
+#include "umock_c/umock_lock_factory.h"
+#include "umock_c/umock_lock_factory_default.h"
+
 #define ENABLE_MOCKS
 
 #include "umock_c/umock_c.h"
@@ -30,20 +33,6 @@ static void test_on_umock_c_error(UMOCK_C_ERROR_CODE error_code)
 }
 
 static TEST_MUTEX_HANDLE test_mutex;
-
-static int test_lock_function(void* context, UMOCK_C_LOCK_TYPE lock_type)
-{
-    (void)context;
-    (void)lock_type;
-    return 0;
-}
-
-static int test_unlock_function(void* context, UMOCK_C_LOCK_TYPE lock_type)
-{
-    (void)context;
-    (void)lock_type;
-    return 0;
-}
 
 BEGIN_TEST_SUITE(umock_c_lock_unlock_integrationtests)
 
@@ -78,7 +67,7 @@ TEST_FUNCTION_CLEANUP(test_function_cleanup)
 TEST_FUNCTION(expected_calls_and_actual_calls_from_multiple_threads_do_not_crash)
 {
     // arrange
-    umock_c_set_lock_functions(test_lock_function, test_unlock_function, (void*)0x4242);
+    umock_c_init_with_lock_factory(test_on_umock_c_error, umock_lock_factory_create_lock, NULL);
 
     // act
 

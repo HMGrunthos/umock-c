@@ -11,7 +11,7 @@ umock_c_lock_unlock_int.c
 
 set(${theseTestsName}_c_files
 ../../src/umock_c.c
-../../src/umock_lock_functions.c
+../../src/umock_lock_factory_windows.c
 ../../src/umock_log.c
 ../../src/umockalloc.c
 ../../src/umockautoignoreargs.c

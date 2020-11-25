@@ -10,7 +10,6 @@ umock_c_negt_int_tests.c
 )
 
 set(${theseTestsName}_c_files
-../../src/umock_lock_functions.c
 ../../src/umock_c.c
 ../../src/umockalloc.c
 ../../src/umockcall.c

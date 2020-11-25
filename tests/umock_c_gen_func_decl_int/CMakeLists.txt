@@ -12,7 +12,6 @@ umock_c_gen_func_multiple_inc.c
 
 set(${theseTestsName}_c_files
 ../../src/umock_c.c
-../../src/umock_lock_functions.c
 ../../src/umockalloc.c
 ../../src/umockautoignoreargs.c
 ../../src/umockcall.c

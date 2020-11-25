@@ -6,7 +6,6 @@
 
 #include "macro_utils/macro_utils.h"
 
-#include "umock_c/umock_lock_functions.h"
 #include "umock_c/umock_lock_factory.h"
 #include "umock_c/umock_lock_if.h"
 #include "umock_c/umock_log.h"
@@ -29,9 +28,6 @@ typedef struct UMOCKCALLRECORDER_TAG
     UMOCKCALL_HANDLE* actual_calls;
     char* expected_calls_string;
     char* actual_calls_string;
-    UMOCK_C_LOCK_FUNCTION lock_function;
-    UMOCK_C_UNLOCK_FUNCTION unlock_function;
-    void* lock_context;
     UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock;
     void* lock_factory_create_lock_params;
     UMOCK_C_LOCK_HANDLE lock;
@@ -135,8 +131,6 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(UMOCK_C_LOCK_FACTORY_CREATE_LO
             result->actual_call_count = 0;
             result->actual_calls = NULL;
             result->actual_calls_string = NULL;
-            result->lock_function = NULL;
-            result->unlock_function = NULL;
 
             /* Codes_SRS_UMOCKCALLRECORDER_01_096: [ `lock_factory_create_lock` shall be saved for later use. ]*/
             result->lock_factory_create_lock = lock_factory_create_lock;
@@ -624,6 +618,7 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_clone(UMOCKCALLRECORDER_HANDLE umock_
 
                 if (umock_call_recorder->lock_factory_create_lock != NULL)
                 {
+                    /* Codes_SRS_UMOCKCALLRECORDER_01_085: [ If the `lock_factory_create_lock` associated with `umock_call_recorder` is not `NULL`, `umockcallrecorder_clone` shall create a new lock for the cloned call recorder. ]*/
                     result->lock = umock_call_recorder->lock_factory_create_lock(umock_call_recorder->lock_factory_create_lock_params);
                 }
                 else
@@ -643,11 +638,6 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_clone(UMOCKCALLRECORDER_HANDLE umock_
                 }
                 else
                 {
-                    /* Codes_SRS_UMOCKCALLRECORDER_01_085: [ If the `lock_factory_create_lock` associated with `umock_call_recorder` is not `NULL`, `umockcallrecorder_clone` shall create a new lock for the cloned call recorder. ]*/
-                    result->lock_function = umock_call_recorder->lock_function;
-                    result->unlock_function = umock_call_recorder->unlock_function;
-                    result->lock_context = umock_call_recorder->lock_context;
-
                     result->expected_calls = umockalloc_malloc(sizeof(UMOCK_EXPECTED_CALL) * umock_call_recorder->expected_call_count);
                     if (result->expected_calls == NULL)
                     {
