@@ -12,7 +12,6 @@
 
     UMOCKCALLRECORDER_HANDLE umockcallrecorder_create(UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock, void* lock_factory_create_lock_params);
     void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
-    int umockcallrecorder_set_lock_functions(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context);
     int umockcallrecorder_reset_all_calls(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
     int umockcallrecorder_add_expected_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCKCALL_HANDLE mock_call);
     int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCKCALL_HANDLE mock_call, UMOCKCALL_HANDLE* matched_call);
@@ -56,26 +55,6 @@ void umockcallrecorder_destroy(UMOCKCALLRECORDER_HANDLE umock_call_recorder);
 **SRS_UMOCKCALLRECORDER_01_098: [** If a lock was created in `umockcallrecorder_create`, the lock shall be destroyed. **]**
 
 **SRS_UMOCKCALLRECORDER_01_004: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_destroy` shall do nothing. **]**
-
-### umockcallrecorder_set_lock_functions
-
-```c
-int umockcallrecorder_set_lock_functions(UMOCKCALLRECORDER_HANDLE umock_call_recorder, UMOCK_C_LOCK_FUNCTION lock_function, UMOCK_C_UNLOCK_FUNCTION unlock_function, void* context)
-```
-
-`umockcallrecorder_set_lock_functions` sets up the lock and unlock functions to be used for accessing the expected and actual calls.
-
-**SRS_UMOCKCALLRECORDER_01_064: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. **]**
-
-**SRS_UMOCKCALLRECORDER_01_059: [** If `umockcallrecorder_set_lock_functions` is called with a `NULL` `lock_function` and non-`NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. **]**
-
-**SRS_UMOCKCALLRECORDER_01_060: [** If `umockcallrecorder_set_lock_functions` is called with a non-`NULL` `lock_function` and a `NULL` `unlock_function`, `umockcallrecorder_set_lock_functions` shall fail and return a non-zero value. **]**
-
-**SRS_UMOCKCALLRECORDER_01_061: [** `umockcallrecorder_set_lock_functions` shall save `lock_function`, `unlock_function` and `context` for later use. **]**
-
-**SRS_UMOCKCALLRECORDER_01_063: [** `context` may be `NULL`. **]**
-
-**SRS_UMOCKCALLRECORDER_01_062: [** On success `umockcallrecorder_set_lock_functions` shall return 0. **]**
 
 ### umockcallrecorder_reset_all_calls
 
@@ -127,8 +106,6 @@ int umockcallrecorder_add_actual_call(UMOCKCALLRECORDER_HANDLE umock_call_record
 
 **SRS_UMOCKCALLRECORDER_01_071: [** If a lock was created for the call recorder, `umockcallrecorder_add_actual_call` shall acquire the lock in exclusive mode. **]**
 
-**SRS_UMOCKCALLRECORDER_01_072: [** If the lock function fails, `umockcallrecorder_add_actual_call` shall fail and return a non-zero value. **]**
-
 **SRS_UMOCKCALLRECORDER_01_014: [** `umockcallrecorder_add_actual_call` shall check whether the call mock_call matches any of the expected calls maintained by `umock_call_recorder`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_015: [** If the call does not match any of the expected calls, then `umockcallrecorder_add_actual_call` shall add the mock_call call to the actual call list maintained by `umock_call_recorder`. **]**
@@ -163,8 +140,6 @@ const char* umockcallrecorder_get_actual_calls(UMOCKCALLRECORDER_HANDLE umock_ca
 
 **SRS_UMOCKCALLRECORDER_01_073: [** If a lock was created for the call recorder, `umockcallrecorder_get_actual_calls` shall acquire the lock in shared mode. **]**
 
-**SRS_UMOCKCALLRECORDER_01_075: [** If the lock function fails, `umockcallrecorder_get_actual_calls` shall fail and return `NULL`. **]**
-
 **SRS_UMOCKCALLRECORDER_01_022: [** `umockcallrecorder_get_actual_calls` shall return a pointer to the string representation of all the actual calls. **]**
 
 **SRS_UMOCKCALLRECORDER_01_023: [** The string for each call shall be obtained by calling `umockcall_stringify`. **]**
@@ -186,8 +161,6 @@ const char* umockcallrecorder_get_expected_calls(UMOCKCALLRECORDER_HANDLE umock_
 **SRS_UMOCKCALLRECORDER_01_029: [** If the `umock_call_recorder` is `NULL`, `umockcallrecorder_get_expected_calls` shall fail and return `NULL`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_076: [** If a lock was created for the call recorder, `umockcallrecorder_get_expected_calls` shall acquire the lock in shared mode. **]**
-
-**SRS_UMOCKCALLRECORDER_01_078: [** If the lock function fails, `umockcallrecorder_get_expected_calls` shall fail and return `NULL`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_027: [** `umockcallrecorder_get_expected_calls` shall return a pointer to the string representation of all the expected calls. **]**
 
@@ -239,7 +212,7 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_clone(UMOCKCALLRECORDER_HANDLE umock_
 
 **SRS_UMOCKCALLRECORDER_01_037: [** If allocating memory for the new umock call recorder instance fails, `umockcallrecorder_clone` shall fail and return `NULL`. **]**
 
-**SRS_UMOCKCALLRECORDER_01_082: [** If a lock was created for the call recorder on `umock_call_recorder`, `umockcallrecorder_clone` shall call the lock function of `umock_call_recorder` with `UMOCK_C_LOCK_TYPE_READ`. **]**
+**SRS_UMOCKCALLRECORDER_01_082: [** If a lock was created for the call recorder `umock_call_recorder`, `umockcallrecorder_clone` shall acquire_the lock in shared mode for `umock_call_recorder`. **]**
 
 **SRS_UMOCKCALLRECORDER_01_084: [** If locking fails, `umockcallrecorder_clone` shall fail and return `NULL`. **]**
 
@@ -255,13 +228,11 @@ UMOCKCALLRECORDER_HANDLE umockcallrecorder_clone(UMOCKCALLRECORDER_HANDLE umock_
 
 **SRS_UMOCKCALLRECORDER_01_043: [** If cloning an actual call fails, `umockcallrecorder_clone` shall fail and return `NULL`. **]**
 
-**SRS_UMOCKCALLRECORDER_01_085: [** `umockcallrecorder_clone` shall also copy the `lock_function`, `unlock_function` and lock `context` from `umock_call_recorder` to the cloned call recorder. **]**
+**SRS_UMOCKCALLRECORDER_01_085: [** If the `lock_factory_create_lock` associated with `umock_call_recorder` is not `NULL`, `umockcallrecorder_clone` shall create a new lock for the cloned call recorder. **]**
 
-**SRS_UMOCKCALLRECORDER_01_083: [** If a lock was created for the call recorder on `umock_call_recorder`, `umockcallrecorder_clone` shall call the unlock function of `umock_call_recorder` with `UMOCK_C_LOCK_TYPE_READ`. **]**
+**SRS_UMOCKCALLRECORDER_01_083: [** If a lock was created for the call recorder `umock_call_recorder`, `umockcallrecorder_clone` shall release the shared lock for `umock_call_recorder`. **]**
 
-**SRS_UMOCKCALLRECORDER_01_052: [** If allocating memory for the expected calls fails, `umockcallrecorder_clone` shall fail and return `NULL`. **]**
-
-**SRS_UMOCKCALLRECORDER_01_053: [** If allocating memory for the actual calls fails, `umockcallrecorder_clone` shall fail and return `NULL`. **]**
+**SRS_UMOCKCALLRECORDER_01_052: [** If any error occurs, `umockcallrecorder_clone` shall fail and return `NULL`. **]**
 
 ### umockcallrecorder_get_expected_call_count
 
@@ -281,8 +252,6 @@ int umockcallrecorder_get_expected_call_count(UMOCKCALLRECORDER_HANDLE umock_cal
 
 **SRS_UMOCKCALLRECORDER_01_045: [** On success `umockcallrecorder_get_expected_call_count` shall return 0. **]**
 
-**SRS_UMOCKCALLRECORDER_01_088: [** If any error occurs, `umockcallrecorder_get_expected_call_count` shall fail and return a non-zero value. **]**
-
 ### umockcallrecorder_fail_call
 
 ```c
@@ -294,8 +263,6 @@ int umockcallrecorder_fail_call(UMOCKCALLRECORDER_HANDLE umock_call_recorder, si
 **SRS_UMOCKCALLRECORDER_01_049: [** If `umock_call_recorder` is `NULL`, `umockcallrecorder_fail_call` shall return a non-zero value. **]**
 
 **SRS_UMOCKCALLRECORDER_01_089: [** If a lock was created for the call recorder, `umockcallrecorder_fail_call` shall acquire the lock in exclusive mode. **]**
-
-**SRS_UMOCKCALLRECORDER_01_091: [** If locking fails, `umockcallrecorder_fail_call` shall fail and return a non-zero value. **]**
 
 **SRS_UMOCKCALLRECORDER_01_047: [** `umockcallrecorder_fail_call` shall mark an expected call as to be failed by calling `umockcall_set_fail_call` with a 1 value for `fail_call`. **]**
 
@@ -318,8 +285,6 @@ int umockcallrecorder_can_call_fail(UMOCKCALLRECORDER_HANDLE umock_call_recorder
 **SRS_UMOCKCALLRECORDER_31_056: [** If `umock_call_recorder` or `call_can_fail` is `NULL`, `umockcallrecorder_can_call_fail` shall return a non-zero value. **]**
 
 **SRS_UMOCKCALLRECORDER_01_092: [** If a lock was created for the call recorder, `umockcallrecorder_can_call_fail` shall acquire the lock in exclusive mode. **]**
-
-**SRS_UMOCKCALLRECORDER_01_093: [** If locking fails, `umockcallrecorder_can_call_fail` shall fail and return a non-zero value. **]**
 
 **SRS_UMOCKCALLRECORDER_31_057: [** If `index` is greater or equal to the current expected calls count, `umockcallrecorder_can_call_fail` shall return a non-zero value. **]**
 
