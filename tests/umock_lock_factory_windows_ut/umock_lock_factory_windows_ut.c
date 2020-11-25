@@ -95,48 +95,44 @@ static TEST_MOCK_CALL* mocked_calls;
 extern "C" {
 #endif
 
-    void* mock_malloc(size_t size)
+void* mock_malloc(size_t size)
+{
+    void* result;
+
+    TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
+    if (new_calls != NULL)
     {
-        void* result;
-
-        TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
-        if (new_calls != NULL)
-        {
-            mocked_calls = new_calls;
-            mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_mock_malloc;
-            mocked_calls[mocked_call_count].u.mock_malloc.size = size;
-            mocked_call_count++;
-        }
-
-        malloc_call_count++;
-        if (malloc_call_count == when_shall_malloc_fail)
-        {
-            result = NULL;
-        }
-        else
-        {
-            result = malloc(size);
-        }
-        return result;
+        mocked_calls = new_calls;
+        mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_mock_malloc;
+        mocked_calls[mocked_call_count].u.mock_malloc.size = size;
+        mocked_call_count++;
     }
 
-    void mock_free(void* ptr)
+    malloc_call_count++;
+    if (malloc_call_count == when_shall_malloc_fail)
     {
-        TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
-        if (new_calls != NULL)
-        {
-            mocked_calls = new_calls;
-            mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_mock_free;
-            mocked_calls[mocked_call_count].u.mock_free.ptr = ptr;
-            mocked_call_count++;
-        }
-
-        free(ptr);
+        result = NULL;
     }
-
-#ifdef __cplusplus
+    else
+    {
+        result = malloc(size);
+    }
+    return result;
 }
-#endif
+
+void mock_free(void* ptr)
+{
+    TEST_MOCK_CALL* new_calls = (TEST_MOCK_CALL*)realloc(mocked_calls, sizeof(TEST_MOCK_CALL) * (mocked_call_count + 1));
+    if (new_calls != NULL)
+    {
+        mocked_calls = new_calls;
+        mocked_calls[mocked_call_count].call_type = TEST_MOCK_CALL_TYPE_mock_free;
+        mocked_calls[mocked_call_count].u.mock_free.ptr = ptr;
+        mocked_call_count++;
+    }
+
+    free(ptr);
+}
 
 void mock_InitializeSRWLock(PSRWLOCK SRWLock)
 {
@@ -197,6 +193,10 @@ void mock_ReleaseSRWLockExclusive(PSRWLOCK SRWLock)
         mocked_call_count++;
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 static void reset_all_calls(void)
 {
