@@ -41,7 +41,7 @@ TEST_SUITE_INITIALIZE(suite_init)
     test_mutex = TEST_MUTEX_CREATE();
     ASSERT_IS_NOT_NULL(test_mutex);
 
-    ASSERT_ARE_EQUAL(int, 0, umock_c_init(test_on_umock_c_error));
+    ASSERT_ARE_EQUAL(int, 0, umock_c_init_with_lock_factory(test_on_umock_c_error, umock_lock_factory_create_lock, NULL));
 }
 
 TEST_SUITE_CLEANUP(suite_cleanup)
@@ -53,8 +53,7 @@ TEST_SUITE_CLEANUP(suite_cleanup)
 
 TEST_FUNCTION_INITIALIZE(test_function_init)
 {
-    int mutex_acquire_result = TEST_MUTEX_ACQUIRE(test_mutex);
-    ASSERT_ARE_EQUAL(int, 0, mutex_acquire_result);
+    ASSERT_ARE_EQUAL(int, 0, TEST_MUTEX_ACQUIRE(test_mutex));
 
     umock_c_reset_all_calls();
 }
@@ -67,7 +66,6 @@ TEST_FUNCTION_CLEANUP(test_function_cleanup)
 TEST_FUNCTION(expected_calls_and_actual_calls_from_multiple_threads_do_not_crash)
 {
     // arrange
-    umock_c_init_with_lock_factory(test_on_umock_c_error, umock_lock_factory_create_lock, NULL);
 
     // act
 
