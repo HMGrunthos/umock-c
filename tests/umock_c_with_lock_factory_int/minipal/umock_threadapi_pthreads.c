@@ -19,15 +19,15 @@
 #include <time.h>
 #include "c_logging/xlogging.h"
 
-#include "c_pal/threadapi.h"
+#include "umock_threadapi.h"
 
 
-MU_DEFINE_ENUM_STRINGS(THREADAPI_RESULT, THREADAPI_RESULT_VALUES);
+MU_DEFINE_ENUM_STRINGS(UMOCK_THREADAPI_RESULT, UMOCK_THREADAPI_RESULT_VALUES);
 
 typedef struct THREAD_INSTANCE_TAG
 {
     pthread_t Pthread_handle;
-    THREAD_START_FUNC ThreadStartFunc;
+    UMOCK_THREAD_START_FUNC ThreadStartFunc;
     void* Arg;
 } THREAD_INSTANCE;
 
@@ -38,23 +38,23 @@ static void* ThreadWrapper(void* threadInstanceArg)
     return (void*)(intptr_t)result;
 }
 
-THREADAPI_RESULT ThreadAPI_Create(THREAD_HANDLE* threadHandle, THREAD_START_FUNC func, void* arg)
+UMOCK_THREADAPI_RESULT umock_threadapi_create(UMOCK_THREAD_HANDLE* threadHandle, UMOCK_THREAD_START_FUNC func, void* arg)
 {
-    THREADAPI_RESULT result;
+    UMOCK_THREADAPI_RESULT result;
 
     if ((threadHandle == NULL) ||
         (func == NULL))
     {
-        result = THREADAPI_INVALID_ARG;
-        LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(THREADAPI_RESULT, result));
+        result = UMOCK_THREADAPI_INVALID_ARG;
+        LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(UMOCK_THREADAPI_RESULT, result));
     }
     else
     {
         THREAD_INSTANCE* threadInstance = malloc(sizeof(THREAD_INSTANCE));
         if (threadInstance == NULL)
         {
-            result = THREADAPI_NO_MEMORY;
-            LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(THREADAPI_RESULT, result));
+            result = UMOCK_THREADAPI_NO_MEMORY;
+            LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(UMOCK_THREADAPI_RESULT, result));
         }
         else
         {
@@ -66,20 +66,20 @@ THREADAPI_RESULT ThreadAPI_Create(THREAD_HANDLE* threadHandle, THREAD_START_FUNC
             default:
                 free(threadInstance);
 
-                result = THREADAPI_ERROR;
-                LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(THREADAPI_RESULT, result));
+                result = UMOCK_THREADAPI_ERROR;
+                LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(UMOCK_THREADAPI_RESULT, result));
                 break;
 
             case 0:
                 *threadHandle = threadInstance;
-                result = THREADAPI_OK;
+                result = UMOCK_THREADAPI_OK;
                 break;
 
             case EAGAIN:
                 free(threadInstance);
 
-                result = THREADAPI_NO_MEMORY;
-                LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(THREADAPI_RESULT, result));
+                result = UMOCK_THREADAPI_NO_MEMORY;
+                LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(UMOCK_THREADAPI_RESULT, result));
                 break;
             }
         }
@@ -88,23 +88,23 @@ THREADAPI_RESULT ThreadAPI_Create(THREAD_HANDLE* threadHandle, THREAD_START_FUNC
     return result;
 }
 
-THREADAPI_RESULT ThreadAPI_Join(THREAD_HANDLE threadHandle, int* res)
+UMOCK_THREADAPI_RESULT umock_threadapi_join(UMOCK_THREAD_HANDLE threadHandle, int* res)
 {
-    THREADAPI_RESULT result;
+    UMOCK_THREADAPI_RESULT result;
 
     THREAD_INSTANCE* threadInstance = (THREAD_INSTANCE*)threadHandle;
     if (threadInstance == NULL)
     {
-        result = THREADAPI_INVALID_ARG;
-        LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(THREADAPI_RESULT, result));
+        result = UMOCK_THREADAPI_INVALID_ARG;
+        LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(UMOCK_THREADAPI_RESULT, result));
     }
     else
     {
         void* threadResult;
         if (pthread_join(threadInstance->Pthread_handle, &threadResult) != 0)
         {
-            result = THREADAPI_ERROR;
-            LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(THREADAPI_RESULT, result));
+            result = UMOCK_THREADAPI_ERROR;
+            LogError("(result = %" PRI_MU_ENUM ")", MU_ENUM_VALUE(UMOCK_THREADAPI_RESULT, result));
         }
         else
         {
@@ -113,7 +113,7 @@ THREADAPI_RESULT ThreadAPI_Join(THREAD_HANDLE threadHandle, int* res)
                 *res = (int)(intptr_t)threadResult;
             }
 
-            result = THREADAPI_OK;
+            result = UMOCK_THREADAPI_OK;
         }
 
         free(threadInstance);
@@ -122,7 +122,7 @@ THREADAPI_RESULT ThreadAPI_Join(THREAD_HANDLE threadHandle, int* res)
     return result;
 }
 
-void ThreadAPI_Sleep(unsigned int milliseconds)
+void umock_threadapi_sleep(unsigned int milliseconds)
 {
 #ifdef TI_RTOS
     Task_sleep(milliseconds);

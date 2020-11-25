@@ -83,7 +83,6 @@ include_directories(${MACRO_UTILS_INC_FOLDER})
 set(umock_c_c_files
     ./src/umock_c.c
     ./src/umock_c_negative_tests.c
-    ./src/umock_lock_factory_windows.c
     ./src/umock_log.c
     ./src/umockalloc.c
     ./src/umockautoignoreargs.c
@@ -125,16 +124,22 @@ set(umock_c_h_files
     ./inc/umock_c/umocktypes_wcharptr.h
 )
 
-IF(WIN32)
-
+if(WIN32)
 set(umock_c_c_files ${umock_c_c_files}
     ./src/umocktypes_windows.c
+    ./src/umock_lock_factory_windows.c
 )
 
 set(umock_c_h_files ${umock_c_h_files}
     ./inc/umock_c/umocktypes_windows.h
 )
-ENDIF()
+endif()
+
+if(UNIX)
+set(umock_c_c_files ${umock_c_c_files}
+    ./src/umock_lock_factory_pthreads.c
+)
+endif()
 
 FILE(GLOB umock_c_md_files "devdoc/*.md")
 SOURCE_GROUP(devdoc FILES ${umock_c_md_files})

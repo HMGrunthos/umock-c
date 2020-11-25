@@ -40,7 +40,7 @@ if(${run_int_tests})
     add_subdirectory(umock_c_malloc_hook_int)
     add_subdirectory(umock_c_ptrarg_leak_int)
     add_subdirectory(umocktypes_struct_int)
-    if(WIN32 OR UNIX)
+    if((WIN32) OR (UNIX))
         add_subdirectory(umock_c_with_lock_factory_int)
     endif()
 
