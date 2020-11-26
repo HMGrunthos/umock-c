@@ -1336,7 +1336,7 @@ If `ENABLE_MOCKS` is not defined, `IMPLEMENT_MOCKABLE_FUNCTION` shall expand to 
 int umock_c_init_with_lock_factory(ON_UMOCK_C_ERROR on_umock_c_error, UMOCK_C_LOCK_FACTORY_CREATE_LOCK_FUNC lock_factory_create_lock, void* lock_factory_create_lock_params);
 ```
 
-There are scenarios where mocking is done in multi threaded environments.
+There are scenarios where mocked calls are made in multi threaded environments.
 
 For these cases `umock_c` shall expose an initialization function that allows passing a lock factory to `umock_c`.
 

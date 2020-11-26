@@ -11,11 +11,11 @@
 #include "umock_c/umock_lock_factory.h"
 #include "umock_c/umock_lock_factory_default.h"
 
-typedef struct UMOCK_C_LOCK_PTHREADS_TAG
+typedef struct UMOCK_C_LOCK_PTHREAD_TAG
 {
     UMOCK_C_LOCK_IF lock_if;
     pthread_rwlock_t rw_lock;
-} UMOCK_C_LOCK_PTHREADS;
+} UMOCK_C_LOCK_PTHREAD;
 
 static void umock_lock_pthreads_acquire_shared(UMOCK_C_LOCK_HANDLE lock)
 {
@@ -26,9 +26,9 @@ static void umock_lock_pthreads_acquire_shared(UMOCK_C_LOCK_HANDLE lock)
     }
     else
     {
-        UMOCK_C_LOCK_PTHREADS* umock_c_lock_windows = (UMOCK_C_LOCK_PTHREADS*)lock;
+        UMOCK_C_LOCK_PTHREAD* umock_c_lock_pthread = (UMOCK_C_LOCK_PTHREAD*)lock;
         /* Codes_SRS_UMOCK_LOCK_FACTORY_PTHREAD_01_005: [ umock_lock_pthread_acquire_shared shall acquire the read lock by calling pthread_rwlock_rdlock. ]*/
-        if (pthread_rwlock_rdlock(&umock_c_lock_windows->rw_lock) != 0)
+        if (pthread_rwlock_rdlock(&umock_c_lock_pthread->rw_lock) != 0)
         {
             UMOCK_LOG("pthread_rwlock_rdlock failed");
         }
@@ -44,9 +44,9 @@ static void umock_lock_pthreads_release_shared(UMOCK_C_LOCK_HANDLE lock)
     }
     else
     {
-        UMOCK_C_LOCK_PTHREADS* umock_c_lock_windows = (UMOCK_C_LOCK_PTHREADS*)lock;
+        UMOCK_C_LOCK_PTHREAD* umock_c_lock_pthread = (UMOCK_C_LOCK_PTHREAD*)lock;
         /* Codes_SRS_UMOCK_LOCK_FACTORY_PTHREAD_01_006: [ umock_lock_pthread_release_shared shall release the lock that was acquired in shared mode by calling pthread_rwlock_unlock. ]*/
-        if (pthread_rwlock_unlock(&umock_c_lock_windows->rw_lock) != 0)
+        if (pthread_rwlock_unlock(&umock_c_lock_pthread->rw_lock) != 0)
         {
             UMOCK_LOG("pthread_rwlock_unlock failed");
         }
@@ -62,9 +62,9 @@ static void umock_lock_pthreads_acquire_exclusive(UMOCK_C_LOCK_HANDLE lock)
     }
     else
     {
-        UMOCK_C_LOCK_PTHREADS* umock_c_lock_windows = (UMOCK_C_LOCK_PTHREADS*)lock;
+        UMOCK_C_LOCK_PTHREAD* umock_c_lock_pthread = (UMOCK_C_LOCK_PTHREAD*)lock;
         /* Codes_SRS_UMOCK_LOCK_FACTORY_PTHREAD_01_007: [ umock_lock_pthread_acquire_exclusive shall acquire the lock in exclusive mode by calling pthread_rwlock_wrlock. ]*/
-        if (pthread_rwlock_wrlock(&umock_c_lock_windows->rw_lock) != 0)
+        if (pthread_rwlock_wrlock(&umock_c_lock_pthread->rw_lock) != 0)
         {
             UMOCK_LOG("pthread_rwlock_rdlock failed");
         }
@@ -80,8 +80,8 @@ static void umock_lock_pthreads_release_exclusive(UMOCK_C_LOCK_HANDLE lock)
     }
     else
     {
-        UMOCK_C_LOCK_PTHREADS* umock_c_lock_windows = (UMOCK_C_LOCK_PTHREADS*)lock;
-        if (pthread_rwlock_unlock(&umock_c_lock_windows->rw_lock) != 0)
+        UMOCK_C_LOCK_PTHREAD* umock_c_lock_pthread = (UMOCK_C_LOCK_PTHREAD*)lock;
+        if (pthread_rwlock_unlock(&umock_c_lock_pthread->rw_lock) != 0)
         {
             UMOCK_LOG("pthread_rwlock_unlock failed");
         }
@@ -97,15 +97,15 @@ static void umock_lock_pthreads_destroy(UMOCK_C_LOCK_HANDLE lock)
     }
     else
     {
-        UMOCK_C_LOCK_PTHREADS* umock_c_lock_windows = (UMOCK_C_LOCK_PTHREADS*)lock;
+        UMOCK_C_LOCK_PTHREAD* umock_c_lock_pthread = (UMOCK_C_LOCK_PTHREAD*)lock;
         /* Codes_SRS_UMOCK_LOCK_FACTORY_WINDOWS_01_001: [ umock_lock_pthread_destroy shall release the resources for the pthread lock by calling pthread_rwlock_destroy. ]*/
-        if (pthread_rwlock_destroy(&umock_c_lock_windows->rw_lock) != 0)
+        if (pthread_rwlock_destroy(&umock_c_lock_pthread->rw_lock) != 0)
         {
             UMOCK_LOG("pthread_rwlock_destroy failed");
         }
 
         /* Codes_SRS_UMOCK_LOCK_FACTORY_PTHREAD_01_009: [ umock_lock_pthread_destroy shall free the memory associated with the lock. ]*/
-        umockalloc_free(umock_c_lock_windows);
+        umockalloc_free(umock_c_lock_pthread);
     }
 }
 
@@ -115,11 +115,11 @@ UMOCK_C_LOCK_HANDLE umock_lock_factory_create_lock(void* params)
 
     UMOCK_C_LOCK_HANDLE result;
     /* Codes_SRS_UMOCK_LOCK_FACTORY_PTHREAD_01_001: [ umock_lock_factory_create_lock shall allocate memory for the lock. ]*/
-    UMOCK_C_LOCK_PTHREADS* rw_lock_pthreads = umockalloc_malloc(sizeof(UMOCK_C_LOCK_PTHREADS));
+    UMOCK_C_LOCK_PTHREAD* rw_lock_pthreads = umockalloc_malloc(sizeof(UMOCK_C_LOCK_PTHREAD));
     if (rw_lock_pthreads == NULL)
     {
         /* Codes_SRS_UMOCK_LOCK_FACTORY_PTHREAD_01_004: [ If any error occurs, umock_lock_factory_create_lock shall fail and return NULL. ]*/
-        UMOCK_LOG("umockalloc_malloc(%zu) failed", sizeof(UMOCK_C_LOCK_PTHREADS));
+        UMOCK_LOG("umockalloc_malloc(%zu) failed", sizeof(UMOCK_C_LOCK_PTHREAD));
     }
     else
     {

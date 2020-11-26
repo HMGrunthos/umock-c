@@ -17,7 +17,7 @@ static void umock_lock_windows_acquire_shared(UMOCK_C_LOCK_HANDLE lock);
 static void umock_lock_windows_release_shared(UMOCK_C_LOCK_HANDLE lock);
 static void umock_lock_windows_acquire_exclusive(UMOCK_C_LOCK_HANDLE lock);
 static void umock_lock_windows_release_exclusive(UMOCK_C_LOCK_HANDLE lock);
-static void umock_lock_windows_release_destroy(UMOCK_C_LOCK_HANDLE lock);
+static void umock_lock_windows_destroy(UMOCK_C_LOCK_HANDLE lock);
 ```
 
 ### umockcall_create

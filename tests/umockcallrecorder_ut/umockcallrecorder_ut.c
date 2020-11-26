@@ -1458,8 +1458,8 @@ TEST_FUNCTION(umockcallrecorder_get_actual_calls_when_the_actual_call_does_not_m
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_073: [ If a lock was created for the call recorder, umockcallrecorder_get_actual_calls shall acquire the lock in shared mode. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_074: [ If a lock was created for the call recorder, umockcallrecorder_get_actual_calls shall release the shared lock. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_073: [ If a lock was created for the call recorder, umockcallrecorder_get_actual_calls shall acquire the lock in exclusive mode. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_074: [ If a lock was created for the call recorder, umockcallrecorder_get_actual_calls shall release the exclusive lock. ]*/
 TEST_FUNCTION(umockcallrecorder_get_actual_calls_with_lock_functions_setup_locks_and_unlocks)
 {
     // arrange
@@ -1476,11 +1476,11 @@ TEST_FUNCTION(umockcallrecorder_get_actual_calls_with_lock_functions_setup_locks
     // assert
     ASSERT_ARE_EQUAL(char_ptr, "[a()]", result);
     ASSERT_ARE_EQUAL(size_t, 5, mocked_call_count);
-    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_acquire_shared, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_acquire_exclusive, mocked_calls[0].call_type);
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcall_stringify, mocked_calls[1].call_type);
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_realloc, mocked_calls[2].call_type);
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_free, mocked_calls[3].call_type);
-    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_release_shared, mocked_calls[4].call_type);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_release_exclusive, mocked_calls[4].call_type);
 
     // cleanup
     umockcallrecorder_destroy(call_recorder);
@@ -1714,8 +1714,8 @@ TEST_FUNCTION(when_getting_the_ignore_all_cals_fails_umockcallrecorder_get_expec
     umockcallrecorder_destroy(call_recorder);
 }
 
-/* Tests_SRS_UMOCKCALLRECORDER_01_076: [ If a lock was created for the call recorder, umockcallrecorder_get_expected_calls shall acquire the lock in shared mode. ]*/
-/* Tests_SRS_UMOCKCALLRECORDER_01_077: [ If a lock was created for the call recorder, umockcallrecorder_get_expected_calls shall release the shared lock. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_076: [ If a lock was created for the call recorder, umockcallrecorder_get_expected_calls shall acquire the lock in exclusive mode. ]*/
+/* Tests_SRS_UMOCKCALLRECORDER_01_077: [ If a lock was created for the call recorder, umockcallrecorder_get_expected_calls shall release the exclusive lock. ]*/
 TEST_FUNCTION(umockcallrecorder_get_expected_calls_with_lock_functions_setup_locks_and_unlocks)
 {
     // arrange
@@ -1731,12 +1731,12 @@ TEST_FUNCTION(umockcallrecorder_get_expected_calls_with_lock_functions_setup_loc
     // assert
     ASSERT_ARE_EQUAL(char_ptr, "[a()]", result);
     ASSERT_ARE_EQUAL(size_t, 6, mocked_call_count);
-    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_acquire_shared, mocked_calls[0].call_type);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_acquire_exclusive, mocked_calls[0].call_type);
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcall_get_ignore_all_calls, mocked_calls[1].call_type);
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_umockcall_stringify, mocked_calls[2].call_type);
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_realloc, mocked_calls[3].call_type);
     ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_mock_free, mocked_calls[4].call_type);
-    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_release_shared, mocked_calls[5].call_type);
+    ASSERT_ARE_EQUAL(TEST_MOCK_CALL_TYPE, TEST_MOCK_CALL_TYPE_test_lock_release_exclusive, mocked_calls[5].call_type);
 
     // cleanup
     umockcallrecorder_destroy(call_recorder);
