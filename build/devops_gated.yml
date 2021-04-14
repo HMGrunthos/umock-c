@@ -257,7 +257,8 @@ jobs:
       modifyEnvironment: false
       workingFolder: '$(Build.SourcesDirectory)'
 
-- job: includecheck
+- job: iwyu_includecheck
+  displayName: 'iwyu includecheck'
   pool:
     name: Azure-MessagingStore
     demands:
@@ -307,7 +308,8 @@ jobs:
           cmake --build . | tee build.log
           if ((Select-String -Path "./build.log" -Pattern "Warning:") -ne $null) { throw "include check failed" }
 
-- job: includecheck_linux
+- job: iwyu_includecheck_linux
+  displayName: 'iwyu includecheck Linux'
   pool:
     name: Azure-MessagingStore
     demands:
